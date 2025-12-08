@@ -1,0 +1,5 @@
+/* App-wide styles can go here if distinct from index.css */
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+}
