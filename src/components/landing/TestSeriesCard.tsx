@@ -12,7 +12,6 @@ interface TestSeriesProps {
 
 const TestSeriesCard = ({ title, isNew, features, originalPrice, price, colorTheme = 'blue' }: TestSeriesProps) => {
     const navigate = useNavigate();
-    const themeColor = colorTheme === 'green' ? 'green' : 'blue';
 
     return (
         <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 flex flex-col h-full group">
