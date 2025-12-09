@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, BookOpen } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const PYQSection = () => {
     const navigate = useNavigate();
@@ -8,45 +8,51 @@ const PYQSection = () => {
         {
             title: "NEET PYQs",
             subtitle: "Medical Entrance Examination",
-            items: ["Physics 2018-2023", "Chemistry 2018-2023", "Biology 2018-2023"],
+            items: ["Physics PYQs", "Chemistry PYQs", "Biology PYQs"],
+            accent: "orange"
         },
         {
             title: "JEE PYQs",
             subtitle: "Engineering Entrance Examination",
-            items: ["JEE Main 2019-2024", "JEE Advanced 2019-2023"],
+            items: ["JEE Main PYQs", "JEE Advanced PYQs"],
+            accent: "green"
         },
         {
             title: "SSC PYQs",
             subtitle: "Staff Selection Commission",
-            items: ["CGL Tier I & II", "CHSL Previous Papers", "MTS Exam Papers"],
+            items: ["CGL Previous Papers", "MTS Previous Papers", "CHSL Previous Papers"],
+            accent: "blue" // Using blue to differentiate third card visually 
         }
     ];
 
     return (
-        <section id="resources" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50">
+        <section id="resources" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
-                    <span className="inline-block py-1 px-3 rounded-md bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide mb-4">Free Access</span>
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Previous Year Questions</h2>
-                    <p className="text-slate-500 font-medium text-lg max-w-2xl mx-auto">
-                        Download and practice with authentic previous year papers. No subscription required.
+                    <span className="inline-block py-1 px-3 rounded-full bg-green-100 text-green-700 text-sm font-bold uppercase tracking-wide mb-4">Free Resources</span>
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Explore PYQs (Free)</h2>
+                    <p className="text-blue-600 font-medium text-lg">
+                        Access previous year questions to boost your preparation
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {cards.map((card, idx) => (
-                        <div key={idx} className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 group">
-                            <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                <BookOpen size={24} />
-                            </div>
+                        <div key={idx} className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 relative overflow-hidden group hover:-translate-y-2 transition-transform duration-300">
+                            {/* Top Border Accent */}
+                            <div className={`absolute top-0 left-0 w-full h-1.5 ${card.accent === 'orange' ? 'bg-orange-500' :
+                                card.accent === 'green' ? 'bg-green-500' : 'bg-blue-500'
+                                }`}></div>
 
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">{card.title}</h3>
-                            <p className="text-sm text-slate-500 mb-8">{card.subtitle}</p>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">{card.title}</h3>
+                            <p className="text-sm text-gray-500 mb-6 font-medium">{card.subtitle}</p>
 
                             <ul className="space-y-3 mb-8">
                                 {card.items.map((item, i) => (
-                                    <li key={i} className="text-slate-600 flex items-center gap-3 text-sm font-medium">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                                    <li key={i} className="text-gray-600 flex items-center gap-2">
+                                        <span className={`w-1.5 h-1.5 rounded-full ${card.accent === 'orange' ? 'bg-orange-400' :
+                                            card.accent === 'green' ? 'bg-green-400' : 'bg-blue-400'
+                                            }`}></span>
                                         {item}
                                     </li>
                                 ))}
@@ -54,9 +60,9 @@ const PYQSection = () => {
 
                             <button
                                 onClick={() => navigate('/signup')}
-                                className="w-full py-3 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all flex items-center justify-center gap-2 text-sm"
+                                className="w-full py-3 rounded-xl border-2 border-blue-600 text-blue-600 font-bold hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center gap-2"
                             >
-                                Download PDF <ArrowRight size={16} />
+                                Explore PYQs <ArrowRight size={18} />
                             </button>
                         </div>
                     ))}

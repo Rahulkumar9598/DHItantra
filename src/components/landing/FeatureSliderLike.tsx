@@ -1,63 +1,90 @@
+import { Trophy, Clock, Target, BarChart2 } from 'lucide-react';
 import studentBanner from '../../assets/student_banner.png';
-import chartGraphic from '../../assets/chart_graphic.png';
 
 const FeatureSliderLike = () => {
     return (
-        <section className="py-20 bg-orange-50 relative overflow-hidden">
+        <section className="py-24 bg-white relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                <div className="bg-white rounded-[2rem] shadow-xl p-8 lg:p-12 flex flex-col lg:flex-row items-center gap-12 relative z-10 border border-orange-100">
+                <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-                    {/* Image Left */}
-                    <div className="w-full lg:w-1/3 relative group">
-                        <div className="absolute inset-0 bg-blue-600 rounded-2xl rotate-3 opacity-20 group-hover:rotate-6 transition-transform"></div>
+                    {/* Content Left */}
+                    <div>
+                        <div className="inline-block px-4 py-2 bg-orange-100 text-orange-600 rounded-lg text-sm font-bold mb-6">
+                            Why Students Trust Us?
+                        </div>
+                        <h2 className="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-6 leading-tight">
+                            We Help You <br />
+                            <span className="text-blue-600">Crack The Exam Code.</span>
+                        </h2>
+                        <p className="text-lg text-slate-600 mb-10 leading-relaxed">
+                            Examinantt isn't just a test platform; it's your personal performance coach. We analyze every keystroke to tell you exactly where you're losing marks.
+                        </p>
+
+                        <div className="grid sm:grid-cols-2 gap-8">
+                            <div className="flex gap-4">
+                                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
+                                    <Trophy size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 text-lg mb-1">95% Success Rate</h3>
+                                    <p className="text-slate-500 text-sm">Students improving scores</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-600 shrink-0">
+                                    <Clock size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 text-lg mb-1">Real-Time Sync</h3>
+                                    <p className="text-slate-500 text-sm">Exam-like environment</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 shrink-0">
+                                    <Target size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 text-lg mb-1">Targeted Prep</h3>
+                                    <p className="text-slate-500 text-sm">Focus on weak areas</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 shrink-0">
+                                    <BarChart2 size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 text-lg mb-1">AI Insights</h3>
+                                    <p className="text-slate-500 text-sm">Detailed performance reports</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Image Right */}
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-blue-600 rounded-[2rem] rotate-6 opacity-10 blur-xl scale-95"></div>
                         <img
                             src={studentBanner}
                             alt="Student Learning"
-                            className="relative w-full rounded-2xl shadow-lg object-cover aspect-[4/3]"
+                            className="relative w-full rounded-[2rem] shadow-2xl object-cover aspect-[4/3] border-[6px] border-white"
                         />
-                    </div>
 
-                    {/* Content Middle */}
-                    <div className="w-full lg:w-1/2">
-                        <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-8">
-                            Why Choose <span className="text-blue-600">Examinantt?</span>
-                        </h2>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {[
-                                { icon: "⚙️", title: "Real-Test Experience" },
-                                { icon: "⏱️", title: "Time-Scheduled Mock Tests" },
-                                { icon: "📊", title: "Expert-Curated Content" },
-                                { icon: "📈", title: "Smart Performance Analytics" }
-                            ].map((item, idx) => (
-                                <div key={idx} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-blue-50 transition-colors">
-                                    <span className="text-2xl">{item.icon}</span>
-                                    <h3 className="font-bold text-gray-800 text-sm md:text-base">{item.title}</h3>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="mt-8 flex gap-4">
-                            {['#ff5e57', '#ffdd59', '#0fbcf9'].map((color, i) => (
-                                <div key={i} className="w-10 h-10 rounded-full shadow-md flex items-center justify-center text-white font-bold text-xs" style={{ backgroundColor: color }}>
-                                    {['NEET', 'JEE', 'SSC'][i]}
-                                </div>
-                            ))}
+                        {/* Floating Stat Card */}
+                        <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl flex items-center gap-4 max-w-xs animate-bounce" style={{ animationDuration: '4s' }}>
+                            <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                4.9
+                            </div>
+                            <div>
+                                <div className="font-bold text-slate-900">Top Rated Platform</div>
+                                <div className="text-xs text-slate-500">Based on 5000+ reviews</div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Graphics Right (Hidden on mobile) */}
-                    <div className="hidden xl:block w-1/4">
-                        <img src={chartGraphic} alt="Performance Graph" className="w-full max-h-60 object-contain drop-shadow-xl" />
-                    </div>
-                </div>
-
-                {/* CTA Bar */}
-                <div className="mt-8 bg-blue-600 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center text-white shadow-lg lg:mx-12">
-                    <span className="text-lg font-medium opacity-90">📸 @examinantt</span>
-                    <span className="text-xl font-bold uppercase tracking-wider my-4 md:my-0 text-center">Start Practicing Today</span>
-                    <span className="text-lg font-bold">📞 888-1188-670</span>
                 </div>
             </div>
         </section>

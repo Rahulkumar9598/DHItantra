@@ -1,106 +1,86 @@
 import { useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { Menu } from 'lucide-react';
+import { useState } from 'react';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     return (
-        <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-100 py-3' : 'bg-transparent py-5'
-            }`}>
+        <nav className="fixed top-0 w-full z-50 glass-nav shadow-sm transition-all duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
-                        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-600/20 transition-transform group-hover:scale-105">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M22 10v6M2 10v6M12 2l10 8-10 8L2 10z" />
+                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
+                        <div className="bg-gradient-to-tr from-orange-400 to-orange-600 p-1.5 rounded-lg shadow-md">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
                             </svg>
                         </div>
-                        <span className="text-2xl font-bold text-slate-900 tracking-tight">
-                            Examinantt<span className="text-blue-600">.</span>
+                        <span className="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-500 tracking-tight">
+                            Examinantt
                         </span>
                     </div>
 
                     {/* Desktop Links */}
-                    <div className="hidden md:flex items-center gap-10">
-                        {['Home', 'Test Series', 'Free Resources', 'About'].map((item) => (
+                    <div className="hidden md:flex items-center gap-8">
+                        {['Home', 'Test Series', 'Free Resources', 'Result', 'About'].map((item) => (
                             <a
                                 key={item}
-                                href={`#${item.toLowerCase().replace(' ', '-')} `}
-                                className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+                                href={`#${item.toLowerCase().replace(' ', '-')}`}
+                                className="text-gray-600 font-medium hover:text-blue-600 transition-colors relative group"
                             >
                                 {item}
+                                <span className="absolute bottom-[-4px] left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
                             </a>
                         ))}
                     </div>
 
                     {/* Auth Button */}
-                    <div className="hidden md:flex items-center gap-4">
+                    <div className="hidden md:block">
                         <button
                             onClick={() => navigate('/login')}
-                            className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors"
+                            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-orange-500/30 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl"
                         >
-                            Log in
-                        </button>
-                        <button
-                            onClick={() => navigate('/signup')}
-                            className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-slate-900/20 hover:bg-blue-600 hover:shadow-blue-600/30 transition-all transform hover:-translate-y-0.5"
-                        >
-                            Get Started
+                            Login / Register
                         </button>
                     </div>
 
                     {/* Mobile Menu Button */}
                     <div className="md:hidden">
-                        <button
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="p-2 text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
-                        >
-                            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-gray-700 hover:text-blue-600">
+                            <Menu size={28} />
                         </button>
                     </div>
                 </div>
             </div>
 
             {/* Mobile Menu Dropdown */}
-            <div className={`md:hidden absolute top-full left-0 w-full bg-white border-b border-slate-100 shadow-xl transition-all duration-300 origin-top ${mobileMenuOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
-                }`}>
-                <div className="px-6 py-8 space-y-4">
-                    {['Home', 'Test Series', 'Free Resources', 'About'].map((item) => (
-                        <a
-                            key={item}
-                            href="#"
-                            className="block text-lg font-medium text-slate-800 hover:text-blue-600"
-                            onClick={() => setMobileMenuOpen(false)}
-                        >
-                            {item}
-                        </a>
-                    ))}
-                    <div className="pt-6 flex flex-col gap-3">
+            {mobileMenuOpen && (
+                <div className="md:hidden bg-white border-t border-gray-100 absolute w-full shadow-lg">
+                    <div className="px-4 pt-2 pb-6 space-y-2">
+                        {['Home', 'Test Series', 'Free Resources', 'Result', 'About'].map((item) => (
+                            <a
+                                key={item}
+                                href="#"
+                                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                            >
+                                {item}
+                            </a>
+                        ))}
                         <button
                             onClick={() => navigate('/login')}
-                            className="w-full py-3 rounded-xl border border-slate-200 text-slate-700 font-bold hover:bg-slate-50"
+                            className="w-full mt-4 bg-orange-500 text-white px-4 py-3 rounded-lg font-bold"
                         >
-                            Log in
-                        </button>
-                        <button
-                            onClick={() => navigate('/signup')}
-                            className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-600/20"
-                        >
-                            Get Started Free
+                            Login / Register
                         </button>
                     </div>
                 </div>
-            </div>
+            )}
         </nav>
     );
 };
