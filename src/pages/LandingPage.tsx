@@ -4,7 +4,6 @@ import FeatureSliderLike from '../components/landing/FeatureSliderLike';
 import TestSeriesCard from '../components/landing/TestSeriesCard';
 import PYQSection from '../components/landing/PYQSection';
 import Footer from '../components/landing/Footer';
-import logo from '../assets/logo.png';
 // test
 const LandingPage = () => {
 

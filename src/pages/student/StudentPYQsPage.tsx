@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Download, Lock, Check, Loader2, Search, ExternalLink } from 'lucide-react';
+import { FileText, Download, Lock, Loader2, Search } from 'lucide-react';
 import { db } from '../../firebase';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
