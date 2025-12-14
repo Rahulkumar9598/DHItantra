@@ -71,4 +71,5 @@ export default defineConfig([
   },
 ])
 ```
-# examinant-web
+# closetesting
+# closetesting-web
