@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Trash2, X, Save, Loader2, List, Sparkles, Layers } from 'lucide-react';
+import { Plus, Search, Trash2, X, Save, Loader2, List } from 'lucide-react';
 import { db } from '../../firebase';
 import { collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, serverTimestamp, arrayUnion, getDocs } from 'firebase/firestore';
 import { generateJEEMainsTest } from '../../services/testGenerationService';
@@ -31,6 +31,9 @@ const AdminTestsPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isCreating, setIsCreating] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
     // Question Management State
     const [managingTest, setManagingTest] = useState<TestSeries | null>(null);
@@ -43,7 +46,7 @@ const AdminTestsPage = () => {
     // Form State for New Test
     const [formData, setFormData] = useState({
         title: '',
-        category: 'NEET',
+        category: 'JEE',
         price: '',
         description: '',
         status: 'draft' as const,
@@ -92,7 +95,9 @@ const AdminTestsPage = () => {
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
         try {
+            await delay(1000); // Artificial delay
             await addDoc(collection(db, 'testSeries'), {
                 ...formData,
                 price: Number(formData.price),
@@ -102,7 +107,7 @@ const AdminTestsPage = () => {
             setIsCreating(false);
             setFormData({
                 title: '',
-                category: 'NEET',
+                category: 'JEE',
                 price: '',
                 description: '',
                 status: 'draft',
@@ -111,6 +116,8 @@ const AdminTestsPage = () => {
             });
         } catch (error) {
             console.error("Error creating test:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -139,7 +146,9 @@ const AdminTestsPage = () => {
     };
 
     const handleConfirmGenerated = async () => {
+        setIsSubmitting(true);
         try {
+            await delay(1500); // Artificial delay
             await addDoc(collection(db, 'testSeries'), {
                 ...formData,
                 price: Number(formData.price),
@@ -151,7 +160,7 @@ const AdminTestsPage = () => {
             setIsCreating(false);
             setFormData({
                 title: '',
-                category: 'NEET',
+                category: 'JEE',
                 price: '',
                 description: '',
                 status: 'draft',
@@ -163,6 +172,8 @@ const AdminTestsPage = () => {
         } catch (error) {
             console.error("Error saving generated test:", error);
             alert("Failed to save test. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -204,6 +215,11 @@ const AdminTestsPage = () => {
     const handleDelete = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this test series?')) {
             try {
+                // Ideally this should have a loading state too, but since it's inline confirm, 
+                // we mostly need the delay for visual feedback if we had a better modal.
+                // Adding simple delay before optimistic update (if any) or reload.
+                // For now, just standard delete logic, but let's delay to mimic processing.
+                // (Note: UI might not show loading spinner for this specific button unless we track deletingId)
                 await deleteDoc(doc(db, 'testSeries', id));
             } catch (error) {
                 console.error("Error deleting test:", error);
@@ -260,8 +276,8 @@ const AdminTestsPage = () => {
     };
 
     const filteredTests = tests.filter(test =>
-        test.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        test.category.toLowerCase().includes(searchTerm.toLowerCase())
+        test.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        test.category?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -655,12 +671,92 @@ const AdminTestsPage = () => {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-md shadow-blue-500/20 flex items-center gap-2"
+                                        className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 shadow-md shadow-blue-500/20 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                        disabled={isSubmitting}
                                     >
-                                        <Save size={18} /> Create Test
+                                        {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                                        {isSubmitting ? 'Creating...' : 'Create Test'}
                                     </button>
                                 </div>
                             </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Preview Generated Test Modal */}
+            <AnimatePresence>
+                {showPreview && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowPreview(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-white w-full max-w-4xl h-[80vh] rounded-2xl shadow-xl overflow-hidden flex flex-col"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+                                <div>
+                                    <h2 className="text-xl font-bold text-slate-800">Preview Generated Test</h2>
+                                    <p className="text-sm text-slate-500">
+                                        Generated {generatedQuestions.length} questions based on {formData.testPattern === 'JEE_MAINS' ? 'JEE Mains pattern' : 'selected topics'}
+                                    </p>
+                                </div>
+                                <button onClick={() => setShowPreview(false)} className="text-slate-400 hover:text-slate-600">
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50">
+                                {generatedQuestions.map((q, idx) => (
+                                    <div key={idx} className="bg-white p-4 rounded-xl border border-slate-200">
+                                        <div className="flex justify-between mb-2">
+                                            <span className="font-bold text-slate-700">Question {idx + 1}</span>
+                                            <span className={`px-2 py-1 rounded text-xs font-bold ${q.subject === 'Physics' ? 'bg-green-100 text-green-700' :
+                                                q.subject === 'Chemistry' ? 'bg-purple-100 text-purple-700' :
+                                                    'bg-orange-100 text-orange-700'
+                                                }`}>
+                                                {q.subject}
+                                            </span>
+                                        </div>
+                                        <div className="text-slate-800 mb-3">{q.text}</div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {q.options?.map((opt: string, i: number) => (
+                                                <div key={i} className={`px-3 py-2 rounded-lg text-sm border ${i === q.correctAnswer
+                                                    ? 'bg-green-50 border-green-200 text-green-700 font-medium'
+                                                    : 'bg-slate-50 border-slate-100 text-slate-500'
+                                                    }`}>
+                                                    <span className="font-bold mr-2">{String.fromCharCode(65 + i)}.</span>
+                                                    {opt}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="p-4 border-t border-slate-200 bg-white flex justify-end gap-3 sticky bottom-0 z-10">
+                                <button
+                                    onClick={() => setShowPreview(false)}
+                                    className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleConfirmGenerated}
+                                    disabled={isSubmitting}
+                                    className="px-6 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 shadow-md shadow-green-500/20 flex items-center gap-2"
+                                >
+                                    {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                                    {isSubmitting ? 'Saving...' : 'Confirm & Save Test'}
+                                </button>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

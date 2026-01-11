@@ -12,7 +12,8 @@ import {
     X,
     Bell,
     BookMarked,
-    FolderTree
+    FolderTree,
+    ListChecks
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../firebase';
@@ -49,6 +50,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
 
     const adminLinks = [
         { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/admin-dashboard' },
+        { icon: <ListChecks size={20} />, label: 'Test Series', path: '/admin-dashboard/test-series' },
         { icon: <BookMarked size={20} />, label: 'Question Bank', path: '/admin-dashboard/question-bank' },
         { icon: <FolderTree size={20} />, label: 'Chapters', path: '/admin-dashboard/chapters' },
         { icon: <BookOpen size={20} />, label: 'Manage Tests', path: '/admin-dashboard/tests' },
@@ -60,12 +62,17 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
 
     const links = role === 'admin' ? adminLinks : studentLinks;
 
+    // Determine theme based on role or globally (For now enforcing Dark for Admin as requested, but Layout wraps both. 
+    // We'll apply Dark Theme generally as the user implies a system-wide design change or at least for the Admin view).
+    // The screenshot implies a global dark theme app.
+    const isDarkTheme = false; // Could be a prop or context later.
+
     return (
-        <div className="min-h-screen bg-slate-50 flex">
+        <div className={`min-h-screen flex ${isDarkTheme ? 'bg-[#0B0F19] text-white' : 'bg-slate-50 text-slate-900'}`}>
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-slate-900/50 z-40 md:hidden backdrop-blur-sm transition-opacity"
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
@@ -73,87 +80,118 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
             {/* Sidebar */}
             <aside
                 className={`
-                    fixed md:sticky top-0 h-screen w-72 bg-white border-r border-slate-200 z-50 transition-transform duration-300 ease-in-out
+                    fixed md:sticky top-0 h-screen w-72 
+                    ${isDarkTheme ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'}
+                    border-r z-50 transition-transform duration-300 ease-in-out
                     ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-                    flex flex-col shadow-xl md:shadow-none
+                    flex flex-col shadow-2xl md:shadow-none
                 `}
             >
                 {/* Logo Area */}
-                <div className="p-6 border-b border-slate-100 flex items-center gap-3">
-                    <img src={logo} alt="Logo" className="w-9 h-9 rounded-lg shadow-sm" />
-                    <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600 tracking-tight">
-                        Examinantt
-                    </h2>
+                <div className="px-6 py-8 flex items-center gap-3">
+                    <div className="relative group">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-amber-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                        <img src={logo} alt="Logo" className={`relative w-10 h-10 rounded-xl shadow-lg p-1 ${isDarkTheme ? 'bg-[#0B0F19]' : 'bg-white'}`} />
+                    </div>
+                    <div>
+                        <h2 className={`text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${isDarkTheme ? 'from-white to-slate-400' : 'from-slate-800 to-slate-600'} tracking-tight`}>
+                            Examinantt
+                        </h2>
+                        <p className={`text-[10px] uppercase tracking-widest font-bold ${isDarkTheme ? 'text-slate-500' : 'text-slate-400'}`}>
+                            {role === 'admin' ? 'Admin Portal' : 'Student Portal'}
+                        </p>
+                    </div>
                     <button
                         onClick={() => setIsSidebarOpen(false)}
-                        className="ml-auto md:hidden text-slate-400 hover:text-slate-600"
+                        className={`ml-auto md:hidden p-2 rounded-lg transition-colors ${isDarkTheme ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}
                     >
-                        <X size={24} />
+                        <X size={20} />
                     </button>
                 </div>
 
+                {/* Separator */}
+                <div className={`h-px bg-gradient-to-r from-transparent ${isDarkTheme ? 'via-slate-800' : 'via-slate-200'} to-transparent mx-6 mb-4`}></div>
+
                 {/* Navigation */}
-                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                <nav className="flex-1 px-4 space-y-2 overflow-y-auto scrollbar-hide py-2">
                     {links.map((link) => (
                         <NavLink
                             key={link.path}
                             to={link.path}
-                            onClick={() => setIsSidebarOpen(false)} // Close on mobile click
+                            onClick={() => setIsSidebarOpen(false)}
                             className={({ isActive }) => `
-                                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium
+                                relative group flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 font-medium overflow-hidden
                                 ${isActive
-                                    ? 'bg-blue-50 text-blue-700 shadow-sm border border-blue-100'
-                                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                    ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-500/20 translate-x-1'
+                                    : `${isDarkTheme ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-50 hover:text-orange-600'} hover:translate-x-1`
                                 }
                             `}
                         >
-                            {link.icon}
-                            <span>{link.label}</span>
+                            {({ isActive }) => (
+                                <>
+                                    {/* Active State Glow */}
+                                    {isActive && (
+                                        <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-transparent mix-blend-overlay"></div>
+                                    )}
+
+                                    <span className={`relative z-10 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}>
+                                        {link.icon}
+                                    </span>
+                                    <span className="relative z-10">{link.label}</span>
+
+                                    {/* Active Indicator Dot */}
+                                    {isActive && (
+                                        <div className="absolute right-3 w-1.5 h-1.5 bg-white rounded-full shadow-sm animate-pulse"></div>
+                                    )}
+                                </>
+                            )}
                         </NavLink>
                     ))}
                 </nav>
 
                 {/* Sidebar Footer */}
-                <div className="p-4 border-t border-slate-100">
-                    <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors font-medium"
-                    >
-                        <LogOut size={20} />
-                        <span>Sign Out</span>
-                    </button>
+                <div className="p-4 mt-auto">
+                    <div className={`p-4 rounded-2xl border backdrop-blur-sm ${isDarkTheme ? 'bg-slate-800/20 border-slate-800' : 'bg-slate-50/50 border-slate-100'}`}>
+                        <button
+                            onClick={handleLogout}
+                            className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-300 font-semibold group shadow-sm ${isDarkTheme ? 'text-red-400 hover:text-white hover:bg-red-500/20' : 'text-red-600 hover:text-white hover:bg-red-500'} hover:shadow-lg`}
+                        >
+                            <LogOut size={18} className="transition-transform group-hover:-translate-x-1" />
+                            <span>Sign Out</span>
+                        </button>
+                    </div>
                 </div>
             </aside>
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Header */}
-                <header className="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-4 flex items-center justify-between">
+                <header className={`sticky top-0 z-30 px-6 py-4 flex items-center justify-between border-b ${isDarkTheme ? 'bg-[#0B0F19]/80 border-slate-800 backdrop-blur-md' : 'bg-white border-slate-200'}`}>
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className="md:hidden text-slate-500 hover:text-slate-700 p-1 bg-slate-100 rounded-lg"
+                            className={`md:hidden p-1 rounded-lg ${isDarkTheme ? 'text-slate-400 hover:text-white bg-slate-800' : 'text-slate-500 hover:text-slate-700 bg-slate-100'}`}
                         >
                             <Menu size={24} />
                         </button>
                         <div>
-                            <h1 className="text-xl font-bold text-slate-800 hidden sm:block">
+                            <h1 className={`text-xl font-bold hidden sm:block ${isDarkTheme ? 'text-white' : 'text-slate-800'}`}>
                                 {role === 'admin' ? 'Admin Portal' : 'Student Dashboard'}
                             </h1>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+                        <button className={`relative p-2 rounded-full transition-colors ${isDarkTheme ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}>
                             <Bell size={20} />
-                            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-inherit"></span>
                         </button>
-                        <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
+                        <div className={`flex items-center gap-3 pl-4 border-l ${isDarkTheme ? 'border-slate-800' : 'border-slate-200'}`}>
                             <div className="text-right hidden sm:block">
-                                <p className="text-sm font-semibold text-slate-700 leading-none">{currentUser?.displayName || 'User'}</p>
-                                <p className="text-xs text-slate-500 mt-1">{role === 'admin' ? 'Administrator' : 'Student'}</p>
+                                <p className={`text-sm font-semibold leading-none ${isDarkTheme ? 'text-white' : 'text-slate-700'}`}>{currentUser?.displayName || 'User'}</p>
+                                <p className={`text-xs mt-1 ${isDarkTheme ? 'text-slate-500' : 'text-slate-500'}`}>{role === 'admin' ? 'Administrator' : 'Student'}</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-200 ring-2 ring-white">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold shadow-md shadow-orange-500/20 ring-2 ring-white/10">
                                 {currentUser?.email?.charAt(0).toUpperCase() || 'U'}
                             </div>
                         </div>
@@ -161,7 +199,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
                 </header>
 
                 {/* Page Content */}
-                <main className="flex-1 overflow-x-hidden pt-4"> {/* Added padding top */}
+                <main className="flex-1 overflow-x-hidden pt-4">
                     {children}
                 </main>
             </div>

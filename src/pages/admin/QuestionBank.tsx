@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Trash2, X, Save, Loader2, Download, BarChart3, Edit2, Upload } from 'lucide-react';
+import { Plus, Search, Trash2, X, Save, Loader2, Download, BarChart3, Edit2, Upload, AlertTriangle } from 'lucide-react';
 import { db } from '../../firebase';
-import { collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { parseQuestionsCSV, validateQuestion, batchUploadQuestions, downloadTemplate } from '../../utils/csvImporter';
+import { JEE_MAINS_2024_WEIGHTAGE } from '../../data/jeeMainsWeightage2024';
 import type { QuestionCSVRow, ValidationResult } from '../../utils/csvImporter';
 
 interface Question {
@@ -28,9 +29,16 @@ const AdminQuestionBank = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isCreating, setIsCreating] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     const [searchTerm, setSearchTerm] = useState('');
     const [showStats, setShowStats] = useState(false);
+
+    // Deletion Modal State
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+    const [isDeletingLoading, setIsDeletingLoading] = useState(false);
 
     // Filters
     const [filterSubject, setFilterSubject] = useState<string>('all');
@@ -100,7 +108,9 @@ const AdminQuestionBank = () => {
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
         try {
+            await delay(1000); // Artificial delay
             const questionData: any = {
                 text: formData.text,
                 subject: formData.subject,
@@ -141,16 +151,22 @@ const AdminQuestionBank = () => {
         } catch (error) {
             console.error("Error creating question:", error);
             alert("Error creating question. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (window.confirm('Are you sure you want to delete this question?')) {
-            try {
-                await deleteDoc(doc(db, 'questions', id));
-            } catch (error) {
-                console.error("Error deleting question:", error);
-            }
+        setIsDeletingLoading(true);
+        try {
+            await delay(1000); // Artificial delay
+            await deleteDoc(doc(db, 'questions', id));
+            setConfirmDeleteId(null);
+        } catch (error) {
+            console.error("Error deleting question:", error);
+            alert("Failed to delete question. Please try again.");
+        } finally {
+            setIsDeletingLoading(false);
         }
     };
 
@@ -182,7 +198,9 @@ const AdminQuestionBank = () => {
         e.preventDefault();
         if (!editingQuestion) return;
 
+        setIsSubmitting(true);
         try {
+            await delay(1000); // Artificial delay
             const questionData: any = {
                 text: formData.text,
                 subject: formData.subject,
@@ -223,6 +241,8 @@ const AdminQuestionBank = () => {
         } catch (error) {
             console.error("Error updating question:", error);
             alert("Error updating question. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -321,18 +341,68 @@ const AdminQuestionBank = () => {
 
     const stats = getStatistics();
 
-    // CSV Download Template
-    const downloadCSVTemplate = () => {
-        const headers = ['Subject', 'Chapter', 'Unit', 'Type', 'Difficulty', 'Question Text', 'Option A', 'Option B', 'Option C', 'Option D', 'Correct Answer (0-3 for MCQ, value for Numerical)'];
-        const sampleRow = ['Physics', 'Current Electricity', 'Ohm\'s Law', 'MCQ', 'Medium', 'What is the unit of resistance?', 'Ohm', 'Volt', 'Ampere', 'Watt', '0'];
 
-        const csvContent = [headers.join(','), sampleRow.join(',')].join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'question_upload_template.csv';
-        a.click();
+    const handleSeed = async () => {
+        if (!window.confirm('Seed 150 dummy questions (aligned with JEE Weightage)?')) return;
+        setIsLoading(true);
+        try {
+            await delay(1500); // Artificial delay for seed
+            const batch = writeBatch(db);
+            const subjects = ['Physics', 'Chemistry', 'Mathematics'];
+            const types = ['MCQ', 'Numerical'];
+            const difficulties = ['Easy', 'Medium', 'Hard'];
+
+            let count = 0;
+            const target = 300;
+
+            // Flatten validation map for easier access
+            const subjectChapters: Record<string, string[]> = {};
+
+            subjects.forEach(sub => {
+                subjectChapters[sub] = [];
+                // @ts-ignore
+                const subData = JEE_MAINS_2024_WEIGHTAGE[sub] || {};
+                Object.values(subData).forEach((unit: any) => {
+                    if (unit.chapters) subjectChapters[sub].push(...unit.chapters);
+                });
+            });
+
+            while (count < target) {
+                const subject = subjects[count % 3];
+                const chaptersList = subjectChapters[subject];
+                // Fallback to 'General' if undefined or empty
+                const availableChapters = (chaptersList && chaptersList.length > 0) ? chaptersList : ['General'];
+                const chapter = availableChapters[count % availableChapters.length];
+                const type = types[count % 2] as 'MCQ' | 'Numerical';
+                const difficulty = difficulties[count % 3] as 'Easy' | 'Medium' | 'Hard';
+
+                const newDocRef = doc(collection(db, 'questions'));
+
+                batch.set(newDocRef, {
+                    text: `Dummy Question ${count + 1} for ${subject} - ${chapter} (${type})`,
+                    subject,
+                    chapter,
+                    topic: 'Basics',
+                    type,
+                    difficulty,
+                    marks: 4,
+                    negativeMarks: type === 'MCQ' ? -1 : 0,
+                    options: type === 'MCQ' ? ['Option A', 'Option B', 'Option C', 'Option D'] : [],
+                    correctAnswer: type === 'MCQ' ? 0 : '10',
+                    explanation: 'This is a dummy explanation.',
+                    createdAt: serverTimestamp()
+                });
+                count++;
+            }
+
+            await batch.commit();
+            alert('Seeded 150 questions!');
+        } catch (error) {
+            console.error("Error seeding:", error);
+            alert("Error seeding questions.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -365,6 +435,12 @@ const AdminQuestionBank = () => {
                         className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors"
                     >
                         <BarChart3 size={20} /> Statistics
+                    </button>
+                    <button
+                        onClick={handleSeed}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-yellow-600 text-white font-semibold rounded-xl hover:bg-yellow-700 transition-colors"
+                    >
+                        Seed DB
                     </button>
                     <button
                         onClick={() => setIsCreating(true)}
@@ -507,7 +583,7 @@ const AdminQuestionBank = () => {
                                                     <Edit2 size={18} />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(q.id)}
+                                                    onClick={() => setConfirmDeleteId(q.id)}
                                                     className="text-slate-400 hover:text-red-600 transition-colors"
                                                     title="Delete question"
                                                 >
@@ -721,11 +797,61 @@ const AdminQuestionBank = () => {
 
                                 <button
                                     type="submit"
-                                    className="w-full py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
+                                    className="w-full py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    disabled={isSubmitting}
                                 >
-                                    <Save size={18} /> Save Question
+                                    {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
+                                    {isSubmitting ? 'Creating Question...' : 'Add Question'}
                                 </button>
                             </form>
+                            {/* Delete Confirmation Modal */}
+                            <AnimatePresence>
+                                {confirmDeleteId && (
+                                    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                                        <motion.div
+                                            initial={{ scale: 0.95, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            exit={{ scale: 0.95, opacity: 0 }}
+                                            className="bg-white w-full max-w-md rounded-2xl shadow-xl p-6"
+                                        >
+                                            <div className="flex flex-col items-center text-center space-y-4">
+                                                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                                                    <AlertTriangle className="text-red-600" size={32} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-bold text-slate-800">Delete Question?</h3>
+                                                    <p className="text-slate-500 mt-2">
+                                                        Are you sure you want to delete this question? This action cannot be undone and it will be removed from any tests using it.
+                                                    </p>
+                                                </div>
+                                                <div className="flex gap-3 w-full pt-4">
+                                                    <button
+                                                        onClick={() => setConfirmDeleteId(null)}
+                                                        disabled={isDeletingLoading}
+                                                        className="flex-1 px-6 py-2.5 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 disabled:opacity-50"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(confirmDeleteId)}
+                                                        disabled={isDeletingLoading}
+                                                        className="flex-1 px-6 py-2.5 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 disabled:bg-red-400 flex items-center justify-center gap-2 shadow-lg shadow-red-500/20"
+                                                    >
+                                                        {isDeletingLoading ? (
+                                                            <>
+                                                                <Loader2 className="animate-spin" size={18} />
+                                                                Deleting...
+                                                            </>
+                                                        ) : (
+                                                            'Delete Now'
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    </div>
+                                )}
+                            </AnimatePresence>
                         </motion.div>
                     </div>
                 )}

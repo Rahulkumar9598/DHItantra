@@ -26,7 +26,7 @@ const LandingPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <TestSeriesCard
-                            title="JEE Mains & Advanced"
+                            title="JEE Series"
                             isNew={true}
                             originalPrice="2999"
                             price="1499"
@@ -38,7 +38,7 @@ const LandingPage = () => {
                             ]}
                         />
                         <TestSeriesCard
-                            title="NEET UG Series"
+                            title="NEET Series"
                             isNew={true}
                             originalPrice="2499"
                             price="1299"
@@ -50,7 +50,7 @@ const LandingPage = () => {
                             ]}
                         />
                         <TestSeriesCard
-                            title="SSC CGL / CHSL"
+                            title="SSC Series"
                             isNew={true}
                             originalPrice="1999"
                             price="999"

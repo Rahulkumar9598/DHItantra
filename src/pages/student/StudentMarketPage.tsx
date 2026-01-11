@@ -92,8 +92,8 @@ const StudentMarketPage = () => {
     };
 
     const filteredTests = tests.filter(test => {
-        const matchesSearch = test.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            test.category.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = (test.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+            (test.category?.toLowerCase() || '').includes(searchTerm.toLowerCase());
         const matchesCategory = selectedCategory === 'All' || test.category === selectedCategory;
         return matchesSearch && matchesCategory;
     });
@@ -184,7 +184,7 @@ const StudentMarketPage = () => {
                                     <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                                         <div>
                                             <div className="text-2xl font-bold text-slate-800">
-                                                {test.price === 0 ? 'Free' : `₹${test.price}`}
+                                                {(test.price || 0) === 0 ? 'Free' : `₹${test.price}`}
                                             </div>
                                         </div>
                                         {isOwned ? (

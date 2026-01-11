@@ -33,6 +33,8 @@ const AdminStudentsPage = React.lazy(() => import('./pages/admin/AdminStudentsPa
 const AdminSettingsPage = React.lazy(() => import('./pages/admin/AdminSettingsPage'));
 const QuestionBank = React.lazy(() => import('./pages/admin/QuestionBank'));
 const AdminChaptersPage = React.lazy(() => import('./pages/admin/AdminChaptersPage'));
+const TestSeriesManagement = React.lazy(() => import('./pages/admin/TestSeriesManagement'));
+const TestCreationWizard = React.lazy(() => import('./pages/admin/TestCreationWizard'));
 
 
 import './App.css';
@@ -103,6 +105,8 @@ function App() {
               <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
                 <Route element={<DashboardLayout role="admin"><Outlet /></DashboardLayout>}>
                   <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin-dashboard/test-series" element={<TestSeriesManagement />} />
+                  <Route path="/admin-dashboard/create-test" element={<TestCreationWizard />} />
                   <Route path="/admin-dashboard/tests" element={<AdminTestsPage />} />
                   <Route path="/admin-dashboard/question-bank" element={<QuestionBank />} />
                   <Route path="/admin-dashboard/chapters" element={<AdminChaptersPage />} />
