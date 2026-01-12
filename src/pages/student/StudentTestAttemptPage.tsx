@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Timer, AlertCircle, ArrowLeft, Save, Loader2, ChevronLeft, ChevronRight,
-    Flag, Circle, CheckCircle, XCircle, BookmarkCheck
+    Timer, ArrowLeft, Save, Loader2, ChevronLeft, ChevronRight, Flag
 } from 'lucide-react';
 import { db } from '../../firebase';
 import { doc, getDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
@@ -403,8 +402,8 @@ const StudentTestAttemptPage = () => {
 
                     <div className="flex items-center gap-3 md:gap-6">
                         <div className={`flex items-center gap-2 font-mono text-sm md:text-lg font-bold px-3 md:px-4 py-2 rounded-lg ${timeRemaining < 300 ? 'bg-red-50 text-red-600 animate-pulse' :
-                                timeRemaining < 600 ? 'bg-orange-50 text-orange-600' :
-                                    'bg-slate-100 text-slate-700'
+                            timeRemaining < 600 ? 'bg-orange-50 text-orange-600' :
+                                'bg-slate-100 text-slate-700'
                             }`}>
                             <Timer size={18} />
                             <span className="hidden md:inline">{formatTime(timeRemaining)}</span>
@@ -432,8 +431,8 @@ const StudentTestAttemptPage = () => {
                                 if (firstQuestionOfSubject !== -1) goToQuestion(firstQuestionOfSubject);
                             }}
                             className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-colors ${activeSubject === subject
-                                    ? 'bg-blue-600 text-white shadow-md'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                ? 'bg-blue-600 text-white shadow-md'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                 }`}
                         >
                             {subject}
@@ -487,13 +486,13 @@ const StudentTestAttemptPage = () => {
                                         <label
                                             key={oIdx}
                                             className={`flex items-start gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${answers[currentQuestionIndex] === oIdx
-                                                    ? 'bg-blue-50 border-blue-500 shadow-md shadow-blue-500/20'
-                                                    : 'border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+                                                ? 'bg-blue-50 border-blue-500 shadow-md shadow-blue-500/20'
+                                                : 'border-slate-200 hover:bg-slate-50 hover:border-slate-300'
                                                 }`}
                                         >
                                             <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${answers[currentQuestionIndex] === oIdx
-                                                    ? 'border-blue-600 bg-blue-600'
-                                                    : 'border-slate-300 bg-white'
+                                                ? 'border-blue-600 bg-blue-600'
+                                                : 'border-slate-300 bg-white'
                                                 }`}>
                                                 {answers[currentQuestionIndex] === oIdx && (
                                                     <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -542,8 +541,8 @@ const StudentTestAttemptPage = () => {
                                 <button
                                     onClick={toggleMarkForReview}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${markedForReview.has(currentQuestionIndex)
-                                            ? 'bg-purple-100 text-purple-700 border-2 border-purple-500'
-                                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        ? 'bg-purple-100 text-purple-700 border-2 border-purple-500'
+                                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                                         }`}
                                 >
                                     <Flag size={16} />
@@ -621,7 +620,7 @@ const StudentTestAttemptPage = () => {
                                 <div>
                                     <h4 className="text-sm font-bold text-slate-700 mb-2">Section A (MCQ)</h4>
                                     <div className="grid grid-cols-5 gap-2">
-                                        {subjectQuestions.filter(q => q.section === 'A').map((q, idx) => {
+                                        {subjectQuestions.filter(q => q.section === 'A').map((q) => {
                                             const globalIdx = testData.questions.indexOf(q);
                                             const status = getQuestionStatus(globalIdx);
                                             return (
@@ -629,8 +628,8 @@ const StudentTestAttemptPage = () => {
                                                     key={globalIdx}
                                                     onClick={() => goToQuestion(globalIdx)}
                                                     className={`w-full aspect-square rounded-lg border-2 font-bold text-sm transition-all ${globalIdx === currentQuestionIndex
-                                                            ? 'ring-2 ring-blue-500 scale-110'
-                                                            : ''
+                                                        ? 'ring-2 ring-blue-500 scale-110'
+                                                        : ''
                                                         } ${getStatusColor(status)}`}
                                                 >
                                                     {globalIdx + 1}
@@ -642,7 +641,7 @@ const StudentTestAttemptPage = () => {
                                 <div>
                                     <h4 className="text-sm font-bold text-slate-700 mb-2">Section B (Numerical)</h4>
                                     <div className="grid grid-cols-5 gap-2">
-                                        {subjectQuestions.filter(q => q.section === 'B').map((q, idx) => {
+                                        {subjectQuestions.filter(q => q.section === 'B').map((q) => {
                                             const globalIdx = testData.questions.indexOf(q);
                                             const status = getQuestionStatus(globalIdx);
                                             return (
@@ -650,8 +649,8 @@ const StudentTestAttemptPage = () => {
                                                     key={globalIdx}
                                                     onClick={() => goToQuestion(globalIdx)}
                                                     className={`w-full aspect-square rounded-lg border-2 font-bold text-sm transition-all ${globalIdx === currentQuestionIndex
-                                                            ? 'ring-2 ring-blue-500 scale-110'
-                                                            : ''
+                                                        ? 'ring-2 ring-blue-500 scale-110'
+                                                        : ''
                                                         } ${getStatusColor(status)}`}
                                                 >
                                                     {globalIdx + 1}
@@ -663,15 +662,15 @@ const StudentTestAttemptPage = () => {
                             </>
                         ) : (
                             <div className="grid grid-cols-5 gap-2">
-                                {testData.questions.map((q, idx) => {
+                                {testData.questions.map((_, idx) => {
                                     const status = getQuestionStatus(idx);
                                     return (
                                         <button
                                             key={idx}
                                             onClick={() => goToQuestion(idx)}
                                             className={`w-full aspect-square rounded-lg border-2 font-bold text-sm transition-all ${idx === currentQuestionIndex
-                                                    ? 'ring-2 ring-blue-500 scale-110'
-                                                    : ''
+                                                ? 'ring-2 ring-blue-500 scale-110'
+                                                : ''
                                                 } ${getStatusColor(status)}`}
                                         >
                                             {idx + 1}

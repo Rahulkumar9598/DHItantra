@@ -76,7 +76,7 @@ const TestCreationWizard = ({ seriesId, onComplete, onCancel }: TestCreationWiza
         setIsSaving(true);
         try {
             await delay(1000); // Artificial delay
-            const testId = await createTest(formData as TestFormData, 'admin');
+            await createTest(formData as TestFormData, 'admin');
             alert('Test saved as draft!');
             if (onComplete) {
                 onComplete();

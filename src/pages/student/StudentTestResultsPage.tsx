@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Clock, TrendingUp, Award, BarChart3, ArrowRight, BookOpen, Target, Zap } from 'lucide-react';
 import { db } from '../../firebase';
-import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface TestAttempt {
