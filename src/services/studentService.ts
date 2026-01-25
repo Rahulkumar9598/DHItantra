@@ -10,7 +10,6 @@ import {
     deleteDoc,
     startAfter,
     limit,
-    orderBy,
     getDoc,
     serverTimestamp
 } from 'firebase/firestore';

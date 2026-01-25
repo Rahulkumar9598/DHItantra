@@ -13,11 +13,11 @@ import {
 } from 'lucide-react';
 import { loadRazorpay } from '../utils/razorpay';
 import { useAuth } from '../contexts/AuthContext';
-import { getTestSeries, getTestsBySeriesId } from '../services/testSeriesService';
+import { getTestSeries } from '../services/testSeriesService';
 import { studentService } from '../services/studentService';
 import { db } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import type { TestSeries, Test } from '../types/test.types';
+import type { TestSeries } from '../types/test.types';
 import Navbar from '../components/landing/Navbar';
 import Footer from '../components/landing/Footer';
 
@@ -27,7 +27,6 @@ const TestSeriesDetailsPage = () => {
     const { currentUser } = useAuth() || {};
 
     const [series, setSeries] = useState<TestSeries | null>(null);
-    const [tests, setTests] = useState<Test[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isEnrolling, setIsEnrolling] = useState(false);
     const [isOwned, setIsOwned] = useState(false);
@@ -47,9 +46,6 @@ const TestSeriesDetailsPage = () => {
                     const snapshot = await getDocs(q);
                     if (!snapshot.empty) {
                         setIsOwned(true);
-                        // Fetch Tests if owned
-                        const testsData = await getTestsBySeriesId(id);
-                        setTests(testsData);
                     }
                 }
             } catch (error) {
@@ -88,7 +84,7 @@ const TestSeriesDetailsPage = () => {
                     name: 'Examinant',
                     description: `Purchase ${series.name}`,
                     image: 'https://examinantt.web.app/logo192.png', // Optional logic for logo
-                    handler: async function (response: any) {
+                    handler: async function (_response: any) {
                         try {
                             // In a real app, verify signature on backend: response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature
                             await studentService.enrollInTestSeries(currentUser.uid, series);

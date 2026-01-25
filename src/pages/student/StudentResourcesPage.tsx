@@ -79,7 +79,7 @@ const StudentResourcesPage = () => {
                 name: 'Examinant',
                 description: `Unlock ${resource.title}`,
                 image: 'https://examinantt.web.app/logo192.png',
-                handler: async function (response: any) {
+                handler: async function (_response: any) {
                     try {
                         await marketplaceService.enrollInItem(currentUser.uid, {
                             id: resource.id,

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Download, Lock, Loader2, Search, PenTool, PlayCircle } from 'lucide-react';
 import { db } from '../../firebase';
-import { collection, query, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { marketplaceService } from '../../services/marketplaceService';

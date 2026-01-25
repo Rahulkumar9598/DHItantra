@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Search, Loader2 } from 'lucide-react';
 import { db } from '../../firebase';
 import { collection, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';

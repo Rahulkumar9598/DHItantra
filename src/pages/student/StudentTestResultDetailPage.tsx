@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
     ArrowLeft, CheckCircle, XCircle, MinusCircle, Clock,
-    Award, BarChart2, Loader2, BookOpen, Filter
+    Award, Loader2, BookOpen
 } from 'lucide-react';
 import { db } from '../../firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -200,8 +199,8 @@ const StudentTestResultDetailPage = () => {
                                 key={filter}
                                 onClick={() => setActiveFilter(filter)}
                                 className={`px-4 py-1.5 rounded-md text-sm font-semibold capitalize transition-all ${activeFilter === filter
-                                        ? 'bg-white text-slate-800 shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-700'
+                                    ? 'bg-white text-slate-800 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-700'
                                     }`}
                             >
                                 {filter}
@@ -220,8 +219,8 @@ const StudentTestResultDetailPage = () => {
                                 <div className="flex items-start gap-4">
                                     <div className="flex-shrink-0">
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${status === 'correct' ? 'bg-green-100 text-green-700' :
-                                                status === 'incorrect' ? 'bg-red-100 text-red-700' :
-                                                    'bg-slate-100 text-slate-500'
+                                            status === 'incorrect' ? 'bg-red-100 text-red-700' :
+                                                'bg-slate-100 text-slate-500'
                                             }`}>
                                             {q.index + 1}
                                         </div>
@@ -270,8 +269,8 @@ const StudentTestResultDetailPage = () => {
                                                     return (
                                                         <div key={optIdx} className={className}>
                                                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isCorrect ? 'border-green-600 bg-green-600 text-white' :
-                                                                    isSelected ? 'border-red-600 bg-red-600 text-white' :
-                                                                        'border-slate-300'
+                                                                isSelected ? 'border-red-600 bg-red-600 text-white' :
+                                                                    'border-slate-300'
                                                                 }`}>
                                                                 {(isCorrect || isSelected) && <div className="w-2 h-2 bg-white rounded-full" />}
                                                             </div>
@@ -285,7 +284,7 @@ const StudentTestResultDetailPage = () => {
                                                 <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
                                                     <span className="text-xs text-slate-500 block">Your Answer</span>
                                                     <span className={`font-mono font-bold ${status === 'correct' ? 'text-green-600' :
-                                                            status === 'incorrect' ? 'text-red-600' : 'text-slate-400'
+                                                        status === 'incorrect' ? 'text-red-600' : 'text-slate-400'
                                                         }`}>
                                                         {userAnswer ?? 'N/A'}
                                                     </span>
