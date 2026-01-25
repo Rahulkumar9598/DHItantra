@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, Calendar, Award, Target, BookOpen, BarChart3, TrendingUp } from 'lucide-react';
+import { Clock, Calendar, Award, Target, BookOpen, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../firebase';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
