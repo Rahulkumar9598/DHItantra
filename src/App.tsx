@@ -15,6 +15,10 @@ import FreeResourcesPage from './pages/FreeResourcesPage';
 import ResultPage from './pages/ResultPage';
 import AboutPage from './pages/AboutPage';
 import NotFound from './pages/NotFound';
+import TermsPage from './pages/TermsPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import RefundPolicyPage from './pages/RefundPolicyPage';
+import SLAPage from './pages/SLAPage';
 
 // Lazy Loaded Pages
 const StudentDashboard = React.lazy(() => import('./pages/student/StudentDashboard'));
@@ -95,6 +99,10 @@ function App() {
               <Route path="/resources" element={<FreeResourcesPage />} />
               <Route path="/results" element={<ResultPage />} />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
+              <Route path="/refund-policy" element={<RefundPolicyPage />} />
+              <Route path="/sla" element={<SLAPage />} />
 
               <Route element={<ProtectedRoute allowedRoles={['student']} />}>
                 {/* Dashboard Layout Routes */}
