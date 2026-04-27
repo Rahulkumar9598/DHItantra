@@ -9,7 +9,8 @@ import {
     Copy,
     TrendingUp,
     ExternalLink,
-    Loader2
+    Loader2,
+    Award
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { dashboardService, type DashboardStats } from '../../services/dashboardService';
@@ -96,6 +97,7 @@ const AdminDashboard = () => {
         { label: 'Create Test Series', icon: Plus, path: '/admin-dashboard/test-series', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Create New Test', icon: FileText, path: '/admin-dashboard/create-test', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Add Question', icon: HelpCircle, path: '/admin-dashboard/question-bank', color: 'bg-slate-800 text-white hover:bg-slate-700' },
+        { label: 'Manage Subjects', icon: Award, path: '/admin-dashboard/subjects', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Create Chapter', icon: BookOpen, path: '/admin-dashboard/chapters', color: 'bg-slate-800 text-white hover:bg-slate-700' },
     ];
 
