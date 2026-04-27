@@ -202,22 +202,22 @@ const TestSeriesManagement = () => {
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">Test Series Management</h1>
                     <p className="text-slate-500 mt-1 font-medium">Create and manage premium test series for your students</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end w-full">
                     <button
                         onClick={() => navigate('/admin-dashboard/create-omr-test')}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-zinc-900 text-white font-semibold rounded-xl hover:bg-zinc-800 transition-colors shadow-sm"
+                        className="w-full sm:w-auto flex items-center gap-2 px-5 py-2.5 bg-zinc-900 text-white font-semibold rounded-xl hover:bg-zinc-800 transition-colors shadow-sm"
                     >
                         📄 Create OMR Test
                     </button>
                     <button
                         onClick={() => navigate('/admin-dashboard/create-test')}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm"
+                        className="w-full sm:w-auto flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm"
                     >
                         <Plus size={18} /> New Digital Test
                     </button>
                     <button
                         onClick={() => setIsCreating(true)}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-white text-slate-700 font-semibold rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
+                        className="w-full sm:w-auto flex items-center gap-2 px-6 py-2.5 bg-white text-slate-700 font-semibold rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
                     >
                         <Plus size={18} /> New Series
                     </button>
@@ -236,11 +236,11 @@ const TestSeriesManagement = () => {
                         className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-blue-500 transition-all text-slate-700 placeholder:text-slate-400"
                     />
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row w-full">
                     <select
                         value={filterCategory}
                         onChange={(e) => setFilterCategory(e.target.value)}
-                        className="px-4 py-2.5 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-blue-500 text-slate-700 font-medium cursor-pointer"
+                        className="w-full sm:w-auto px-4 py-2.5 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-blue-500 text-slate-700 font-medium cursor-pointer"
                     >
                         <option value="all">All Categories</option>
                         <option value="JEE">JEE</option>
@@ -251,7 +251,7 @@ const TestSeriesManagement = () => {
                     <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
-                        className="px-4 py-2.5 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-blue-500 text-slate-700 font-medium cursor-pointer"
+                        className="w-full sm:w-auto px-4 py-2.5 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-blue-500 text-slate-700 font-medium cursor-pointer"
                     >
                         <option value="all">All Status</option>
                         <option value="draft">Draft</option>

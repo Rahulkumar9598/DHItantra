@@ -259,22 +259,22 @@ const AdminChaptersPage = () => {
                     <h1 className="text-2xl font-bold text-slate-800">Manage Chapters</h1>
                     <p className="text-slate-500 mt-1">Create and organize topics for test creation</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
                     <button
                         onClick={() => downloadTemplate('chapters')}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors"
                     >
                         <Download size={18} /> Template
                     </button>
                     <button
                         onClick={() => setIsImporting(true)}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors"
                     >
                         <Upload size={18} /> Import CSV
                     </button>
                     <button
                         onClick={() => setIsCreating(true)}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"
                     >
                         <Plus size={20} />
                         Create Chapter

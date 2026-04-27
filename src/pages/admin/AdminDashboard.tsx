@@ -199,12 +199,12 @@ const AdminDashboard = () => {
                     <motion.div variants={itemVariants} className="space-y-6">
                         <div className="bg-white rounded-2xl p-6 border border-slate-200 h-full shadow-sm">
                             <h2 className="text-lg font-bold text-slate-900 mb-6">Quick Actions</h2>
-                            <div className="space-y-4">
+                            <div className="grid gap-4 sm:grid-cols-2">
                                 {quickActions.map((action, i) => (
                                     <button
                                         key={i}
                                         onClick={() => navigate(action.path)}
-                                        className="w-full flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl text-left group hover:bg-slate-50 hover:border-slate-200 transition-all shadow-sm hover:shadow-md"
+                                        className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white border border-slate-100 rounded-xl text-left group hover:bg-slate-50 hover:border-slate-200 transition-all shadow-sm hover:shadow-md"
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className="p-2.5 rounded-lg bg-orange-50 text-orange-600 group-hover:bg-orange-100 transition-colors">
