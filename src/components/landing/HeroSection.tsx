@@ -129,11 +129,18 @@
 // export default HeroSection;
 // ---------------------------------------------------------------------------------------------
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Star, BookOpen, Trophy, BarChart3 } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star } from 'lucide-react';
 
 type HeroSectionProps = {
     onGetStarted?: () => void;
 };
+
+const features = [
+    'Real Exam-Like OMR Practice',
+    'Time-Scheduled Mock Tests',
+    'Expert-Curated Question Papers',
+    'Smart Performance & Mistake Analysis',
+];
 
 const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
     const navigate = useNavigate();
@@ -144,155 +151,158 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
     };
 
     return (
-        <section className="bg-white relative overflow-hidden">
-
-            {/* Background */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-72 sm:w-96 h-72 sm:h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
-                <div className="absolute bottom-0 left-0 w-72 sm:w-96 h-72 sm:h-96 bg-indigo-50 rounded-full blur-3xl opacity-50"></div>
+        <section className="relative overflow-hidden bg-white">
+            <div className="absolute inset-0 hidden lg:flex">
+                <div className="w-[42%] bg-[#0B4F97] relative h-full">
+                    <div className="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
+                        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] border-40 border-white rounded-full blur-[100px]"></div>
+                    </div>
+                </div>
+                <div className="w-[58%] bg-white h-full"></div>
             </div>
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-24 pb-10 space-y-12 relative">
 
-                {/* HERO */}
-                <div className="text-center max-w-3xl mx-auto">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-4 sm:mb-6">
-                        Practice That Makes You{" "}
-                        <span className="text-blue-600 relative inline-block">
-                            Exam-Ready
-                            <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none">
-                                <path d="M1 5.5C66.5 2.5 133.5 2.5 199 5.5" stroke="#3B82F6" strokeWidth="3" strokeLinecap="round" />
-                            </svg>
-                        </span>
-                    </h1>
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid lg:grid-cols-12 min-h-screen">
+                    <div className="lg:col-span-5 bg-[#0B4F97] text-white px-6 sm:px-8 py-14 lg:py-24 flex items-center">
+                        <div className="max-w-xl">
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
+                                An AI-Powered <br />
+                                <span className="text-blue-300">Semi-Offline</span> <br />
+                                Mock Test Platform
+                            </h2>
 
-                    <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
-                        Not Just Test-Ready. We bridge the gap between simple practice and the high-pressure environment of the real exam.
-                    </p>
+                            <p className="text-blue-100/90 text-base sm:text-lg max-w-xl mt-6 leading-relaxed">
+                                Practice online. Mark on real OMR sheets. <br className="hidden sm:block" />
+                                <span className="text-white font-semibold">Get AI-driven performance analysis.</span>
+                            </p>
 
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <button
-                            onClick={handleGetStarted}
-                            className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center justify-center gap-2"
-                        >
-                            Get Started
-                            <ArrowRight size={18} />
-                        </button>
-
-                        <button className="w-full sm:w-auto px-6 py-3 bg-white border border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50">
-                            Try Demo Test (Free)
-                        </button>
-                    </div>
-                </div>
-
-                {/* FEATURES */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-                    <div className="bg-white border border-gray-100 rounded-lg p-4 shadow-sm">
-                        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mb-3">
-                            <BookOpen className="text-blue-600" size={20} />
-                        </div>
-                        <h3 className="font-semibold text-gray-800 text-sm mb-1">AI-Powered Platform</h3>
-                        <p className="text-xs text-gray-500">An AI-Powered Semi-Offline Mock Test Platform</p>
-                    </div>
-
-                    <div className="bg-white border border-gray-100 rounded-lg p-4 shadow-sm">
-                        <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center mb-3">
-                            <CheckCircle className="text-green-600" size={20} />
-                        </div>
-                        <h3 className="font-semibold text-gray-800 text-sm mb-1">OMR Practice</h3>
-                        <p className="text-xs text-gray-500">Practice online. Mark on real OMR sheets.</p>
-                    </div>
-
-                    <div className="bg-white border border-gray-100 rounded-lg p-4 shadow-sm">
-                        <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center mb-3">
-                            <BarChart3 className="text-purple-600" size={20} />
-                        </div>
-                        <h3 className="font-semibold text-gray-800 text-sm mb-1">AI Performance Analysis</h3>
-                        <p className="text-xs text-gray-500">Get AI-driven performance analysis.</p>
-                    </div>
-
-                    <div className="bg-white border border-gray-100 rounded-lg p-4 shadow-sm">
-                        <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center mb-3">
-                            <Trophy className="text-orange-600" size={20} />
-                        </div>
-                        <h3 className="font-semibold text-gray-800 text-sm mb-1">Exam Categories</h3>
-                        <p className="text-xs text-gray-500">NEET • JEE • SSC</p>
-                    </div>
-
-                </div>
-
-                {/* TRUST */}
-                <div className="bg-gray-50 rounded-xl p-5 sm:p-6">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-
-                        <div className="flex items-center gap-4">
-                            <div className="flex -space-x-2">
-                                {[1, 2, 3, 4].map(i => (
-                                    <img
-                                        key={i}
-                                        src={`https://i.pravatar.cc/100?u=${i}`}
-                                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white"
-                                    />
+                            <ul className="space-y-3 mt-8">
+                                {features.map((item, index) => (
+                                    <li key={index} className="flex items-start gap-3 text-sm text-blue-100/90 font-medium">
+                                        <div className="p-1 rounded-full bg-white/10 mt-1">
+                                            <CheckCircle size={16} className="text-blue-200" />
+                                        </div>
+                                        <span>{item}</span>
+                                    </li>
                                 ))}
-                                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold border-2 border-white">
-                                    +10k
-                                </div>
-                            </div>
+                            </ul>
 
-                            <div>
-                                <div className="flex gap-1">
-                                    {[1, 2, 3, 4, 5].map(i => (
-                                        <Star key={i} size={14} className="fill-yellow-400 text-yellow-400" />
+                            <div className="mt-10">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-200 mb-4 opacity-80">
+                                    Prepared for:
+                                </p>
+                                <div className="flex flex-wrap gap-3">
+                                    {['NEET', 'JEE', 'SSC'].map((exam) => (
+                                        <span
+                                            key={exam}
+                                            className="px-4 py-2 rounded-2xl bg-white/10 border border-white/20 text-xs sm:text-sm font-black uppercase tracking-widest"
+                                        >
+                                            {exam}
+                                        </span>
                                     ))}
                                 </div>
-                                <p className="text-xs text-gray-600">
-                                    Trusted by <span className="font-semibold text-blue-600">10,000+</span>
-                                </p>
                             </div>
                         </div>
-
-                        <span className="text-xs sm:text-sm bg-white px-3 py-1.5 rounded-md text-gray-700">
-                            Next Gen Testing Environment
-                        </span>
-                    </div>
-                </div>
-
-                {/* WHY + CTA */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                    <div className="bg-white border border-gray-100 rounded-lg p-5">
-                        <h3 className="text-base font-semibold text-gray-800 mb-3">Why Choose Us?</h3>
-                        <ul className="space-y-2">
-                            {[
-                                "Real Exam-Like OMR Practice",
-                                "Time-Scheduled Mock Tests",
-                                "Expert-Curated Question Papers",
-                                "Smart Performance & Mistake Analysis"
-                            ].map((item, i) => (
-                                <li key={i} className="flex items-center gap-2 text-sm text-gray-700">
-                                    <CheckCircle size={14} className="text-green-500" />
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
                     </div>
 
-                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-5 text-white flex flex-col justify-between">
-                        <div>
-                            <h3 className="text-base font-semibold mb-2">Ready to Start Your Journey?</h3>
-                            <p className="text-blue-100 text-sm mb-4">
-                                Join thousands of successful students who achieved their dreams with us.
+                    <div className="lg:col-span-7 bg-white px-6 sm:px-8 py-14 lg:py-24 flex flex-col justify-center">
+                        <div className="max-w-2xl mx-auto">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-[#1D64D0] mb-6">
+                                Next Gen Testing Environment
+                            </div>
+
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#0B4F97] leading-tight tracking-tight mb-6">
+                                Practice That <br className="hidden sm:block" />
+                                Makes You <br className="hidden sm:block" />
+                                <span className="text-[#1D64D0] relative inline-flex">
+                                    Exam-Ready.
+                                    <span className="absolute -bottom-1 left-0 w-full h-2 bg-blue-100 rounded-full -z-10"></span>
+                                </span>
+                            </h1>
+
+                            <p className="text-base sm:text-lg text-slate-500 leading-relaxed max-w-xl mb-10">
+                                Not just test-ready. We bridge the gap between simple practice and the high-pressure environment of the real exam.
                             </p>
+
+                            <div className="flex flex-col sm:flex-row gap-4 mb-14">
+                                <button
+                                    onClick={handleGetStarted}
+                                    className="w-full sm:w-auto px-8 py-4 bg-[#1D64D0] hover:bg-blue-700 text-white rounded-[15px] font-black text-lg transition-all"
+                                >
+                                    Get Started
+                                    <ArrowRight size={20} className="inline-block ml-2" />
+                                </button>
+                                <button className="w-full sm:w-auto px-8 py-4 bg-white border-2 border-[#1D64D0] text-[#1D64D0] rounded-[15px] font-black text-lg hover:bg-blue-50 transition-all">
+                                    Try Demo Test (Free)
+                                </button>
+                            </div>
+
+                            <div className="bg-slate-50 rounded-3xl p-6 shadow-sm border border-slate-100">
+                                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex -space-x-3">
+                                            {[1, 2, 3, 4].map((i) => (
+                                                <img
+                                                    key={i}
+                                                    src={`https://i.pravatar.cc/100?u=${i}`}
+                                                    alt="user"
+                                                    className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
+                                                />
+                                            ))}
+                                            <div className="w-10 h-10 rounded-full bg-[#1D64D0] text-white flex items-center justify-center text-xs font-bold border-2 border-white">
+                                                +10k
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="flex gap-1">
+                                                {[1, 2, 3, 4, 5].map((i) => (
+                                                    <Star key={i} size={16} className="fill-yellow-400 text-yellow-400" />
+                                                ))}
+                                            </div>
+                                            <p className="text-xs text-slate-500 font-semibold uppercase tracking-[0.15em] mt-1">
+                                                Trusted by <span className="text-[#0B4F97]">10,000+</span> Aspirants
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <span className="text-xs sm:text-sm bg-white px-3 py-2 rounded-full text-slate-600 border border-slate-200">
+                                        Next Gen Testing Environment
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-[0.2em]">Leaderboard</p>
+                                        <h2 className="text-2xl font-bold text-slate-900">Top Aspirants This Week</h2>
+                                    </div>
+                                    <button className="px-4 py-2 rounded-full bg-[#1D64D0] text-white text-sm font-semibold hover:bg-blue-700 transition-all">
+                                        View Full Board
+                                    </button>
+                                </div>
+
+                                <div className="grid gap-4 sm:grid-cols-3">
+                                    {[
+                                        { rank: 1, name: 'Aarav', score: '98.5%', badge: 'Top Performer' },
+                                        { rank: 2, name: 'Mira', score: '96.2%', badge: 'Consistency King' },
+                                        { rank: 3, name: 'Riya', score: '95.4%', badge: 'Speed Master' },
+                                    ].map((item) => (
+                                        <div key={item.rank} className="rounded-2xl border border-slate-200 p-4 bg-slate-50">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <span className="text-sm font-semibold text-slate-700">#{item.rank}</span>
+                                                <span className="text-xs font-semibold uppercase text-[#1D64D0]">{item.badge}</span>
+                                            </div>
+                                            <div>
+                                                <p className="text-xl font-bold text-slate-900">{item.name}</p>
+                                                <p className="text-sm text-slate-500 mt-1">Score: <span className="font-semibold text-slate-900">{item.score}</span></p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-
-                        <button
-                            onClick={handleGetStarted}
-                            className="w-full sm:w-auto px-5 py-2 bg-white text-blue-600 font-semibold rounded-md"
-                        >
-                            Get Started Free
-                        </button>
                     </div>
-
                 </div>
             </div>
         </section>

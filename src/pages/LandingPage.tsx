@@ -14,6 +14,66 @@ const LandingPage = () => {
     const navigate = useNavigate();
     const [testSeries, setTestSeries] = useState<TestSeries[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedClass, setSelectedClass] = useState<'11' | '12' | 'both'>('11');
+    const [selectedSubject, setSelectedSubject] = useState('Physics');
+
+    const subjectOptionsByClass: Record<'11' | '12' | 'both', string[]> = {
+        '11': ['Physics', 'Chemistry', 'Mathematics'],
+        '12': ['Physics', 'Chemistry', 'Mathematics'],
+        'both': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+    };
+
+    useEffect(() => {
+        const availableSubjects = subjectOptionsByClass[selectedClass];
+        if (!availableSubjects.includes(selectedSubject)) {
+            setSelectedSubject(availableSubjects[0]);
+        }
+    }, [selectedClass]);
+
+    const courseCatalog = [
+        {
+            id: 'course-1',
+            title: 'JEE Physics Mastery',
+            category: 'JEE',
+            classLevel: '11',
+            subject: 'Physics',
+            description: 'Complete class 11 physics course for concept clarity and mock practice.',
+            price: 'Free',
+        },
+        {
+            id: 'course-2',
+            title: 'NEET Chemistry Booster',
+            category: 'NEET',
+            classLevel: '11',
+            subject: 'Chemistry',
+            description: 'Focused chemistry drills and revision for NEET aspirants.',
+            price: '₹299',
+        },
+        {
+            id: 'course-3',
+            title: 'JEE Mathematics Advance',
+            category: 'JEE',
+            classLevel: '12',
+            subject: 'Mathematics',
+            description: 'High-yield problems and timed practice for class 12 maths.',
+            price: '₹349',
+        },
+        {
+            id: 'course-4',
+            title: 'NEET Biology Revision',
+            category: 'NEET',
+            classLevel: '12',
+            subject: 'Biology',
+            description: 'Botany and Zoology full revision with exam-style questions.',
+            price: '₹299',
+        },
+    ];
+
+    const filteredCourses = courseCatalog.filter((course) => {
+        const classMatch = selectedClass === 'both' || course.classLevel === selectedClass;
+        const subjectMatch = course.subject === selectedSubject;
+        return classMatch && subjectMatch;
+    });
 
     useEffect(() => {
         const fetchTestSeries = async () => {
@@ -45,6 +105,93 @@ const LandingPage = () => {
 
             {/* 1 & 2. Hero & Banner Section */}
             <HeroSection onGetStarted={scrollToTestSeries} />
+
+            {/* 2a. Class → Subject → Course Finder */}
+            <section className="py-16 bg-[#F8FAFC]">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-10">
+                        <span className="inline-block text-xs font-semibold uppercase tracking-[0.3em] text-[#1D64D0] bg-blue-100 px-3 py-1 rounded-full">
+                            Course Selector
+                        </span>
+                        <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-slate-900">
+                            Choose Class, Pick Subject, Find Courses
+                        </h2>
+                        <p className="mt-3 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto">
+                            Select your class first, then a subject to reveal the best exam-ready course options with category labels.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-[280px_minmax(0,1fr)] items-end mb-6">
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-slate-700">Select Class</label>
+                            <select
+                                value={selectedClass}
+                                onChange={(e) => setSelectedClass(e.target.value as '11' | '12' | 'both')}
+                                className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                            >
+                                <option value="11">Class 11</option>
+                                <option value="12">Class 12</option>
+                                <option value="both">Class 11 + 12</option>
+                            </select>
+                        </div>
+
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-3">
+                                <label className="text-sm font-semibold text-slate-700">Select Subject</label>
+                                <select
+                                    value={selectedSubject}
+                                    onChange={(e) => setSelectedSubject(e.target.value)}
+                                    className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                >
+                                    {subjectOptionsByClass[selectedClass].map((subject) => (
+                                        <option key={subject} value={subject}>{subject}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3 mb-8">
+                        {filteredCourses.length > 0 ? (
+                            Array.from(new Set(filteredCourses.map((course) => course.category))).map((category) => (
+                                <span
+                                    key={category}
+                                    className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#1D64D0]"
+                                >
+                                    {category}
+                                </span>
+                            ))
+                        ) : (
+                            <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-500">
+                                No courses available for selected subject.
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="grid gap-4 lg:grid-cols-3">
+                        {filteredCourses.map((course) => (
+                            <div key={course.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                                <div className="flex items-center justify-between gap-3 mb-4">
+                                    <div>
+                                        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{course.subject}</p>
+                                        <h3 className="mt-2 text-xl font-bold text-slate-900">{course.title}</h3>
+                                    </div>
+                                    <span className="rounded-full bg-[#EFF6FF] px-3 py-1 text-xs font-semibold text-[#1D64D0]">
+                                        {course.category}
+                                    </span>
+                                </div>
+                                <p className="text-sm text-slate-600 mb-6">{course.description}</p>
+                                <div className="flex items-center justify-between gap-4">
+                                    <span className="text-lg font-bold text-slate-900">{course.price}</span>
+                                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+                                        Class {course.classLevel}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
             {/* 4. AI Analysis and Real Exam Simulation Demo */}
             <AISimulationSection />
