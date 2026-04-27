@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Timer, ArrowLeft, Send, Loader2, AlertCircle } from 'lucide-react';
 import { db } from '../../firebase';
-import { db } from '../../firebase';
 import { doc, getDoc, addDoc, collection, serverTimestamp, query, where, documentId, getDocs } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
 import type { OMRSection, OMRTest } from '../../types/omr.types';

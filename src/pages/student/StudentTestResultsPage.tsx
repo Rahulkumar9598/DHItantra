@@ -42,7 +42,7 @@ const StudentTestResultsPage = () => {
 
                 const fetchedAttempts = snapshot.docs.map(doc => {
                     const data = doc.data();
-                    const totalQs = data.totalQuestions ?? (data.correctCount + data.wrongCount + data.unattemptedCount) ?? 0;
+                    const totalQs = (data.totalQuestions ?? (data.correctCount + data.wrongCount + data.unattemptedCount)) || 0;
                     const maxScore = data.totalMarks ?? (totalQs * 4);
                     
                     return {

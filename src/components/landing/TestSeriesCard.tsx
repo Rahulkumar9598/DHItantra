@@ -1,6 +1,6 @@
-import { CheckCircle, ArrowRight, Zap, Target, ScrollText, Clock3, Award, Sparkles } from 'lucide-react';
+import { CheckCircle, ArrowRight, Zap, Target, ScrollText, Award, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 interface TestSeriesProps {
     title: string;
@@ -23,7 +23,6 @@ const TestSeriesCard = ({
     features = [], 
     originalPrice, 
     price, 
-    colorTheme = 'orange', 
     onExplore,
     actions,
     examCategory,

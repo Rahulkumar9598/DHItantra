@@ -16,11 +16,7 @@ import {
     RadarChart,
     PolarGrid,
     PolarAngleAxis,
-    PolarRadiusAxis,
-    Radar,
-    BarChart,
-    Bar,
-    Cell
+    Radar
 } from 'recharts';
 
 interface Attempt {

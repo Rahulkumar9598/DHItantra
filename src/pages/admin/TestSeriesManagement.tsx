@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Edit2, Trash2, Copy, AlertTriangle, Loader2, X, Eye } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Copy, AlertTriangle, Loader2, X } from 'lucide-react';
 import TestSeriesCard from '../../components/landing/TestSeriesCard';
 import type { TestSeries } from '../../types/test.types';
 import {

@@ -26,7 +26,7 @@ export const convertPdfToImage = async (file: File): Promise<Blob> => {
     const context = canvas.getContext('2d');
     if (!context) throw new Error('Canvas context not available.');
 
-    await page.render({ canvasContext: context, viewport }).promise;
+    await page.render({ canvas, canvasContext: context, viewport }).promise;
 
     return new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(

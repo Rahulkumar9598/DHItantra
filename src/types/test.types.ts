@@ -11,6 +11,7 @@ export interface TestSeries {
         currency?: string;
     };
     description: string;
+    features?: string[];
     testIds: string[]; // Array of test IDs in this series
     createdBy: string;
     createdAt: Timestamp;

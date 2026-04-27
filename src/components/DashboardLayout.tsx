@@ -14,7 +14,6 @@ import {
     BookMarked,
     FolderTree,
     Award,
-    Database,
     ListChecks
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';

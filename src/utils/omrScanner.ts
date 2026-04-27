@@ -673,18 +673,6 @@ const GAP_THRESH = 0.02;
         // so question-to-row mapping stays correct even if the page is cropped/zoomed.
         const rowCenters = findBubbleRowCenters(scanData, scanWidth, scanHeight, expectedRows);
 
-        const rowSpacing = (() => {
-            if (!rowCenters.length) return 0;
-            const diffs: number[] = [];
-            for (let i = 1; i < rowCenters.length; i++) {
-                const d = rowCenters[i] - rowCenters[i - 1];
-                if (d > 4) diffs.push(d);
-            }
-            if (!diffs.length) return 0;
-            diffs.sort((a, b) => a - b);
-            return diffs[Math.floor(diffs.length / 2)];
-        })();
-
         const nearestRowCenter = (targetY: number) => {
             if (!rowCenters.length) return targetY;
             let bestY = rowCenters[0];
@@ -703,8 +691,6 @@ const GAP_THRESH = 0.02;
             ? clamp(qrY + scanHeight * 0.18, scanHeight * 0.18, scanHeight * 0.60)
             : scanHeight * 0.34;
         const fallbackRowH = (gridBottom - fallbackGridTop) / Math.max(1, expectedRows);
-
-     const bubbleR = Math.max(8, Math.min(22, (rowSpacing || fallbackRowH) * 0.4));
 
         // If corner markers exist, use them to compensate perspective/keystone from phone photos.
         const tl = !isRectified ? findCornerMarker(scanData, scanWidth, scanHeight, 'tl') : null;

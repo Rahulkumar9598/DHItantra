@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     ArrowLeft, CheckCircle, XCircle, MinusCircle, Clock,
-    Award, Loader2, BookOpen, Download, User, Printer
+    Award, Loader2, BookOpen, Download
 } from 'lucide-react';
 import { db } from '../../firebase';
 import { doc, getDoc, collection, query, where, documentId, getDocs } from 'firebase/firestore';
@@ -28,6 +28,7 @@ interface AttemptData {
     correctAnswers: number;
     attemptedQuestions: number;
     duration: number;
+    timeTakenSeconds?: number;
     answers: Record<number, number | string>;
     attemptDate: any;
     isOMR?: boolean;
@@ -165,8 +166,8 @@ const StudentTestResultDetailPage = () => {
                             }
                             
                             // Ensure questions are in the correct order as per questionIds array
-                            const orderedQuestions = questionIds.map(id => 
-                                loadedQuestions.find(q => q.id === id)
+                            const orderedQuestions = questionIds.map((questionId: string) => 
+                                loadedQuestions.find(q => q.id === questionId)
                             ).filter(Boolean) as Question[];
                             
                             setQuestions(orderedQuestions);
@@ -309,7 +310,7 @@ const StudentTestResultDetailPage = () => {
                     <div>
                         <p className="text-sm text-slate-500 font-medium">Incorrect</p>
                         <h3 className="text-2xl font-bold text-slate-800">
-                            {(attempt as any).wrongCount ?? (attempt.attemptedQuestions - attempt.correctAnswers) ?? 0}
+                            {(attempt as any).wrongCount ?? (attempt.attemptedQuestions - attempt.correctAnswers)}
                         </h3>
                     </div>
                 </div>

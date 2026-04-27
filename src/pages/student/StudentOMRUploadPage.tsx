@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Upload, Camera, Loader2, CheckCircle, AlertCircle,
-    ArrowLeft, RefreshCw, Send, FileText, Edit3
+    ArrowLeft, RefreshCw, Send, Edit3
 } from 'lucide-react';
 import { db } from '../../firebase';
 import { doc, getDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
