@@ -1,16 +1,16 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDwkmfRn7_GZwUslawEuWRYUvkceL96xNg",
-    authDomain: "examinantt-ae432.firebaseapp.com",
-    projectId: "examinantt-ae432",
-    storageBucket: "examinantt-ae432.appspot.com",
-    messagingSenderId: "121993344266",
-    appId: "1:121993344266:web:5ba79677f952793351f6f3",
-    measurementId: "G-2KK00MFTLC"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
@@ -20,10 +20,10 @@ let db: any;
 let storage: any;
 
 try {
-    app = initializeApp(firebaseConfig);
+    app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
-    storage = getStorage(app, 'gs://examinantt-ae432.appspot.com');
+    storage = getStorage(app);
 } catch (error) {
     console.error("Firebase initialization failed:", error);
 }

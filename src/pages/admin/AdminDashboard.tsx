@@ -98,6 +98,7 @@ const AdminDashboard = () => {
         { label: 'Create New Test', icon: FileText, path: '/admin-dashboard/create-test', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Add Question', icon: HelpCircle, path: '/admin-dashboard/question-bank', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Manage Subjects', icon: Award, path: '/admin-dashboard/subjects', color: 'bg-slate-800 text-white hover:bg-slate-700' },
+        { label: 'Manage Classes', icon: Copy, path: '/admin-dashboard/classes', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Create Chapter', icon: BookOpen, path: '/admin-dashboard/chapters', color: 'bg-slate-800 text-white hover:bg-slate-700' },
     ];
 

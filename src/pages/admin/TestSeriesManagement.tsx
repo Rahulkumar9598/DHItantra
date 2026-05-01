@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, Edit2, Trash2, Copy, AlertTriangle, Loader2, X } from 'lucide-react';
 import TestSeriesCard from '../../components/landing/TestSeriesCard';
+import { useAuth } from '../../contexts/AuthContext';
 import type { TestSeries } from '../../types/test.types';
 import {
     getAllTestSeries,
@@ -11,9 +12,14 @@ import {
     deleteTestSeries,
     duplicateTestSeries
 } from '../../services/testSeriesService';
+import { subjectService, type SubjectRecord } from '../../services/subjectService';
+import { classService, type ClassRecord } from '../../services/classService';
 
 const TestSeriesManagement = () => {
     const navigate = useNavigate();
+    const authContext = useAuth();
+    const currentUser = authContext?.currentUser;
+    const userRole = authContext?.userRole;
     const [testSeries, setTestSeries] = useState<TestSeries[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isCreating, setIsCreating] = useState(false);
@@ -22,6 +28,10 @@ const TestSeriesManagement = () => {
     const [filterCategory, setFilterCategory] = useState<string>('all');
     const [filterStatus, setFilterStatus] = useState<string>('all');
 
+    // Dynamic Options State
+    const [availableSubjects, setAvailableSubjects] = useState<SubjectRecord[]>([]);
+    const [availableClasses, setAvailableClasses] = useState<ClassRecord[]>([]);
+
     // Deletion Modal State
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
     const [isDeletingLoading, setIsDeletingLoading] = useState(false);
@@ -29,16 +39,19 @@ const TestSeriesManagement = () => {
 
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-
     const [formData, setFormData] = useState<{
         name: string;
-        examCategory: 'JEE' | 'NEET' | 'SSC' | string;
+        examCategory: string;
+        courseClass: string;
+        subject: string;
         pricing: { type: 'free' | 'paid'; amount: number };
         description: string;
         status: 'draft' | 'published' | 'archived';
     }>({
         name: '',
         examCategory: 'JEE',
+        courseClass: '',
+        subject: '',
         pricing: { type: 'free', amount: 0 },
         description: '',
         status: 'draft'
@@ -49,7 +62,21 @@ const TestSeriesManagement = () => {
 
     useEffect(() => {
         loadTestSeries();
+        loadDynamicOptions();
     }, []);
+
+    const loadDynamicOptions = async () => {
+        try {
+            const [subs, cls] = await Promise.all([
+                subjectService.getAll(),
+                classService.getAll()
+            ]);
+            setAvailableSubjects(subs);
+            setAvailableClasses(cls);
+        } catch (error) {
+            console.error('Error loading dynamic options:', error);
+        }
+    };
 
     const loadTestSeries = async () => {
         setIsLoading(true);
@@ -66,6 +93,17 @@ const TestSeriesManagement = () => {
     const handleCreate = async () => {
         setIsSubmitting(true);
         try {
+            if (!currentUser) {
+                alert('Please log in as admin to create a test series.');
+                setIsSubmitting(false);
+                return;
+            }
+            if (userRole !== 'admin') {
+                alert('Your account is not marked as admin. Set `users/{uid}.role = "admin"` in Firestore.');
+                setIsSubmitting(false);
+                return;
+            }
+
             const finalData = {
                 ...formData,
                 examCategory: isCustom ? customCategory : formData.examCategory
@@ -78,13 +116,14 @@ const TestSeriesManagement = () => {
             }
 
             await delay(1000); // Artificial delay
-            await createTestSeries(finalData, 'admin');
+            await createTestSeries(finalData, currentUser.uid);
             await loadTestSeries();
             setIsCreating(false);
             resetForm();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error creating test series:', error);
-            alert('Failed to create test series');
+            const code = typeof error?.code === 'string' ? error.code : '';
+            alert(code ? `Failed to create test series (${code}). Check Firestore rules for testSeries.` : 'Failed to create test series');
         } finally {
             setIsSubmitting(false);
         }
@@ -136,7 +175,16 @@ const TestSeriesManagement = () => {
 
     const handleDuplicate = async (series: TestSeries) => {
         try {
-            await duplicateTestSeries(series.id, `${series.name} (Copy)`, 'admin');
+            if (!currentUser) {
+                alert('Please log in as admin to duplicate a test series.');
+                return;
+            }
+            if (userRole !== 'admin') {
+                alert('Your account is not marked as admin.');
+                return;
+            }
+
+            await duplicateTestSeries(series.id, `${series.name} (Copy)`, currentUser.uid);
             await loadTestSeries();
         } catch (error) {
             console.error('Error duplicating test series:', error);
@@ -152,6 +200,8 @@ const TestSeriesManagement = () => {
         setFormData({
             name: series.name,
             examCategory: isPredefined ? series.examCategory : 'Custom',
+            courseClass: series.courseClass || '',
+            subject: (series as any).subject || '',
             pricing: {
                 type: series.pricing.type,
                 amount: series.pricing.amount || 0
@@ -173,6 +223,8 @@ const TestSeriesManagement = () => {
         setFormData({
             name: '',
             examCategory: 'JEE',
+            courseClass: '',
+            subject: '',
             pricing: { type: 'free', amount: 0 },
             description: '',
             status: 'draft'
@@ -201,6 +253,9 @@ const TestSeriesManagement = () => {
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">Test Series Management</h1>
                     <p className="text-slate-500 mt-1 font-medium">Create and manage premium test series for your students</p>
+                    <p className="text-xs text-slate-400 mt-2 font-semibold">
+                        Signed in: {currentUser?.email || '—'} • Role: {userRole || '—'} • UID: {currentUser?.uid || '—'}
+                    </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end w-full">
                     <button
@@ -358,6 +413,42 @@ const TestSeriesManagement = () => {
                                     />
                                 </div>
 
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {/* Class Selection */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                            Target Class *
+                                        </label>
+                                        <select
+                                            value={formData.courseClass}
+                                            onChange={(e) => setFormData({ ...formData, courseClass: e.target.value })}
+                                            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
+                                        >
+                                            <option value="">Select Class</option>
+                                            {availableClasses.map(c => (
+                                                <option key={c.id} value={c.name}>{c.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Subject Selection */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                            Target Subject *
+                                        </label>
+                                        <select
+                                            value={formData.subject}
+                                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                            className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
+                                        >
+                                            <option value="">Select Subject</option>
+                                            {availableSubjects.map(s => (
+                                                <option key={s.id} value={s.name}>{s.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
                                 {/* Exam Category */}
                                 <div>
                                     <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -370,7 +461,7 @@ const TestSeriesManagement = () => {
                                             setFormData({ ...formData, examCategory: val as any });
                                             setIsCustom(val === 'Custom');
                                         }}
-                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
                                     >
                                         <option value="JEE">JEE</option>
                                         <option value="NEET">NEET</option>
@@ -400,7 +491,7 @@ const TestSeriesManagement = () => {
                                     <label className="block text-sm font-semibold text-slate-700 mb-2">
                                         Pricing *
                                     </label>
-                                    <div className="flex gap-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                    <div className="flex gap-6 p-4 bg-slate-50 rounded-lg border border-slate-200 shadow-sm">
                                         <label className="flex items-center gap-2 cursor-pointer">
                                             <input
                                                 type="radio"
@@ -422,7 +513,7 @@ const TestSeriesManagement = () => {
                                     </div>
                                     {formData.pricing.type === 'paid' && (
                                         <div className="mt-3 relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
                                             <input
                                                 type="number"
                                                 value={formData.pricing.amount}
@@ -431,7 +522,7 @@ const TestSeriesManagement = () => {
                                                     pricing: { ...formData.pricing, amount: Number(e.target.value) }
                                                 })}
                                                 placeholder="Enter amount"
-                                                className="w-full pl-8 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 shadow-sm"
                                             />
                                         </div>
                                     )}
@@ -459,7 +550,7 @@ const TestSeriesManagement = () => {
                                     <select
                                         value={formData.status}
                                         onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
                                     >
                                         <option value="draft">Draft</option>
                                         <option value="published">Published</option>

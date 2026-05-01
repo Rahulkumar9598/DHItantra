@@ -46,6 +46,7 @@ const AdminChaptersPage = React.lazy(() => import('./pages/admin/AdminChaptersPa
 const TestSeriesManagement = React.lazy(() => import('./pages/admin/TestSeriesManagement'));
 const TestCreationWizard = React.lazy(() => import('./pages/admin/TestCreationWizard'));
 const AdminSubjectsPage = React.lazy(() => import('./pages/admin/AdminSubjectsPage'));
+const AdminClassesPage = React.lazy(() => import('./pages/admin/AdminClassesPage'));
 // ── OMR Feature (New Additions) ──────────────────────────────────────────────
 const OMRTestCreationWizard = React.lazy(() => import('./pages/admin/OMRTestCreationWizard'));
 const StudentTestModeSelect = React.lazy(() => import('./pages/student/StudentTestModeSelect'));
@@ -75,6 +76,11 @@ const ProtectedRoute = ({ allowedRoles }: { allowedRoles?: ('student' | 'admin')
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Role is required to decide access/redirects.
+  if (allowedRoles && !userRole) {
+    return <PageLoader />;
   }
 
   if (allowedRoles && userRole && !allowedRoles.includes(userRole)) {
@@ -141,6 +147,7 @@ function App() {
                   <Route path="/admin-dashboard/question-bank" element={<QuestionBank />} />
                   <Route path="/admin-dashboard/chapters" element={<AdminChaptersPage />} />
                   <Route path="/admin-dashboard/subjects" element={<AdminSubjectsPage />} />
+                  <Route path="/admin-dashboard/classes" element={<AdminClassesPage />} />
                   <Route path="/admin-dashboard/pyqs" element={<AdminPYQsPage />} />
                   <Route path="/admin-dashboard/pyqs/new" element={<AdminAddPYQPage />} />
                   <Route path="/admin-dashboard/resources" element={<AdminResourcesPage />} />

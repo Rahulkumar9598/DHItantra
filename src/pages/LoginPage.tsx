@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { auth } from '../firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronRight, AlertCircle, Loader2, Mail, Lock, Smartphone, Globe } from 'lucide-react';
@@ -27,23 +26,19 @@ const LoginPage = () => {
         setLoading(true);
 
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
-
-            if (userDoc.exists()) {
-                const userData = userDoc.data();
-                if (userData.role === 'admin') {
-                    navigate('/admin-dashboard');
-                } else {
-                    navigate('/dashboard');
-                }
-            } else {
-                // Fallback if no user doc found, though this shouldn't typically happen for valid users
-                navigate('/dashboard');
-            }
+            await signInWithEmailAndPassword(auth, email, password);
+            // Don't block login on Firestore profile/role fetch; AuthContext handles role loading.
+            navigate('/dashboard', { replace: true });
         } catch (err: any) {
             console.error(err);
-            setError('Failed to log in. Please check your credentials.');
+            const code = typeof err?.code === 'string' ? err.code : '';
+            if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+                setError('Invalid email or password.');
+            } else if (code === 'auth/configuration-not-found') {
+                setError('Firebase Auth is not configured for this project (enable Authentication providers in Firebase Console).');
+            } else {
+                setError(code ? `Failed to log in (${code}).` : 'Failed to log in. Please try again.');
+            }
         }
 
         setLoading(false);

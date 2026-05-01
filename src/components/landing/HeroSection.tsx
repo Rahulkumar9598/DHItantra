@@ -271,36 +271,6 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
                                 </div>
                             </div>
 
-                            <div className="mt-8 bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
-                                    <div>
-                                        <p className="text-sm font-semibold text-slate-500 uppercase tracking-[0.2em]">Leaderboard</p>
-                                        <h2 className="text-2xl font-bold text-slate-900">Top Aspirants This Week</h2>
-                                    </div>
-                                    <button className="px-4 py-2 rounded-full bg-[#1D64D0] text-white text-sm font-semibold hover:bg-blue-700 transition-all">
-                                        View Full Board
-                                    </button>
-                                </div>
-
-                                <div className="grid gap-4 sm:grid-cols-3">
-                                    {[
-                                        { rank: 1, name: 'Aarav', score: '98.5%', badge: 'Top Performer' },
-                                        { rank: 2, name: 'Mira', score: '96.2%', badge: 'Consistency King' },
-                                        { rank: 3, name: 'Riya', score: '95.4%', badge: 'Speed Master' },
-                                    ].map((item) => (
-                                        <div key={item.rank} className="rounded-2xl border border-slate-200 p-4 bg-slate-50">
-                                            <div className="flex items-center justify-between mb-3">
-                                                <span className="text-sm font-semibold text-slate-700">#{item.rank}</span>
-                                                <span className="text-xs font-semibold uppercase text-[#1D64D0]">{item.badge}</span>
-                                            </div>
-                                            <div>
-                                                <p className="text-xl font-bold text-slate-900">{item.name}</p>
-                                                <p className="text-sm text-slate-500 mt-1">Score: <span className="font-semibold text-slate-900">{item.score}</span></p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

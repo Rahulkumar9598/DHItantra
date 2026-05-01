@@ -52,19 +52,29 @@ const SignupPage = () => {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-            await setDoc(doc(db, 'users', userCredential.user.uid), {
-                fullName,
-                email,
-                state: state,
-                district: district,
-                role: 'student',
-                createdAt: new Date()
-            });
+            // Profile write can fail (e.g., Firestore locked rules). Don't block account creation on it.
+            try {
+                await setDoc(doc(db, 'users', userCredential.user.uid), {
+                    fullName,
+                    email,
+                    state: state,
+                    district: district,
+                    role: 'student',
+                    createdAt: new Date()
+                });
+            } catch (profileErr) {
+                console.warn('Profile creation failed; check Firestore rules for users collection.', profileErr);
+            }
 
             navigate('/dashboard');
         } catch (err: any) {
             console.error(err);
-            setError('Failed to create an account. ' + err.message);
+            const code = typeof err?.code === 'string' ? err.code : '';
+            if (code === 'auth/configuration-not-found') {
+                setError('Failed to create an account. Firebase Auth is not configured for this project (enable Authentication providers in Firebase Console).');
+            } else {
+                setError(code ? `Failed to create an account (${code}).` : `Failed to create an account. ${err?.message ?? ''}`.trim());
+            }
         }
 
         setLoading(false);

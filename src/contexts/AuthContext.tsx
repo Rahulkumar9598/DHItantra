@@ -31,6 +31,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setCurrentUser(user);
 
             if (user) {
+                if (!db) {
+                    console.warn("Firestore service not available; role unknown");
+                    setUserRole(null);
+                    setLoading(false);
+                    return;
+                }
                 try {
                     const userDoc = await getDoc(doc(db, 'users', user.uid));
                     if (userDoc.exists()) {
@@ -42,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     }
                 } catch (error) {
                     console.error("Error fetching user role:", error);
-                    setUserRole('student'); // Fail safe
+                    setUserRole(null);
                 }
             } else {
                 setUserRole(null);
