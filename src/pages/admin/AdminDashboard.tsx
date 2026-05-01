@@ -10,7 +10,8 @@ import {
     TrendingUp,
     ExternalLink,
     Loader2,
-    Award
+    Award,
+    ListChecks
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { dashboardService, type DashboardStats } from '../../services/dashboardService';
@@ -97,6 +98,7 @@ const AdminDashboard = () => {
         { label: 'Create Test Series', icon: Plus, path: '/admin-dashboard/test-series', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Create New Test', icon: FileText, path: '/admin-dashboard/create-test', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Add Question', icon: HelpCircle, path: '/admin-dashboard/question-bank', color: 'bg-slate-800 text-white hover:bg-slate-700' },
+        { label: 'Manage Individual Tests', icon: ListChecks, path: '/admin-dashboard/tests', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Manage Subjects', icon: Award, path: '/admin-dashboard/subjects', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Manage Classes', icon: Copy, path: '/admin-dashboard/classes', color: 'bg-slate-800 text-white hover:bg-slate-700' },
         { label: 'Create Chapter', icon: BookOpen, path: '/admin-dashboard/chapters', color: 'bg-slate-800 text-white hover:bg-slate-700' },
@@ -111,7 +113,7 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 p-6 lg:p-10 -m-4 md:-m-6 lg:-m-8">
+        <div className="min-h-screen bg-slate-50 text-slate-900 p-4 sm:p-6 lg:p-10">
             <motion.div
                 className="max-w-7xl mx-auto space-y-8"
                 variants={containerVariants}

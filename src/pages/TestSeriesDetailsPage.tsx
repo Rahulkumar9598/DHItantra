@@ -19,7 +19,7 @@ import {
 import { loadRazorpay } from '../utils/razorpay';
 import { useAuth } from '../contexts/AuthContext';
 import { getTestSeries } from '../services/testSeriesService';
-import { studentService } from '../services/studentService';
+import { marketplaceService } from '../services/marketplaceService';
 import { db } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import type { TestSeries } from '../types/test.types';
@@ -92,13 +92,13 @@ const TestSeriesDetailsPage = () => {
                     handler: async function (_response: any) {
                         try {
                             // In a real app, verify signature on backend: response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature
-                            await studentService.enrollInTestSeries(currentUser.uid, series);
+                            await marketplaceService.enrollInItem(currentUser.uid, series);
                             setIsOwned(true);
                             alert('Payment Successful!');
                             navigate('/dashboard');
-                        } catch (err) {
+                        } catch (err: any) {
                             console.error("Enrollment error after payment:", err);
-                            alert("Payment successful but enrollment failed. Please contact support.");
+                            alert(`Payment successful but enrollment failed: ${err.message || 'Unknown error'}. Please contact support.`);
                         }
                     },
                     prefill: {
@@ -121,7 +121,7 @@ const TestSeriesDetailsPage = () => {
                 return; // Stop here, handler takes over
             } else {
                 // Free Series
-                await studentService.enrollInTestSeries(currentUser.uid, series);
+                await marketplaceService.enrollInItem(currentUser.uid, series);
                 setIsOwned(true);
                 alert('Enrolled successfully!');
                 navigate('/dashboard');

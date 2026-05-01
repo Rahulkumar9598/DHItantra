@@ -133,28 +133,9 @@ export const studentService = {
      * Enroll student in a test series (record purchase)
      */
     enrollInTestSeries: async (userId: string, series: any) => {
-        try {
-            // Check if already enrolled (optional but good practice)
-            // For now, we rely on the UI to disable the button, but we could add a check here.
-
-            const purchaseData = {
-                seriesId: series.id,
-                testId: series.id, // Fallback
-                type: 'series',
-                seriesTitle: series.name,
-                testTitle: series.name, // Fallback
-                category: series.examCategory,
-                price: series.pricing.type === 'free' ? 0 : series.pricing.amount,
-                purchaseDate: serverTimestamp(),
-                status: 'active'
-            };
-
-            await addDoc(collection(db, 'users', userId, 'purchases'), purchaseData);
-            return true;
-        } catch (error) {
-            console.error("Error enrolling in test series:", error);
-            throw error;
-        }
+        // Delegate to marketplaceService for unified logic
+        const { marketplaceService } = await import('./marketplaceService');
+        return await marketplaceService.enrollInItem(userId, series);
     },
 
     /**

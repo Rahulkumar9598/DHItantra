@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
 import type { TestFormData } from '../../types/test.types';
-import { createTest, generateQuestionsAuto, generateQuestionsCustom, saveQuestionsToTest, publishTest } from '../../services/testService';
+import { createTest, generateQuestionsCustom, saveQuestionsToTest, publishTest } from '../../services/testService';
 
 // Import step components (we'll create these next)
 import BasicInfoStep from '../../components/test/BasicInfoStep';
@@ -19,8 +19,11 @@ interface TestCreationWizardProps {
     onCancel?: () => void;
 }
 
+import { useAuth } from '../../contexts/AuthContext';
+
 const TestCreationWizard = ({ seriesId, onComplete, onCancel }: TestCreationWizardProps) => {
     const navigate = useNavigate();
+    const { currentUser } = useAuth() || {};
     const [currentStep, setCurrentStep] = useState(0);
     const [isSaving, setIsSaving] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -31,7 +34,7 @@ const TestCreationWizard = ({ seriesId, onComplete, onCancel }: TestCreationWiza
         name: '',
         seriesId: seriesId || '',
         testType: 'practice',
-        generationType: 'auto',
+        generationType: 'custom',
         questionConfig: {
             totalQuestions: 90,
             mcqPercentage: 67,
@@ -51,7 +54,7 @@ const TestCreationWizard = ({ seriesId, onComplete, onCancel }: TestCreationWiza
 
     const steps = [
         { title: 'Basic Info', component: BasicInfoStep },
-        { title: 'Generation Method', component: GenerationMethodStep },
+        { title: 'Subjects & Chapters', component: GenerationMethodStep },
         { title: 'Question Config', component: QuestionConfigStep },
         { title: 'Test Settings', component: TestSettingsStep },
         { title: 'Schedule', component: ScheduleStep },
@@ -76,16 +79,16 @@ const TestCreationWizard = ({ seriesId, onComplete, onCancel }: TestCreationWiza
         setIsSaving(true);
         try {
             await delay(1000); // Artificial delay
-            await createTest(formData as TestFormData, 'admin');
+            await createTest(formData as TestFormData, currentUser?.uid || 'admin');
             alert('Test saved as draft!');
             if (onComplete) {
                 onComplete();
             } else {
                 navigate('/admin-dashboard/tests');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving draft:', error);
-            alert('Failed to save draft');
+            alert('Failed to save draft: ' + (error.message || 'Unknown error'));
         } finally {
             setIsSaving(false);
         }
@@ -98,14 +101,16 @@ const TestCreationWizard = ({ seriesId, onComplete, onCancel }: TestCreationWiza
         try {
             await delay(1500); // Artificial delay
             // Step 1: Create test
-            const testId = await createTest({ ...formData, status: 'published' } as TestFormData, 'admin');
+            const testId = await createTest({ ...formData, status: 'published' } as TestFormData, currentUser?.uid || 'admin');
 
-            // Step 2: Generate questions
+            // Step 2: Generate questions from selected chapters/specific picks
             let questionIds: string[] = [];
 
-            if (formData.generationType === 'auto' && formData.autoConfig && formData.autoConfig.subjects) {
-                questionIds = await generateQuestionsAuto(formData.autoConfig as any);
-            } else if (formData.generationType === 'custom' && formData.customConfig && formData.customConfig.subjects && formData.questionConfig) {
+            if (formData.customConfig?.questionSelection === 'specific' && formData.customConfig.selectedQuestionIds) {
+                // Admin hand-picked specific questions
+                questionIds = formData.customConfig.selectedQuestionIds;
+            } else if (formData.customConfig && formData.customConfig.subjects && formData.customConfig.selectedChapters && formData.questionConfig) {
+                // Fetch all questions from selected chapters
                 questionIds = await generateQuestionsCustom(formData.customConfig as any, formData.questionConfig);
             }
 
@@ -121,9 +126,9 @@ const TestCreationWizard = ({ seriesId, onComplete, onCancel }: TestCreationWiza
             } else {
                 navigate('/admin-dashboard/tests');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error publishing test:', error);
-            alert('Failed to publish test');
+            alert('Failed to publish test: ' + (error.message || 'Unknown error'));
         } finally {
             setIsSaving(false);
             setIsGenerating(false);
@@ -138,11 +143,17 @@ const TestCreationWizard = ({ seriesId, onComplete, onCancel }: TestCreationWiza
         switch (currentStep) {
             case 0: // Basic Info
                 return !!(formData.name && formData.testType && formData.seriesId);
-            case 1: // Generation Method
-                if (formData.generationType === 'auto') {
-                    return formData.autoConfig?.subjects && formData.autoConfig.subjects.length > 0;
+            case 1: // Subjects & Chapters
+                // Need at least one subject AND either chapters selected or specific questions picked
+                if (!formData.customConfig?.subjects || formData.customConfig.subjects.length === 0) return false;
+                if (formData.customConfig.questionSelection === 'specific') {
+                    return (formData.customConfig.selectedQuestionIds?.length || 0) > 0;
                 }
-                return formData.customConfig?.subjects && formData.customConfig.subjects.length > 0;
+                // For 'all' mode: at least one chapter must be selected across any subject
+                const totalChapters = Object.values(formData.customConfig.selectedChapters || {}).reduce(
+                    (sum, arr) => sum + arr.length, 0
+                );
+                return totalChapters > 0;
             case 2: // Question Config
                 return formData.questionConfig && formData.questionConfig.totalQuestions > 0;
             case 3: // Test Settings

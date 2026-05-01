@@ -107,9 +107,9 @@ const OMRTestCreationWizard = () => {
                     : '💾 OMR Test saved as draft!'
             );
             navigate('/admin-dashboard/tests');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving OMR test:', error);
-            alert('Failed to save OMR test. Please try again.');
+            alert('Failed to save OMR test: ' + (error.message || 'Unknown error'));
         } finally {
             setIsSaving(false);
         }

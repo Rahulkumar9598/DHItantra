@@ -374,7 +374,7 @@ const AdminStudentsPage = () => {
                             </div>
 
                             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-center">
                                         <BarChart3 className="mx-auto text-blue-600 mb-2" size={24} />
                                         <div className="text-xl font-bold">{selectedStudent.testsTaken || 0}</div>

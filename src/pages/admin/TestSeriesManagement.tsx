@@ -25,7 +25,6 @@ const TestSeriesManagement = () => {
     const [isCreating, setIsCreating] = useState(false);
     const [editingSeries, setEditingSeries] = useState<TestSeries | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterCategory, setFilterCategory] = useState<string>('all');
     const [filterStatus, setFilterStatus] = useState<string>('all');
 
     // Dynamic Options State
@@ -41,24 +40,21 @@ const TestSeriesManagement = () => {
 
     const [formData, setFormData] = useState<{
         name: string;
-        examCategory: string;
         courseClass: string;
         subject: string;
+        examCategory: string;
         pricing: { type: 'free' | 'paid'; amount: number };
         description: string;
         status: 'draft' | 'published' | 'archived';
     }>({
         name: '',
-        examCategory: 'JEE',
         courseClass: '',
         subject: '',
+        examCategory: '',
         pricing: { type: 'free', amount: 0 },
         description: '',
         status: 'draft'
     });
-
-    const [customCategory, setCustomCategory] = useState('');
-    const [isCustom, setIsCustom] = useState(false);
 
     useEffect(() => {
         loadTestSeries();
@@ -104,19 +100,8 @@ const TestSeriesManagement = () => {
                 return;
             }
 
-            const finalData = {
-                ...formData,
-                examCategory: isCustom ? customCategory : formData.examCategory
-            };
-
-            if (isCustom && !customCategory) {
-                alert('Please enter a custom category name');
-                setIsSubmitting(false);
-                return;
-            }
-
             await delay(1000); // Artificial delay
-            await createTestSeries(finalData, currentUser.uid);
+            await createTestSeries(formData, currentUser.uid);
             await loadTestSeries();
             setIsCreating(false);
             resetForm();
@@ -134,19 +119,8 @@ const TestSeriesManagement = () => {
 
         setIsSubmitting(true);
         try {
-            const finalData = {
-                ...formData,
-                examCategory: isCustom ? customCategory : formData.examCategory
-            };
-
-            if (isCustom && !customCategory) {
-                alert('Please enter a custom category name');
-                setIsSubmitting(false);
-                return;
-            }
-
             await delay(1000); // Artificial delay
-            await updateTestSeries(editingSeries.id, finalData);
+            await updateTestSeries(editingSeries.id, formData);
             await loadTestSeries();
             setEditingSeries(null);
             resetForm();
@@ -193,15 +167,12 @@ const TestSeriesManagement = () => {
     };
 
     const handleEdit = (series: TestSeries) => {
-        const predefinedCategories = ['JEE', 'NEET', 'SSC'];
-        const isPredefined = predefinedCategories.includes(series.examCategory);
-
         setEditingSeries(series);
         setFormData({
             name: series.name,
-            examCategory: isPredefined ? series.examCategory : 'Custom',
             courseClass: series.courseClass || '',
             subject: (series as any).subject || '',
+            examCategory: series.examCategory || '',
             pricing: {
                 type: series.pricing.type,
                 amount: series.pricing.amount || 0
@@ -209,37 +180,26 @@ const TestSeriesManagement = () => {
             description: series.description,
             status: series.status
         });
-
-        if (!isPredefined) {
-            setCustomCategory(series.examCategory);
-            setIsCustom(true);
-        } else {
-            setCustomCategory('');
-            setIsCustom(false);
-        }
     };
 
     const resetForm = () => {
         setFormData({
             name: '',
-            examCategory: 'JEE',
             courseClass: '',
             subject: '',
+            examCategory: '',
             pricing: { type: 'free', amount: 0 },
             description: '',
             status: 'draft'
         });
-        setCustomCategory('');
-        setIsCustom(false);
     };
 
     const filteredSeries = testSeries.filter(series => {
         const matchesSearch = (series.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
             (series.description?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-        const matchesCategory = filterCategory === 'all' || series.examCategory === filterCategory;
         const matchesStatus = filterStatus === 'all' || series.status === filterStatus;
 
-        return matchesSearch && matchesCategory && matchesStatus;
+        return matchesSearch && matchesStatus;
     });
 
     return (
@@ -258,12 +218,7 @@ const TestSeriesManagement = () => {
                     </p>
                 </div>
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-end w-full">
-                    <button
-                        onClick={() => navigate('/admin-dashboard/create-omr-test')}
-                        className="w-full sm:w-auto flex items-center gap-2 px-5 py-2.5 bg-zinc-900 text-white font-semibold rounded-xl hover:bg-zinc-800 transition-colors shadow-sm"
-                    >
-                        📄 Create OMR Test
-                    </button>
+
                     <button
                         onClick={() => navigate('/admin-dashboard/create-test')}
                         className="w-full sm:w-auto flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm"
@@ -292,17 +247,6 @@ const TestSeriesManagement = () => {
                     />
                 </div>
                 <div className="flex flex-col gap-4 sm:flex-row w-full">
-                    <select
-                        value={filterCategory}
-                        onChange={(e) => setFilterCategory(e.target.value)}
-                        className="w-full sm:w-auto px-4 py-2.5 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-blue-500 text-slate-700 font-medium cursor-pointer"
-                    >
-                        <option value="all">All Categories</option>
-                        <option value="JEE">JEE</option>
-                        <option value="NEET">NEET</option>
-                        <option value="SSC">SSC</option>
-                        <option value="Custom">Custom</option>
-                    </select>
                     <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
@@ -338,8 +282,8 @@ const TestSeriesManagement = () => {
                             title={series.name}
                             description={series.description}
                             features={series?.features || []}
-                            originalPrice={series.pricing?.type === 'paid' ? `${(series.pricing.amount || 0) * 1.2}` : '0'}
-                            price={series.pricing?.type === 'paid' ? `${series.pricing.amount}` : 'Free'}
+                            originalPrice={series.pricing?.type === 'paid' ? `${((series.pricing.amount ?? 0) * 1.2).toFixed(2)}` : '0'}
+                            price={series.pricing?.type === 'paid' ? `${series.pricing.amount ?? 0}` : 'Free'}
                             examCategory={series.examCategory}
                             testCount={series.testIds?.length || 0}
                             actions={
@@ -449,42 +393,6 @@ const TestSeriesManagement = () => {
                                     </div>
                                 </div>
 
-                                {/* Exam Category */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                        Examination Category *
-                                    </label>
-                                    <select
-                                        value={formData.examCategory}
-                                        onChange={(e) => {
-                                            const val = e.target.value;
-                                            setFormData({ ...formData, examCategory: val as any });
-                                            setIsCustom(val === 'Custom');
-                                        }}
-                                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
-                                    >
-                                        <option value="JEE">JEE</option>
-                                        <option value="NEET">NEET</option>
-                                        <option value="SSC">SSC</option>
-                                        <option value="Custom">Custom</option>
-                                    </select>
-                                    {isCustom && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="mt-3"
-                                        >
-                                            <input
-                                                type="text"
-                                                value={customCategory}
-                                                onChange={(e) => setCustomCategory(e.target.value)}
-                                                placeholder="Enter Category Name (e.g., UPSC, GATE)"
-                                                className="w-full px-4 py-2.5 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-blue-50/30"
-                                                autoFocus
-                                            />
-                                        </motion.div>
-                                    )}
-                                </div>
 
                                 {/* Pricing */}
                                 <div>

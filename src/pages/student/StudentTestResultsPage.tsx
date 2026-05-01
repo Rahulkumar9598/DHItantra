@@ -3,11 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Clock, TrendingUp, Award, BarChart3, ArrowRight, BookOpen, Target, Zap } from 'lucide-react';
 import { db } from '../../firebase';
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, limit, where, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
+
+const MAX_RESULTS = 50;
 
 interface TestAttempt {
     id: string;
+    attemptId: string;
+    source: 'user_attempts' | 'legacy_test_results';
     testTitle: string;
     score: number;
     totalQuestions: number;
@@ -31,58 +35,100 @@ const StudentTestResultsPage = () => {
         totalTimeSpent: 0
     });
 
+    const normalizeAttempt = (
+        docId: string,
+        data: any,
+        source: 'user_attempts' | 'legacy_test_results'
+    ): TestAttempt => {
+        const correctCount = data.correctAnswers ?? data.correctCount ?? 0;
+        const unattemptedCount = data.unattemptedCount ?? 0;
+        
+        const totalQs = data.totalQuestions || (correctCount + (data.wrongCount || 0) + unattemptedCount) || 0;
+        const maxScore = data.totalMarks ?? (totalQs * 4);
+
+        return {
+            id: source === 'legacy_test_results' ? `legacy-${docId}` : docId,
+            attemptId: docId,
+            source,
+            testTitle: data.testTitle || data.testName || 'Unknown Test',
+            score: data.score ?? 0,
+            totalQuestions: totalQs,
+            maxScore: maxScore,
+            correctAnswers: correctCount,
+            attemptDate: data.attemptDate,
+            duration: data.duration ?? data.timeTakenSeconds ?? 0
+        };
+    };
+
     useEffect(() => {
-        const fetchAttempts = async () => {
-            if (!currentUser) return;
+        if (!currentUser) return;
 
-            try {
-                const attemptsRef = collection(db, 'users', currentUser.uid, 'attempts');
-                const q = query(attemptsRef, orderBy('attemptDate', 'desc'), limit(50));
-                const snapshot = await getDocs(q);
+        const unsubscribeFunctions: (() => void)[] = [];
 
-                const fetchedAttempts = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    const totalQs = (data.totalQuestions ?? (data.correctCount + data.wrongCount + data.unattemptedCount)) || 0;
-                    const maxScore = data.totalMarks ?? (totalQs * 4);
-                    
-                    return {
-                        id: doc.id,
-                        testTitle: data.testTitle || data.testName || 'Unknown Test',
-                        score: data.score || 0,
-                        totalQuestions: totalQs,
-                        maxScore: maxScore,
-                        correctAnswers: data.correctAnswers ?? data.correctCount ?? 0,
-                        attemptDate: data.attemptDate,
-                        duration: data.duration ?? data.timeTakenSeconds ?? 0
-                    };
-                }) as TestAttempt[];
+        // 1. Fetch user-specific attempts (modern way)
+        const attemptsRef = collection(db, 'users', currentUser.uid, 'attempts');
+        const qUser = query(attemptsRef, orderBy('attemptDate', 'desc'), limit(MAX_RESULTS));
 
-                setAttempts(fetchedAttempts);
+        // 2. Fetch legacy results (where user is identified by userId or studentId)
+        const legacyRef = collection(db, 'testResults');
+        const qLegacyUser = query(legacyRef, where('userId', '==', currentUser.uid), limit(MAX_RESULTS));
+        const qLegacyStudent = query(legacyRef, where('studentId', '==', currentUser.uid), limit(MAX_RESULTS));
 
-                // Calculate statistics
-                if (fetchedAttempts.length > 0) {
-                    const totalScore = fetchedAttempts.reduce((sum, attempt) => sum + attempt.score, 0);
-                    const bestScore = Math.max(...fetchedAttempts.map(a => a.score));
-                    const totalTime = fetchedAttempts.reduce((sum, attempt) => sum + (attempt.duration || 0), 0);
+        const attemptMap = new Map<string, TestAttempt>();
 
-                    setStats({
-                        totalAttempts: fetchedAttempts.length,
-                        averageScore: Math.round(totalScore / fetchedAttempts.length),
-                        bestScore: bestScore,
-                        totalTimeSpent: totalTime
-                    });
-                }
-            } catch (error) {
-                console.error('Error fetching attempts:', error);
-            } finally {
-                setIsLoading(false);
+        const handleSnapshot = (snapshot: any, source: 'user_attempts' | 'legacy_test_results') => {
+            snapshot.docs.forEach((doc: any) => {
+                const normalized = normalizeAttempt(doc.id, doc.data(), source);
+                attemptMap.set(normalized.id, normalized);
+            });
+
+            const sortedAttempts = Array.from(attemptMap.values()).sort((a, b) => {
+                const aTime = a.attemptDate?.toMillis ? a.attemptDate.toMillis() : (a.attemptDate ? new Date(a.attemptDate).getTime() : 0);
+                const bTime = b.attemptDate?.toMillis ? b.attemptDate.toMillis() : (b.attemptDate ? new Date(b.attemptDate).getTime() : 0);
+                return bTime - aTime;
+            });
+
+            setAttempts(sortedAttempts);
+
+            // Recalculate Statistics
+            if (sortedAttempts.length > 0) {
+                const totalScore = sortedAttempts.reduce((sum, a) => sum + (a.score || 0), 0);
+                const bestScore = Math.max(...sortedAttempts.map(a => a.score || 0));
+                const totalTime = sortedAttempts.reduce((sum, a) => sum + (a.duration || 0), 0);
+
+                setStats({
+                    totalAttempts: sortedAttempts.length,
+                    averageScore: Math.round(totalScore / sortedAttempts.length),
+                    bestScore: bestScore,
+                    totalTimeSpent: totalTime
+                });
             }
+            setIsLoading(false);
         };
 
-        fetchAttempts();
+        unsubscribeFunctions.push(onSnapshot(qUser, (snap) => handleSnapshot(snap, 'user_attempts'), (err) => {
+            console.error("User attempts listener error:", err);
+            if (err.code === 'permission-denied') {
+                console.warn("Permission denied for users/{uid}/attempts. Please check your Firestore security rules.");
+            }
+            setIsLoading(false);
+        }));
+
+        unsubscribeFunctions.push(onSnapshot(qLegacyUser, (snap) => handleSnapshot(snap, 'legacy_test_results'), (err) => {
+            console.error("Legacy user results listener error:", err);
+        }));
+
+        unsubscribeFunctions.push(onSnapshot(qLegacyStudent, (snap) => handleSnapshot(snap, 'legacy_test_results'), (err) => {
+            console.error("Legacy student results listener error:", err);
+        }));
+
+        return () => {
+            unsubscribeFunctions.forEach(unsub => unsub());
+        };
     }, [currentUser]);
 
-    const formatDuration = (seconds: number) => {
+    const formatDuration = (seconds: number | undefined | null) => {
+        if (!seconds || isNaN(seconds)) return '0h 0m';
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
         return `${hours}h ${minutes}m`;

@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Save, Link as LinkIcon, PenTool, Loader2 } from 'lucide-react';
 import { db } from '../../firebase';
 import { collection, addDoc, serverTimestamp, query, getDocs } from 'firebase/firestore';
+import { useAuth } from '../../contexts/AuthContext';
 
 const AdminAddPYQPage = () => {
     const navigate = useNavigate();
+    const { currentUser } = useAuth() || {};
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [tests, setTests] = useState<{ id: string; title: string }[]>([]);
     const [isLoadingTests, setIsLoadingTests] = useState(true);
@@ -70,6 +72,7 @@ const AdminAddPYQPage = () => {
                 year: formData.year,
                 type: formData.type,
                 price: Number(formData.price),
+                createdBy: currentUser?.uid || 'admin',
                 createdAt: serverTimestamp()
             };
 
@@ -82,9 +85,9 @@ const AdminAddPYQPage = () => {
             await addDoc(collection(db, 'pyqs'), pyqData);
             alert('PYQ Created Successfully!');
             navigate('/admin-dashboard/pyqs');
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating PYQ:", error);
-            alert("Failed to create PYQ");
+            alert("Failed to create PYQ: " + (error.message || 'Unknown error'));
         } finally {
             setIsSubmitting(false);
         }
@@ -154,7 +157,7 @@ const AdminAddPYQPage = () => {
 
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <label className="block text-sm font-bold text-slate-700 mb-3">Resource Type</label>
-                        <div className="flex gap-6">
+                        <div className="flex flex-col sm:flex-row gap-4">
                             <label className={`flex-1 flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.type === 'pdf' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300 bg-white'}`}>
                                 <input
                                     type="radio"

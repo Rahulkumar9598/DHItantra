@@ -304,6 +304,7 @@ const StudentTestAttemptPage = () => {
             const resultData = {
                 testId: testData.id,
                 testTitle: testData.title,
+                userId: currentUser.uid,
                 score: score,
                 totalQuestions: testData.questions.length,
                 correctAnswers: correctCount,
@@ -312,21 +313,24 @@ const StudentTestAttemptPage = () => {
                 duration: (testData.duration ? testData.duration * 60 : 180 * 60) - timeRemaining,
                 answers: answers,
                 markedForReview: Array.from(markedForReview),
-                sectionBSelections: {
-                    Physics: Array.from(sectionBSelections.Physics),
-                    Chemistry: Array.from(sectionBSelections.Chemistry),
-                    Mathematics: Array.from(sectionBSelections.Mathematics)
-                }
+                // Only include sectionBSelections for JEE-pattern tests
+                ...(testData.testPattern === 'JEE_MAINS' && {
+                    sectionBSelections: Object.fromEntries(
+                        Object.entries(sectionBSelections).map(([subj, set]) => [subj, Array.from(set)])
+                    )
+                })
             };
 
-            await addDoc(collection(db, 'users', currentUser.uid, 'attempts'), resultData);
+            // Write to top-level testResults (covered by Firestore rules)
+            await addDoc(collection(db, 'testResults'), resultData);
 
+            setShowSubmitConfirm(false);
             alert(`Test Submitted!${autoSubmit ? ' (Time Up)' : ''}\n\nYour Score: ${score}\nCorrect: ${correctCount}\nAttempted: ${attemptedCount}`);
             navigate('/dashboard/tests');
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error submitting test:", error);
-            alert("Failed to submit test. Please try again.");
+            alert("Failed to submit test: " + (error?.message || 'Please try again.'));
         } finally {
             setIsSubmitting(false);
         }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Check, Loader2, BookOpen } from 'lucide-react';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 interface Question {
@@ -9,8 +9,15 @@ interface Question {
     text: string;
     subject: string;
     chapter: string;
+    chapterId?: string;
     type: 'MCQ' | 'Numerical';
     difficulty: 'Easy' | 'Medium' | 'Hard';
+}
+
+interface ChapterInfo {
+    id: string;
+    name: string;
+    subject: string;
 }
 
 interface QuestionPickerProps {
@@ -19,6 +26,8 @@ interface QuestionPickerProps {
     onSelect: (questionIds: string[]) => void;
     initialSelected?: string[];
     subjects: string[];
+    // Optional: pre-fetched chapter IDs to filter by
+    selectedChapterIds?: Record<string, string[]>; // subject -> chapterIds
     maxSelection?: number;
 }
 
@@ -28,23 +37,43 @@ const QuestionPicker = ({
     onSelect,
     initialSelected = [],
     subjects,
+    selectedChapterIds,
     maxSelection
 }: QuestionPickerProps) => {
     const [selectedIds, setSelectedIds] = useState<string[]>(initialSelected);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [chapterMap, setChapterMap] = useState<Record<string, ChapterInfo>>({});
 
     // Filters
     const [activeSubject, setActiveSubject] = useState<string>(subjects[0] || '');
+    const [filterChapterId, setFilterChapterId] = useState<string>('all');
     const [filterDifficulty, setFilterDifficulty] = useState<'all' | 'Easy' | 'Medium' | 'Hard'>('all');
     const [filterType, setFilterType] = useState<'all' | 'MCQ' | 'Numerical'>('all');
 
+    // Available chapters for the current subject
+    const availableChapters = (selectedChapterIds?.[activeSubject] || []).map(id => ({
+        id,
+        name: chapterMap[id]?.name || id
+    }));
+
     useEffect(() => {
         if (isOpen) {
+            fetchChapterNames();
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (isOpen) {
+            setFilterChapterId('all');
             fetchQuestions();
         }
     }, [isOpen, activeSubject, filterDifficulty, filterType]);
+
+    useEffect(() => {
+        if (isOpen) fetchQuestions();
+    }, [filterChapterId]);
 
     // Update active subject if props change
     useEffect(() => {
@@ -53,37 +82,73 @@ const QuestionPicker = ({
         }
     }, [subjects]);
 
+    const fetchChapterNames = async () => {
+        if (!selectedChapterIds) return;
+        const allIds = Object.values(selectedChapterIds).flat();
+        const newMap: Record<string, ChapterInfo> = {};
+        await Promise.all(allIds.map(async id => {
+            if (chapterMap[id]) { newMap[id] = chapterMap[id]; return; }
+            try {
+                const snap = await getDoc(doc(db, 'chapters', id));
+                if (snap.exists()) {
+                    newMap[id] = { id, name: snap.data().name, subject: snap.data().subject };
+                }
+            } catch { /* ignore */ }
+        }));
+        setChapterMap(prev => ({ ...prev, ...newMap }));
+    };
+
     const fetchQuestions = async () => {
         setIsLoading(true);
         try {
-            let q = query(
-                collection(db, 'questions'),
+            let constraints: any[] = [
                 where('subject', '==', activeSubject),
-                limit(200)
-            );
+                limit(300)
+            ];
 
-            const snapshot = await getDocs(q);
-            let fetchedQuestions = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })) as Question[];
+            // Filter by specific chapter if selected
+            if (filterChapterId !== 'all') {
+                // Try chapterId field first, fall back to chapter name
+                const chapterName = chapterMap[filterChapterId]?.name;
+                constraints = [
+                    where('subject', '==', activeSubject),
+                    where('chapterId', '==', filterChapterId),
+                    limit(300)
+                ];
 
-            // Sort by createdAt desc client-side to avoid needing composite index
-            fetchedQuestions.sort((a: any, b: any) => {
-                const dateA = a.createdAt?.seconds || 0;
-                const dateB = b.createdAt?.seconds || 0;
-                return dateB - dateA;
-            });
+                const snap = await getDocs(query(collection(db, 'questions'), ...constraints));
+                if (snap.empty && chapterName) {
+                    const fallback = await getDocs(query(
+                        collection(db, 'questions'),
+                        where('subject', '==', activeSubject),
+                        where('chapter', '==', chapterName),
+                        limit(300)
+                    ));
+                    let fetched = fallback.docs.map(d => ({ id: d.id, ...d.data() })) as Question[];
+                    if (filterDifficulty !== 'all') fetched = fetched.filter(q => q.difficulty === filterDifficulty);
+                    if (filterType !== 'all') fetched = fetched.filter(q => q.type === filterType);
+                    setQuestions(fetched);
+                    return;
+                }
 
-            // Client-side filtering for flexibility
-            if (filterDifficulty !== 'all') {
-                fetchedQuestions = fetchedQuestions.filter(q => q.difficulty === filterDifficulty);
+                let fetched = snap.docs.map(d => ({ id: d.id, ...d.data() })) as Question[];
+                if (filterDifficulty !== 'all') fetched = fetched.filter(q => q.difficulty === filterDifficulty);
+                if (filterType !== 'all') fetched = fetched.filter(q => q.type === filterType);
+                setQuestions(fetched);
+                return;
             }
-            if (filterType !== 'all') {
-                fetchedQuestions = fetchedQuestions.filter(q => q.type === filterType);
-            }
 
-            setQuestions(fetchedQuestions);
+            const snapshot = await getDocs(query(collection(db, 'questions'), ...constraints));
+            let fetched = snapshot.docs.map(d => ({ id: d.id, ...d.data() })) as Question[];
+
+            // Client-side filtering
+            if (filterDifficulty !== 'all') fetched = fetched.filter(q => q.difficulty === filterDifficulty);
+            if (filterType !== 'all') fetched = fetched.filter(q => q.type === filterType);
+
+            // Sort by createdAt desc
+            fetched.sort((a: any, b: any) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+            setQuestions(fetched);
         } catch (error) {
             console.error('Error fetching questions:', error);
         } finally {
@@ -93,15 +158,12 @@ const QuestionPicker = ({
 
     const toggleSelection = (id: string) => {
         setSelectedIds(prev => {
-            if (prev.includes(id)) {
-                return prev.filter(qId => qId !== id);
-            } else {
-                if (maxSelection && prev.length >= maxSelection) {
-                    alert(`You can select up to ${maxSelection} questions.`);
-                    return prev;
-                }
-                return [...prev, id];
+            if (prev.includes(id)) return prev.filter(qId => qId !== id);
+            if (maxSelection && prev.length >= maxSelection) {
+                alert(`You can select up to ${maxSelection} questions.`);
+                return prev;
             }
+            return [...prev, id];
         });
     };
 
@@ -111,7 +173,7 @@ const QuestionPicker = ({
     };
 
     const filteredQuestions = questions.filter(q =>
-        q.text.toLowerCase().includes(searchTerm.toLowerCase())
+        q.text?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -127,7 +189,7 @@ const QuestionPicker = ({
                         {/* Header */}
                         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                             <div>
-                                <h2 className="text-xl font-bold text-slate-800">Select Questions</h2>
+                                <h2 className="text-xl font-bold text-slate-800">Pick Specific Questions</h2>
                                 <p className="text-sm text-slate-500">
                                     Selected: <span className="font-bold text-blue-600">{selectedIds.length}</span>
                                     {maxSelection && <span className="text-slate-400"> / {maxSelection}</span>}
@@ -141,10 +203,10 @@ const QuestionPicker = ({
                             </button>
                         </div>
 
-                        {/* Filters & Search */}
-                        <div className="p-4 border-b border-slate-100 space-y-4">
+                        {/* Filters */}
+                        <div className="p-4 border-b border-slate-100 space-y-3">
                             {/* Subject Tabs */}
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
                                 {subjects.map(subject => (
                                     <button
                                         key={subject}
@@ -159,40 +221,53 @@ const QuestionPicker = ({
                                 ))}
                             </div>
 
-                            <div className="flex gap-4">
-                                <div className="relative flex-1">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <div className="flex flex-wrap gap-3">
+                                {/* Chapter filter */}
+                                {availableChapters.length > 0 && (
+                                    <select
+                                        value={filterChapterId}
+                                        onChange={e => setFilterChapterId(e.target.value)}
+                                        className="flex-1 min-w-[160px] px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white"
+                                    >
+                                        <option value="all">All Chapters</option>
+                                        {availableChapters.map(ch => (
+                                            <option key={ch.id} value={ch.id}>{ch.name}</option>
+                                        ))}
+                                    </select>
+                                )}
+
+                                {/* Search */}
+                                <div className="relative flex-1 min-w-[180px]">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                                     <input
                                         type="text"
                                         placeholder="Search question text..."
                                         value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        onChange={e => setSearchTerm(e.target.value)}
+                                        className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                                     />
                                 </div>
 
-                                <div className="flex gap-2">
-                                    <select
-                                        value={filterDifficulty}
-                                        onChange={(e) => setFilterDifficulty(e.target.value as any)}
-                                        className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white"
-                                    >
-                                        <option value="all">All Difficulties</option>
-                                        <option value="Easy">Easy</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="Hard">Hard</option>
-                                    </select>
+                                <select
+                                    value={filterDifficulty}
+                                    onChange={e => setFilterDifficulty(e.target.value as any)}
+                                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white"
+                                >
+                                    <option value="all">All Levels</option>
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
 
-                                    <select
-                                        value={filterType}
-                                        onChange={(e) => setFilterType(e.target.value as any)}
-                                        className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white"
-                                    >
-                                        <option value="all">All Types</option>
-                                        <option value="MCQ">MCQ</option>
-                                        <option value="Numerical">Numerical</option>
-                                    </select>
-                                </div>
+                                <select
+                                    value={filterType}
+                                    onChange={e => setFilterType(e.target.value as any)}
+                                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white"
+                                >
+                                    <option value="all">All Types</option>
+                                    <option value="MCQ">MCQ</option>
+                                    <option value="Numerical">Numerical</option>
+                                </select>
                             </div>
                         </div>
 
@@ -213,17 +288,16 @@ const QuestionPicker = ({
                                             }`}
                                     >
                                         <div className="flex items-start gap-4">
-                                            <div className={`mt-1 w-5 h-5 rounded border flex items-center justify-center transition-colors ${selectedIds.includes(question.id)
+                                            <div className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${selectedIds.includes(question.id)
                                                 ? 'bg-blue-600 border-blue-600'
                                                 : 'border-slate-300 bg-white'
                                                 }`}>
-                                                {selectedIds.includes(question.id) && <Check size={14} className="text-white" />}
+                                                {selectedIds.includes(question.id) && <Check size={12} className="text-white" strokeWidth={3} />}
                                             </div>
 
-                                            <div className="flex-1 space-y-2">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${question.type === 'MCQ' ? 'bg-purple-100 text-purple-700' : 'bg-orange-100 text-orange-700'
-                                                        }`}>
+                                            <div className="flex-1 space-y-2 min-w-0">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${question.type === 'MCQ' ? 'bg-purple-100 text-purple-700' : 'bg-orange-100 text-orange-700'}`}>
                                                         {question.type}
                                                     </span>
                                                     <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${question.difficulty === 'Easy' ? 'bg-green-100 text-green-700' :
@@ -233,39 +307,46 @@ const QuestionPicker = ({
                                                         {question.difficulty}
                                                     </span>
                                                     <span className="text-xs text-slate-400 flex items-center gap-1">
-                                                        <BookOpen size={12} /> {question.chapter}
+                                                        <BookOpen size={11} />
+                                                        {question.chapter || 'Unknown Chapter'}
                                                     </span>
                                                 </div>
 
                                                 <p className="text-slate-800 text-sm font-medium line-clamp-2">
-                                                    {/* Strip HTML if needed, simplistic approach here */}
-                                                    {question.text.replace(/<[^>]*>/g, '')}
+                                                    {question.text?.replace(/<[^>]*>/g, '') || '—'}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
                                 ))
                             ) : (
-                                <div className="text-center py-12 text-slate-500">
-                                    <p>No questions found matching your filters.</p>
+                                <div className="text-center py-12 text-slate-400">
+                                    <BookOpen size={40} className="mx-auto mb-3 opacity-40" />
+                                    <p className="font-medium">No questions found</p>
+                                    <p className="text-sm mt-1">Try changing the filters or add questions to this subject</p>
                                 </div>
                             )}
                         </div>
 
                         {/* Footer */}
-                        <div className="p-4 border-t border-slate-100 bg-white flex justify-end gap-3">
-                            <button
-                                onClick={onClose}
-                                className="px-6 py-2.5 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleConfirm}
-                                className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-lg shadow-blue-200"
-                            >
-                                Confirm Selection ({selectedIds.length})
-                            </button>
+                        <div className="p-4 border-t border-slate-100 bg-white flex justify-between items-center gap-3">
+                            <span className="text-sm text-slate-500 font-medium">
+                                {filteredQuestions.length} question{filteredQuestions.length !== 1 ? 's' : ''} shown
+                            </span>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={onClose}
+                                    className="px-6 py-2.5 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleConfirm}
+                                    className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-lg shadow-blue-200 transition-colors"
+                                >
+                                    Confirm ({selectedIds.length})
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 </div>

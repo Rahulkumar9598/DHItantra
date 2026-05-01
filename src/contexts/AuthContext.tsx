@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect, createContext, type ReactNode } from 'react';
 import { auth, db } from '../firebase';
 import { type User, onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 interface AuthContextType {
     currentUser: User | null;
@@ -21,40 +21,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!auth) {
-            console.warn("Auth service not available");
-            setLoading(false);
-            return;
-        }
+        if (!auth || !db) return;
 
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
-
+            
             if (user) {
-                if (!db) {
-                    console.warn("Firestore service not available; role unknown");
-                    setUserRole(null);
-                    setLoading(false);
-                    return;
-                }
-                try {
-                    const userDoc = await getDoc(doc(db, 'users', user.uid));
-                    if (userDoc.exists()) {
-                        const data = userDoc.data();
-                        setUserRole(data.role as 'student' | 'admin');
+                // If we have a user, fetch their role before finishing loading
+                const unsubRole = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        setUserRole(docSnap.data().role as 'student' | 'admin' || 'student');
                     } else {
-                        // Default to student if document doesn't exist but user is auth'd
                         setUserRole('student');
                     }
-                } catch (error) {
-                    console.error("Error fetching user role:", error);
-                    setUserRole(null);
-                }
+                    setLoading(false);
+                }, (error) => {
+                    console.warn("Role listener error:", error);
+                    setUserRole('student');
+                    setLoading(false);
+                });
+                
+                return () => unsubRole();
             } else {
                 setUserRole(null);
+                setLoading(false);
             }
-
-            setLoading(false);
         });
 
         return unsubscribe;

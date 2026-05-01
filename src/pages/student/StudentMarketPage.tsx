@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, CheckCircle, ArrowRight } from 'lucide-react';
 import { db } from '../../firebase';
-import { collection, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext';
 import type { TestSeries } from '../../types/test.types';
 import { getAllTestSeries } from '../../services/testSeriesService';
 import TestSeriesCard from '../../components/landing/TestSeriesCard';
 import { loadRazorpay } from '../../utils/razorpay';
-import { studentService } from '../../services/studentService';
+import { marketplaceService } from '../../services/marketplaceService';
 
 const StudentMarketPage = () => {
     const authContext = useAuth();
@@ -80,11 +80,11 @@ const StudentMarketPage = () => {
                     image: 'https://examinantt.web.app/logo192.png',
                     handler: async function (_response: any) {
                         try {
-                            await studentService.enrollInTestSeries(currentUser.uid, series);
+                            await marketplaceService.enrollInItem(currentUser.uid, series);
                             alert('Payment Successful! You are now enrolled.');
-                        } catch (err) {
+                        } catch (err: any) {
                             console.error("Enrollment error after payment:", err);
-                            alert("Payment successful but enrollment failed. Please contact support.");
+                            alert(`Payment successful but enrollment failed: ${err.message || 'Unknown error'}. Please contact support.`);
                         }
                     },
                     prefill: {
@@ -104,16 +104,7 @@ const StudentMarketPage = () => {
                 setEnrollingId(null); // reset — modal is open, handler takes over
             } else {
                 // --- FREE: Direct Enroll ---
-                await addDoc(collection(db, 'users', currentUser.uid, 'purchases'), {
-                    seriesId: series.id,
-                    testId: series.id,
-                    type: 'series',
-                    seriesTitle: series.name,
-                    testTitle: series.name,
-                    category: series.examCategory,
-                    price: 0,
-                    purchaseDate: serverTimestamp()
-                });
+                await marketplaceService.enrollInItem(currentUser.uid, series);
                 alert('Enrolled successfully! Go to My Tests to start.');
                 setEnrollingId(null);
             }
@@ -186,33 +177,29 @@ const StudentMarketPage = () => {
                         const actionButton = isOwned ? (
                             <button
                                 disabled
-                                className="w-full h-14 rounded-2xl bg-green-500 text-white font-black text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 cursor-default shadow-lg shadow-green-500/20"
+                                className="w-full h-16 rounded-[1.5rem] bg-emerald-500 text-white font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-2 cursor-default shadow-xl shadow-emerald-500/20"
                             >
-                                <span>✓</span> Enrolled
+                                <CheckCircle size={20} strokeWidth={3} /> Enrolled & Active
                             </button>
                         ) : isBuying ? (
                             <button
                                 disabled
-                                className="w-full h-14 rounded-2xl bg-orange-400 text-white font-black text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 cursor-wait"
+                                className="w-full h-16 rounded-[1.5rem] bg-slate-800 text-white font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 cursor-wait"
                             >
-                                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                                </svg>
+                                <Loader2 className="animate-spin" size={20} />
                                 {isFree ? 'Enrolling...' : 'Processing...'}
                             </button>
                         ) : (
                             <button
                                 onClick={() => handleBuy(series)}
-                                className="w-full relative group/btn overflow-hidden rounded-2xl h-14 bg-gradient-to-r from-orange-500 to-amber-600 shadow-xl shadow-orange-500/10 active:scale-95 transition-all"
+                                className="w-full relative group/btn h-16 rounded-[1.5rem] bg-slate-900 hover:bg-orange-600 shadow-2xl shadow-slate-900/10 active:scale-[0.98] transition-all duration-500 flex items-center justify-center gap-3 overflow-hidden"
                             >
-                                <span className="relative z-10 flex items-center justify-center gap-2 text-white font-black text-xs uppercase tracking-[0.15em]">
-                                    {isFree ? 'Enroll Now — Free' : `Unlock Series — ₹${series.pricing.amount}`}
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                    </svg>
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]" />
+                                <span className="relative z-10 flex items-center justify-center gap-2 text-white font-black text-xs uppercase tracking-[0.2em]">
+                                    {isFree ? 'Enroll for Free' : `Unlock for ₹${series.pricing.amount}`}
+                                    <ArrowRight size={20} className="group-hover/btn:translate-x-2 transition-transform duration-300" />
                                 </span>
-                                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-amber-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500" />
                             </button>
                         );
 

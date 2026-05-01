@@ -264,34 +264,33 @@ export const generateQuestionsCustom = async (
         return config.selectedQuestionIds;
     }
 
-    // Build query constraints based on selections
     const questionIds: string[] = [];
 
     for (const subject of config.subjects) {
         const selectedChapters = config.selectedChapters[subject] || [];
 
-        for (const chapter of selectedChapters) {
-            const selectedTopics = config.selectedTopics[chapter] || [];
-
+        for (const chapterId of selectedChapters) {
+            const selectedTopics = config.selectedTopics?.[chapterId] || [];
+            
             if (selectedTopics.length > 0) {
-                // Get questions for specific topics
-                for (const topic of selectedTopics) {
-                    const topicQuestions = await getQuestionsByTopic(subject, chapter, topic);
+                // Fetch questions only from selected topics
+                for (const topicName of selectedTopics) {
+                    const topicQuestions = await getQuestionsByTopic(subject, chapterId, topicName);
                     questionIds.push(...topicQuestions);
                 }
             } else {
-                // Get all questions for the chapter
-                const chapterQuestions = await getQuestionsByChapter(subject, chapter, 100);
+                // chapterId is a Firestore doc ID — fetch all questions linked to it
+                const chapterQuestions = await getQuestionsByChapterId(subject, chapterId);
                 questionIds.push(...chapterQuestions);
             }
         }
     }
 
+    // Remove duplicates
+    const uniqueIds = Array.from(new Set(questionIds));
+
     // Apply MCQ/Numerical split
-    const filteredIds = await applyQuestionTypeFilter(
-        questionIds,
-        questionConfig
-    );
+    const filteredIds = await applyQuestionTypeFilter(uniqueIds, questionConfig);
 
     return filteredIds.slice(0, questionConfig.totalQuestions);
 };
@@ -299,19 +298,75 @@ export const generateQuestionsCustom = async (
 // Get questions by topic
 const getQuestionsByTopic = async (
     subject: string,
-    chapter: string,
+    chapterId: string,
     topic: string
 ): Promise<string[]> => {
     const q = query(
         collection(db, QUESTIONS_COLLECTION),
         where('subject', '==', subject),
-        where('chapter', '==', chapter),
+        where('chapterId', '==', chapterId),
         where('topic', '==', topic),
-        limit(50)
+        limit(500)
     );
 
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => doc.id);
+};
+
+// Get all questions for a chapter using its Firestore doc ID.
+// Strategy:
+//   1. Try querying questions by chapterId field (new questions have this)
+//   2. Look up the chapter document to get its real name, query by that name
+//   3. Fall back to treating chapterId as a name (legacy path)
+const CHAPTERS_COLLECTION = 'chapters';
+
+const getQuestionsByChapterId = async (
+    subject: string,
+    chapterId: string
+): Promise<string[]> => {
+    // 1. Try by chapterId field (questions created with the new workflow)
+    const byIdQuery = query(
+        collection(db, QUESTIONS_COLLECTION),
+        where('subject', '==', subject),
+        where('chapterId', '==', chapterId),
+        limit(300)
+    );
+    const byIdSnapshot = await getDocs(byIdQuery);
+    if (!byIdSnapshot.empty) {
+        console.log(`Found ${byIdSnapshot.size} questions by chapterId field for ${chapterId}`);
+        return byIdSnapshot.docs.map(d => d.id);
+    }
+
+    // 2. Look up the chapter document to get its real name
+    try {
+        const chapterDoc = await getDoc(doc(db, CHAPTERS_COLLECTION, chapterId));
+        if (chapterDoc.exists()) {
+            const chapterName: string = chapterDoc.data().name;
+            console.log(`Falling back to chapter name lookup: "${chapterName}" for id ${chapterId}`);
+
+            const byNameQuery = query(
+                collection(db, QUESTIONS_COLLECTION),
+                where('subject', '==', subject),
+                where('chapter', '==', chapterName),
+                limit(300)
+            );
+            const byNameSnapshot = await getDocs(byNameQuery);
+            console.log(`Found ${byNameSnapshot.size} questions by chapter name "${chapterName}"`);
+            return byNameSnapshot.docs.map(d => d.id);
+        }
+    } catch (err) {
+        console.warn('Could not fetch chapter document for', chapterId, err);
+    }
+
+    // 3. Last resort: treat chapterId as a direct chapter name (fully legacy)
+    const legacyQuery = query(
+        collection(db, QUESTIONS_COLLECTION),
+        where('subject', '==', subject),
+        where('chapter', '==', chapterId),
+        limit(300)
+    );
+    const legacySnapshot = await getDocs(legacyQuery);
+    return legacySnapshot.docs.map(d => d.id);
 };
 
 // Apply MCQ/Numerical filter

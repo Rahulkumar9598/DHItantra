@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Save, FileText, Video, Link as LinkIcon, UploadCloud } from 'lucide-react';
 import { db } from '../../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from '../../contexts/AuthContext';
 
 const AdminAddResourcePage = () => {
     const navigate = useNavigate();
+    const { currentUser } = useAuth() || {};
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // In a real app, you would handle file upload to Firebase Storage here.
@@ -38,13 +40,14 @@ const AdminAddResourcePage = () => {
             await addDoc(collection(db, 'resources'), {
                 ...formData,
                 price: formData.isFree ? 0 : Number(formData.price),
+                createdBy: currentUser?.uid || 'admin',
                 createdAt: serverTimestamp()
             });
             alert('Resource Added Successfully!');
             navigate('/admin-dashboard/resources');
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error adding resource:", error);
-            alert("Failed to add resource");
+            alert("Failed to add resource: " + (error.message || 'Unknown error'));
         } finally {
             setIsSubmitting(false);
         }
@@ -99,7 +102,7 @@ const AdminAddResourcePage = () => {
 
                     <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <label className="block text-sm font-bold text-slate-700 mb-3">Resource Type</label>
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             {[
                                 { id: 'pdf', label: 'PDF / Notes', icon: FileText, color: 'blue' },
                                 { id: 'video', label: 'Video', icon: Video, color: 'red' },

@@ -12,6 +12,7 @@ import TestDevDept from '../components/landing/TestDevDept';
 import SocialProof from '../components/landing/SocialProof';
 import LeaderboardSection from '../components/landing/LeaderboardSection';
 import Footer from '../components/landing/Footer';
+import TestSeriesCard from '../components/landing/TestSeriesCard';
 import { motion } from 'framer-motion';
 
 const LandingPage = () => {
@@ -206,76 +207,18 @@ const LandingPage = () => {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: index * 0.1 }}
-                                    className="group relative flex flex-col bg-white/70 backdrop-blur-lg border border-white/40 rounded-[40px] shadow-xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-500 overflow-hidden"
+                                    className="h-full"
                                 >
-                                    {/* Top Accent Line */}
-                                    <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                                    {/* Badge Header */}
-                                    <div className="flex justify-between items-center px-8 pt-8">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">
-                                                {series.status === 'published' ? 'Active Now' : 'Upcoming'}
-                                            </span>
-                                        </div>
-
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 bg-slate-100/50 backdrop-blur-sm px-4 py-1.5 rounded-full border border-slate-200/50">
-                                            {series.examCategory || 'Academic'}
-                                        </span>
-                                    </div>
-
-                                    {/* Content Area */}
-                                    <div className="px-8 mt-8 flex-grow">
-                                        <h4 className="text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2">
-                                            {series.name}
-                                        </h4>
-                                        <p className="mt-4 text-sm text-slate-500 font-medium line-clamp-3 leading-relaxed">
-                                            {series.description || "Master your subjects with our comprehensive mock tests and detailed performance analytics."}
-                                        </p>
-                                    </div>
-
-                                    {/* Features / Stats Placeholder */}
-                                    <div className="px-8 mt-6 flex items-center gap-4">
-                                        <div className="flex -space-x-2">
-                                            {[1, 2, 3].map(i => (
-                                                <div key={i} className="w-7 h-7 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-400">
-                                                    {String.fromCharCode(64 + i)}
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            8.5k+ Students enrolled
-                                        </span>
-                                    </div>
-
-                                    {/* Pricing & CTA */}
-                                    <div className="p-8 mt-auto">
-                                        <div className="flex items-center justify-between mb-6">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Investment</span>
-                                                {series.pricing.type === "paid" ? (
-                                                    <div className="flex items-baseline gap-2">
-                                                        <span className="text-3xl font-black text-slate-900">&#8377;{series.pricing.amount}</span>
-                                                        <span className="text-sm text-slate-400 line-through font-bold">&#8377;{(series.pricing.amount || 0) * 1.5}</span>
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-3xl font-black text-emerald-500">Free</span>
-                                                )}
-                                            </div>
-                                            <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-sm">
-                                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                                            </div>
-                                        </div>
-
-                                        <button
-                                            onClick={() => handleBuy(series.id)}
-                                            className="w-full h-14 rounded-2xl bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-slate-900/10 hover:bg-blue-600 hover:shadow-blue-500/20 transition-all duration-300 flex items-center justify-center gap-2 group/btn"
-                                        >
-                                            Explore Test Series
-                                            <span className="group-hover:translate-x-1 transition-transform">→</span>
-                                        </button>
-                                    </div>
+                                    <TestSeriesCard
+                                        title={series.name}
+                                        description={series.description}
+                                        examCategory={series.examCategory}
+                                        price={series.pricing.type === 'paid' ? (series.pricing.amount ?? 0) : 'Free'}
+                                        originalPrice={series.pricing.type === 'paid' ? (series.pricing.amount ?? 0) * 1.5 : 0}
+                                        testCount={series.testIds?.length || 0}
+                                        onExplore={() => handleBuy(series.id)}
+                                        isNew={index === 0} // Just for visual flair on the first one
+                                    />
                                 </motion.div>
                             ))}
                         </div>
