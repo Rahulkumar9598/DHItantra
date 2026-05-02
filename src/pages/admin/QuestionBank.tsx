@@ -61,14 +61,7 @@ const AdminQuestionBank = () => {
     const [isUploading, setIsUploading] = useState(false);
     const subjects = useSubjectList();
 
-    const [imageFiles, setImageFiles] = useState<File[]>([]);
-    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-    useEffect(() => {
-        return () => {
-            imagePreviews.forEach(url => URL.revokeObjectURL(url));
-        };
-    }, [imagePreviews]);
 
     const [formData, setFormData] = useState({
         text: '',
@@ -85,7 +78,7 @@ const AdminQuestionBank = () => {
         marks: 4,
         negativeMarks: -1,
         explanation: '',
-        imageUrls: [] as string[]
+
     });
 
     // Get chapters for selected subject from chapters collection
@@ -134,17 +127,7 @@ const AdminQuestionBank = () => {
             .replace(/[^\w.-]/g, '');
     };
 
-    const uploadQuestionImages = async (files: File[]) => {
-        const urls: string[] = [];
-        for (const file of files) {
-            const safeName = sanitizeFileName(file.name);
-            const imageRef = ref(storage, `question-images/${Date.now()}_${safeName}`);
-            const snapshot = await uploadBytes(imageRef, file);
-            const downloadUrl = await getDownloadURL(snapshot.ref);
-            urls.push(downloadUrl);
-        }
-        return urls;
-    };
+
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -175,7 +158,6 @@ const AdminQuestionBank = () => {
                 marks: formData.marks,
                 negativeMarks: formData.type === 'MCQ' ? formData.negativeMarks : 0,
                 explanation: formData.explanation || '',
-                imageUrls: [...formData.imageUrls, ...uploadUrls],
                 createdAt: serverTimestamp()
             };
 
@@ -192,8 +174,6 @@ const AdminQuestionBank = () => {
             await addDoc(collection(db, 'questions'), questionData);
 
             setIsCreating(false);
-            setImageFiles([]);
-            setImagePreviews([]);
             setFormData({
                 text: '',
                 textHindi: '',
@@ -208,8 +188,7 @@ const AdminQuestionBank = () => {
                 difficulty: 'Medium',
                 marks: 4,
                 negativeMarks: -1,
-                explanation: '',
-                imageUrls: []
+                explanation: ''
             });
         } catch (error) {
             console.error("Error creating question:", error);
@@ -245,12 +224,7 @@ const AdminQuestionBank = () => {
         setFormData({ ...formData, optionsHindi: newOptionsHindi });
     };
 
-    const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files ? Array.from(event.target.files) : [];
-        setImageFiles(files);
-        const previews = files.map(file => URL.createObjectURL(file));
-        setImagePreviews(previews);
-    };
+
 
     const handleEdit = (question: Question) => {
         setEditingQuestion(question);
@@ -269,10 +243,7 @@ const AdminQuestionBank = () => {
             marks: question.marks || 4,
             negativeMarks: question.negativeMarks || -1,
             explanation: question.explanation || '',
-            imageUrls: question.imageUrls || []
         });
-        setImageFiles([]);
-        setImagePreviews([]);
         setIsEditing(true);
     };
 
@@ -284,16 +255,7 @@ const AdminQuestionBank = () => {
         try {
             await delay(1000); // Artificial delay
 
-            let uploadUrls: string[] = [];
-            if (imageFiles.length > 0) {
-                try {
-                    uploadUrls = await uploadQuestionImages(imageFiles);
-                } catch (imageError) {
-                    console.error('Image upload failed:', imageError);
-                    alert('Image upload failed. Question will still be updated without new images. Please check Firebase Storage CORS and bucket configuration.');
-                    uploadUrls = [];
-                }
-            }
+
 
             const questionData: any = {
                 text: formData.text,
@@ -306,8 +268,7 @@ const AdminQuestionBank = () => {
                 difficulty: formData.difficulty,
                 marks: formData.marks,
                 negativeMarks: formData.type === 'MCQ' ? formData.negativeMarks : 0,
-                explanation: formData.explanation || '',
-                imageUrls: [...(formData.imageUrls || []), ...uploadUrls]
+                explanation: formData.explanation || ''
             };
 
             if (formData.type === 'MCQ') {
@@ -324,8 +285,6 @@ const AdminQuestionBank = () => {
 
             setIsEditing(false);
             setEditingQuestion(null);
-            setImageFiles([]);
-            setImagePreviews([]);
             setFormData({
                 text: '',
                 textHindi: '',
@@ -340,8 +299,7 @@ const AdminQuestionBank = () => {
                 difficulty: 'Medium',
                 marks: 4,
                 negativeMarks: -1,
-                explanation: '',
-                imageUrls: []
+                explanation: ''
             });
         } catch (error) {
             console.error("Error updating question:", error);
@@ -928,31 +886,7 @@ const AdminQuestionBank = () => {
                                     </div>
                                 )}
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Upload Question Images</label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={handleImageSelect}
-                                        className="w-full text-sm text-slate-500"
-                                    />
-                                    <p className="text-xs text-slate-500 mt-1">Add supporting images for the question. JPG/PNG files only.</p>
-                                    {(imagePreviews.length > 0 || formData.imageUrls.length > 0) && (
-                                        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                            {formData.imageUrls.map((url, idx) => (
-                                                <a key={`existing-image-${idx}`} href={url} target="_blank" rel="noreferrer" className="block rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                                                    <img src={url} alt={`existing image ${idx + 1}`} className="h-24 w-full object-cover" />
-                                                </a>
-                                            ))}
-                                            {imagePreviews.map((preview, idx) => (
-                                                <div key={`preview-${idx}`} className="block rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                                                    <img src={preview} alt={`preview ${idx + 1}`} className="h-24 w-full object-cover" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+
 
                                 {/* Correct Answer (for Numerical) */}
                                 {formData.type === 'Numerical' && (
@@ -1255,31 +1189,7 @@ const AdminQuestionBank = () => {
                                     </div>
                                 )}
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Upload Question Images</label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={handleImageSelect}
-                                        className="w-full text-sm text-slate-500"
-                                    />
-                                    <p className="text-xs text-slate-500 mt-1">Add supporting images for the question. JPG/PNG files only.</p>
-                                    {(imagePreviews.length > 0 || formData.imageUrls.length > 0) && (
-                                        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                            {formData.imageUrls.map((url, idx) => (
-                                                <a key={`existing-image-${idx}`} href={url} target="_blank" rel="noreferrer" className="block rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                                                    <img src={url} alt={`existing image ${idx + 1}`} className="h-24 w-full object-cover" />
-                                                </a>
-                                            ))}
-                                            {imagePreviews.map((preview, idx) => (
-                                                <div key={`preview-${idx}`} className="block rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                                                    <img src={preview} alt={`preview ${idx + 1}`} className="h-24 w-full object-cover" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+
 
                                 {/* Correct Answer (for Numerical) */}
                                 {formData.type === 'Numerical' && (

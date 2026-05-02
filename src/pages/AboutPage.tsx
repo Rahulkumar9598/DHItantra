@@ -1,5 +1,5 @@
 import PageLayout from '../components/landing/PageLayout';
-import logo from '../assets/logo.png';
+const logo = "/logo.png";
 
 const AboutPage = () => {
     return (
@@ -7,7 +7,7 @@ const AboutPage = () => {
             <div className="bg-white py-16">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <img src={logo} alt="DHItantra Logo" className="w-20 h-20 mx-auto rounded-xl mb-6 shadow-lg" />
+                        <img src={logo} alt="DHItantra Logo" className="w-20 h-20 mx-auto rounded-full mb-6 shadow-lg" />
                         <h1 className="text-4xl font-extrabold text-gray-900 mb-6">About DHItantra</h1>
                         <p className="text-xl text-gray-600 leading-relaxed">
                             We are on a mission to democratize quality education and exam preparation through technology.

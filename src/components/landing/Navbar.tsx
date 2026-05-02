@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import logo from '../../assets/logo.png';
+const logo = "/logo.png";
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -38,7 +38,7 @@ const Navbar = () => {
                 <div className="flex justify-between items-center relative">
                     {/* Logo (Left) */}
                     <div className="flex items-center gap-3 cursor-pointer z-10" onClick={() => navigate('/')}>
-                        <img src={logo} alt="DHItantra Logo" className="h-10 w-auto rounded-lg" />
+                        <img src={logo} alt="DHItantra Logo" className="h-10 w-auto rounded-full" />
                         <span className="text-2xl font-bold text-[#0B4F97] tracking-tight font-display">
                             DHItantra
                         </span>

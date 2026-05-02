@@ -4,7 +4,7 @@ import { auth } from '../firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronRight, AlertCircle, Loader2, Mail, Lock, Smartphone, Globe } from 'lucide-react';
-import logo from '../assets/logo.png';
+const logo = "/logo.png";
 import chartGraphic from '../assets/chart_graphic.png';
 
 const LoginPage = () => {
@@ -98,8 +98,8 @@ const LoginPage = () => {
                     <div className="max-w-md mx-auto w-full">
                         <div className="text-center mb-10">
                             <Link to="/" className="inline-flex items-center gap-2 mb-6 group">
-                                <span className="p-2 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors">
-                                    <img src={logo} alt="DHItantra" className="h-8 w-8 rounded-lg" />
+                                <span className="p-2 bg-blue-50 rounded-full group-hover:bg-blue-100 transition-colors">
+                                    <img src={logo} alt="DHItantra" className="h-8 w-8 rounded-full" />
                                 </span>
                                 <span className="text-2xl font-extrabold text-slate-900 tracking-tight">
                                     DHItantra

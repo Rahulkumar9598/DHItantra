@@ -5,7 +5,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronRight, AlertCircle, Loader2, User, Mail, Lock, MapPin, Star, CheckCircle } from 'lucide-react';
-import logo from '../assets/logo.png';
+const logo = "/logo.png";
 import studentBanner from '../assets/student_banner.png';
 
 const STATES = [
@@ -143,8 +143,8 @@ const SignupPage = () => {
                     <div className="max-w-md mx-auto">
                         <div className="text-center mb-8">
                             <Link to="/" className="inline-flex items-center gap-2 mb-6 group">
-                                <span className="p-2 bg-blue-50 rounded-xl group-hover:bg-blue-100 transition-colors">
-                                    <img src={logo} alt="DHItantra" className="h-8 w-8 rounded-lg" />
+                                <span className="p-2 bg-blue-50 rounded-full group-hover:bg-blue-100 transition-colors">
+                                    <img src={logo} alt="DHItantra" className="h-8 w-8 rounded-full" />
                                 </span>
                                 <span className="text-2xl font-extrabold text-slate-900 tracking-tight">
                                     DHItantra

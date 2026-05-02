@@ -1,4 +1,4 @@
-import logo from '../../assets/logo.png';
+const logo = "/logo.png";
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -9,7 +9,7 @@ const Footer = () => {
                     {/* Brand Section - Spans 4 columns */}
                     <div className="lg:col-span-4 space-y-6">
                         <Link to="/" className="flex items-center gap-3">
-                            <img src={logo} alt="DHItantra Logo" className="w-10 h-10 rounded-lg" />
+                            <img src={logo} alt="DHItantra Logo" className="w-10 h-10 rounded-full" />
                             <span className="text-2xl font-bold text-white tracking-tight">DHItantra</span>
                         </Link>
                         <div className="space-y-4">

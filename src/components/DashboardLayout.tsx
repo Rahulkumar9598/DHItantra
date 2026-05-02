@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../firebase';
-import logo from '../assets/logo.png';
+const logo = "/logo.png";
 
 interface DashboardLayoutProps {
     children: ReactNode;
@@ -94,8 +94,8 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
                 {/* Logo Area */}
                 <div className="px-6 py-8 flex items-center gap-3">
                     <div className="relative group">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-amber-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
-                        <img src={logo} alt="Logo" className={`relative w-10 h-10 rounded-xl shadow-lg p-1 ${isDarkTheme ? 'bg-[#0B0F19]' : 'bg-white'}`} />
+                        <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-amber-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+                        <img src={logo} alt="Logo" className={`relative w-10 h-10 rounded-full shadow-lg p-0.5 ${isDarkTheme ? 'bg-[#0B0F19]' : 'bg-white'}`} />
                     </div>
                     <div>
                         <h2 className={`text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r ${isDarkTheme ? 'from-white to-slate-400' : 'from-slate-800 to-slate-600'} tracking-tight`}>
