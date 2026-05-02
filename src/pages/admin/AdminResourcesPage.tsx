@@ -64,7 +64,7 @@ const AdminResourcesPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
         >
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800">Study Resources</h1>
                     <p className="text-slate-500 mt-1">Manage study materials, notes, and videos.</p>
@@ -92,6 +92,7 @@ const AdminResourcesPage = () => {
                 </div>
 
                 <div className="overflow-x-auto">
+                    <div className="min-w-[580px]">
                     <table className="w-full text-left">
                         <thead className="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
@@ -149,6 +150,7 @@ const AdminResourcesPage = () => {
                             )}
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </motion.div>

@@ -124,7 +124,7 @@ const LandingPage = () => {
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="bg-white/60 backdrop-blur-xl rounded-[40px] border border-white/50 shadow-2xl p-8 md:p-10"
+                            className="bg-white/60 backdrop-blur-xl rounded-[40px] border border-slate-100 shadow-sm p-8 md:p-10"
                         >
                             <div className="flex flex-col lg:flex-row items-center gap-10">
                                 <div className="w-full lg:w-1/3">

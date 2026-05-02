@@ -103,6 +103,7 @@ const AdminPYQsPage = () => {
                 </div>
 
                 <div className="overflow-x-auto">
+                    <div className="min-w-[700px]">
                     <table className="w-full text-left">
                         <thead className="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
@@ -163,6 +164,7 @@ const AdminPYQsPage = () => {
                             )}
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
 

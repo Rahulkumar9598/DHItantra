@@ -230,6 +230,7 @@ const AdminStudentsPage = () => {
                 </div>
 
                 <div className="overflow-x-auto">
+                    <div className="min-w-[620px]">
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
@@ -339,6 +340,7 @@ const AdminStudentsPage = () => {
                             )}
                         </tbody>
                     </table>
+                    </div>
                 </div>
 
                 {/* Simple Pagination - Just load more for v1 */}

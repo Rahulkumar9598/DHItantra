@@ -253,6 +253,7 @@ const StudentTestResultsPage = () => {
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
+                        <div className="min-w-[680px]">
                         <table className="w-full">
                             <thead className="bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider">
                                 <tr>
@@ -310,6 +311,7 @@ const StudentTestResultsPage = () => {
                                 })}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 )}
             </div>

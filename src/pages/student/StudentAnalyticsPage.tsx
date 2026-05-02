@@ -314,6 +314,7 @@ const StudentAnalyticsPage = () => {
                         </button>
                     </div>
                     <div className="overflow-x-auto">
+                        <div className="min-w-[640px]">
                         <table className="w-full text-left">
                             <thead className="bg-slate-50/50 text-slate-500 text-[10px] font-black uppercase tracking-widest">
                                 <tr>
@@ -382,6 +383,7 @@ const StudentAnalyticsPage = () => {
                                 )}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </motion.div>
             </div>

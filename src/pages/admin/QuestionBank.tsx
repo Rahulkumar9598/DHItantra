@@ -595,6 +595,7 @@ const AdminQuestionBank = () => {
             {/* Questions Table */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
+                    <div className="min-w-[800px]">
                     <table className="w-full text-left">
                         <thead className="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
@@ -660,6 +661,7 @@ const AdminQuestionBank = () => {
                             )}
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
 

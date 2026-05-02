@@ -100,6 +100,7 @@ const AdminTestsPage = () => {
                 </div>
 
                 <div className="overflow-x-auto">
+                    <div className="min-w-[640px]">
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
@@ -172,6 +173,7 @@ const AdminTestsPage = () => {
                             )}
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
 
