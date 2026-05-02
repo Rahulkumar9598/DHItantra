@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, Trash2, X, Save, Loader2, Download, BarChart3, Edit2, Upload, AlertTriangle } from 'lucide-react';
-import { db, storage } from '../../firebase';
+import { db } from '../../firebase';
 import { useSubjectList } from '../../hooks/useSubjectList';
 import { collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, serverTimestamp, writeBatch } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 import { parseQuestionsCSV, validateQuestion, batchUploadQuestions, downloadTemplate } from '../../utils/csvImporter';
 import { JEE_MAINS_2024_WEIGHTAGE } from '../../data/jeeMainsWeightage2024';
 import type { QuestionCSVRow, ValidationResult } from '../../utils/csvImporter';
@@ -120,12 +120,7 @@ const AdminQuestionBank = () => {
         };
     }, []);
 
-    const sanitizeFileName = (name: string) => {
-        return name
-            .trim()
-            .replace(/\s+/g, '_')
-            .replace(/[^\w.-]/g, '');
-    };
+
 
 
 
@@ -135,16 +130,7 @@ const AdminQuestionBank = () => {
         try {
             await delay(1000); // Artificial delay
 
-            let uploadUrls: string[] = [];
-            if (imageFiles.length > 0) {
-                try {
-                    uploadUrls = await uploadQuestionImages(imageFiles);
-                } catch (imageError) {
-                    console.error('Image upload failed:', imageError);
-                    alert('Image upload failed. Question will still be created without images. Please check Firebase Storage CORS and bucket configuration.');
-                    uploadUrls = [];
-                }
-            }
+
 
             const questionData: any = {
                 text: formData.text,
