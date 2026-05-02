@@ -59,13 +59,13 @@ const StudentDashboard = () => {
         // 2. Setup live listener for purchases/active tests
         const purchasesRef = collection(db, 'users', currentUser.uid, 'purchases');
         const q = query(purchasesRef);
-        
+
         const unsubscribe = fsOnSnapshot(q, (snapshot) => {
             const activeData = snapshot.docs.map(doc => {
                 const data = doc.data();
                 const title = data.seriesTitle || data.testTitle || data.title || 'Untitled';
                 const category = data.category || 'Test Series';
-                
+
                 // Intelligent type detection for older data
                 let type = data.type;
                 if (!type) {
@@ -192,22 +192,22 @@ const StudentDashboard = () => {
                     </button>
                 </div>
 
-                {activeTests.filter(t => 
-                    t.category?.toLowerCase().includes('pyq') || 
-                    t.type === 'pyq' || 
+                {activeTests.filter(t =>
+                    t.category?.toLowerCase().includes('pyq') ||
+                    t.type === 'pyq' ||
                     t.title?.toLowerCase().includes('pyq') ||
                     (t as any).id?.toLowerCase().includes('pyq')
                 ).length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {activeTests.filter(t => 
-                            t.category?.toLowerCase().includes('pyq') || 
-                            t.type === 'pyq' || 
+                        {activeTests.filter(t =>
+                            t.category?.toLowerCase().includes('pyq') ||
+                            t.type === 'pyq' ||
                             t.title?.toLowerCase().includes('pyq') ||
                             (t as any).id?.toLowerCase().includes('pyq')
                         ).map((pyq) => (
                             <div
                                 key={pyq.id}
-                                onClick={() => navigate('/dashboard/pyqs')}
+                                onClick={() => navigate(`/pyqs/${pyq.testId}`)}
                                 className="bg-white p-5 rounded-2xl border border-slate-200 hover:shadow-md transition-all cursor-pointer flex items-center justify-between group"
                             >
                                 <div className="flex items-center gap-4">
@@ -256,7 +256,7 @@ const StudentDashboard = () => {
                             <motion.div
                                 key={pyq.id}
                                 whileHover={{ y: -4 }}
-                                onClick={() => navigate(`/dashboard/pyq/${pyq.id}`)}
+                                onClick={() => navigate(`/pyqs/${pyq.id}`)}
                                 className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-teal-200 transition-all duration-300 cursor-pointer"
                             >
                                 <div className="h-32 bg-gradient-to-br from-indigo-800 to-indigo-900 relative p-6 flex flex-col justify-between">
@@ -318,7 +318,7 @@ const StudentDashboard = () => {
                             <motion.div
                                 key={series.id}
                                 whileHover={{ y: -4 }}
-                                onClick={() => navigate('/dashboard/market')} 
+                                onClick={() => navigate('/dashboard/market')}
                                 className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-teal-200 transition-all duration-300 cursor-pointer"
                             >
                                 <div className="h-32 bg-gradient-to-br from-slate-800 to-slate-900 relative p-6 flex flex-col justify-between">

@@ -8,7 +8,9 @@ import {
     ShoppingCart,
     Loader2,
     FileText,
-    PenTool
+    PenTool,
+    PlayCircle,
+    Download
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
@@ -25,6 +27,8 @@ interface PYQ {
     type: 'pdf' | 'test';
     price: number;
     description?: string;
+    fileUrl?: string;
+    testId?: string;
 }
 
 const PYQDetailsPage = () => {
@@ -191,12 +195,31 @@ const PYQDetailsPage = () => {
                             </div>
 
                             {isOwned ? (
-                                <button
-                                    onClick={() => navigate('/dashboard/pyqs')}
-                                    className="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg shadow-green-500/20 transition-all flex items-center justify-center gap-2"
-                                >
-                                    Access Now
-                                </button>
+                                pyq.type === 'test' ? (
+                                    <button
+                                        onClick={() => {
+                                            const message = `Are you sure you want to attempt "${pyq.title}"? The timer will start immediately.`;
+                                            if (window.confirm(message)) {
+                                                const path = (pyq as any).isOMR
+                                                    ? `/dashboard/omr-attempt/${id}`
+                                                    : `/dashboard/attempt/${id}`;
+                                                navigate(path);
+                                            }
+                                        }}
+                                        className="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg shadow-teal-500/20 transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <PlayCircle size={20} /> Attempt Now
+                                    </button>
+                                ) : (
+                                    <a
+                                        href={pyq.fileUrl || "#"}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full py-4 flex bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg transition-all items-center justify-center gap-2"
+                                    >
+                                        <Download size={20} /> Download PDF
+                                    </a>
+                                )
                             ) : (
                                 <button
                                     onClick={handleEnroll}
