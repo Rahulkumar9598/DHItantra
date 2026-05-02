@@ -4,7 +4,7 @@ import { PlayCircle, Clock, Award, BarChart2, TrendingUp, ChevronRight, BookOpen
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../firebase';
-import { collection, query, orderBy, limit, onSnapshot as fsOnSnapshot } from 'firebase/firestore';
+import { collection, query, onSnapshot as fsOnSnapshot } from 'firebase/firestore';
 import {
     getStudentStats,
     getRecommendedSeries,

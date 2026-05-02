@@ -129,7 +129,7 @@
 // export default HeroSection;
 // ---------------------------------------------------------------------------------------------
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, CheckCircle, Star } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 type HeroSectionProps = {
