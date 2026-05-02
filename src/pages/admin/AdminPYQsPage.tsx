@@ -25,7 +25,7 @@ const AdminPYQsPage = () => {
 
     useEffect(() => {
         let q = query(collection(db, 'pyqs'), orderBy('createdAt', 'desc'));
-        
+
         const handleSnapshot = (snapshot: any) => {
             const fetchedPyqs = snapshot.docs.map((doc: any) => {
                 const data = doc.data();
@@ -50,7 +50,7 @@ const AdminPYQsPage = () => {
                 setIsLoading(false);
             });
         });
-        
+
         return () => unsubscribe();
     }, []);
 
@@ -104,66 +104,66 @@ const AdminPYQsPage = () => {
 
                 <div className="overflow-x-auto">
                     <div className="min-w-[700px]">
-                    <table className="w-full text-left">
-                        <thead className="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                            <tr>
-                                <th className="px-6 py-4">Title</th>
-                                <th className="px-6 py-4">Category</th>
-                                <th className="px-6 py-4">Year</th>
-                                <th className="px-6 py-4">Type</th>
-                                <th className="px-6 py-4">Source</th>
-                                <th className="px-6 py-4">Price</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {isLoading ? (
-                                <tr><td colSpan={7} className="text-center py-8"><Loader2 className="animate-spin inline" /></td></tr>
-                            ) : filteredPyqs.length === 0 ? (
-                                <tr><td colSpan={7} className="text-center py-8 text-slate-500">No PYQs found.</td></tr>
-                            ) : (
-                                filteredPyqs.map((pyq) => (
-                                    <tr key={pyq.id} className="hover:bg-slate-50/50">
-                                        <td className="px-6 py-4 font-medium text-slate-700 flex items-center gap-2">
-                                            {pyq.type === 'test' ? <PenTool size={16} className="text-purple-500" /> : <FileText size={16} className="text-teal-500" />}
-                                            {pyq.title}
-                                        </td>
-                                        <td className="px-6 py-4">{pyq.category}</td>
-                                        <td className="px-6 py-4">{pyq.year}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded-md text-xs font-bold ${pyq.type === 'test' ? 'bg-purple-100 text-purple-700' : 'bg-teal-100 text-teal-700'}`}>
-                                                {pyq.type === 'test' ? 'Interactive' : 'PDF'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-xs font-mono text-slate-500 truncate max-w-[150px]">
-                                            {pyq.type === 'test' ? `ID: ${pyq.testId}` : 'File Link'}
-                                        </td>
-                                        <td className="px-6 py-4 font-bold text-slate-700">
-                                            {pyq.price === 0 ? <span className="text-green-600">Free</span> : `₹${pyq.price}`}
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <button 
-                                                    onClick={() => navigate(`/pyqs/${pyq.id}`)} 
-                                                    className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
-                                                    title="View Details"
-                                                >
-                                                    <Eye size={18} />
-                                                </button>
-                                                <button 
-                                                    onClick={() => handleDelete(pyq.id)} 
-                                                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Delete"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                        <table className="w-full text-left">
+                            <thead className="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                                <tr>
+                                    <th className="px-6 py-4">Title</th>
+                                    <th className="px-6 py-4">Category</th>
+                                    <th className="px-6 py-4">Year</th>
+                                    <th className="px-6 py-4">Type</th>
+                                    <th className="px-6 py-4">Source</th>
+                                    <th className="px-6 py-4">Price</th>
+                                    <th className="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {isLoading ? (
+                                    <tr><td colSpan={7} className="text-center py-8"><Loader2 className="animate-spin inline" /></td></tr>
+                                ) : filteredPyqs.length === 0 ? (
+                                    <tr><td colSpan={7} className="text-center py-8 text-slate-500">No PYQs found.</td></tr>
+                                ) : (
+                                    filteredPyqs.map((pyq) => (
+                                        <tr key={pyq.id} className="hover:bg-slate-50/50">
+                                            <td className="px-6 py-4 font-medium text-slate-700 flex items-center gap-2">
+                                                {pyq.type === 'test' ? <PenTool size={16} className="text-purple-500" /> : <FileText size={16} className="text-teal-500" />}
+                                                {pyq.title}
+                                            </td>
+                                            <td className="px-6 py-4">{pyq.category}</td>
+                                            <td className="px-6 py-4">{pyq.year}</td>
+                                            <td className="px-6 py-4">
+                                                <span className={`px-2 py-1 rounded-md text-xs font-bold ${pyq.type === 'test' ? 'bg-purple-100 text-purple-700' : 'bg-teal-100 text-teal-700'}`}>
+                                                    {pyq.type === 'test' ? 'Interactive' : 'PDF'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-xs font-mono text-slate-500 truncate max-w-[150px]">
+                                                {pyq.type === 'test' ? `ID: ${pyq.testId}` : 'File Link'}
+                                            </td>
+                                            <td className="px-6 py-4 font-bold text-slate-700">
+                                                {pyq.price === 0 ? <span className="text-green-600">Free</span> : `₹${pyq.price}`}
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <button
+                                                        onClick={() => navigate(`/pyqs/${pyq.id}`)}
+                                                        className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                                                        title="View Details"
+                                                    >
+                                                        <Eye size={18} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(pyq.id)}
+                                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
