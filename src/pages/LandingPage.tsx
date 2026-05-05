@@ -118,6 +118,7 @@ const LandingPage = () => {
                         <div className="w-16 h-1 bg-gradient-to-r from-[#0D9488] to-indigo-600 mx-auto mt-6 rounded-full"></div>
                     </div>
 
+
                     {/* Premium Filter Section */}
                     <div className="relative mb-12 z-10">
                         <motion.div
