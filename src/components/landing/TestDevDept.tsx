@@ -1,13 +1,26 @@
 import { ShieldCheck, TrendingUp, Search, UserCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const TestDevDept = () => {
+    const navigate = useNavigate();
+    const { currentUser } = useAuth() || {};
+
+    const handleProtectedNavigation = (path: string) => {
+        if (currentUser) {
+            navigate(path);
+        } else {
+            navigate('/login');
+        }
+    };
+
     return (
-        <section className="py-24 bg-transparent">
+        <section className="py-10 bg-transparent">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                <div className="text-center mb-20 px-4">
+                <div className="text-center mb-12 px-4">
                     <h2 className="text-3xl md:text-5xl font-extrabold text-[#0F766E] mb-6">Meet the Minds Behind Every Test</h2>
-                    <p className="text-lg text-slate-500 max-w-3xl mx-auto mb-8">
+                    <p className="text-lg text-slate-500 max-w-3xl mx-auto mb-6">
                         Engineered with precision. Reviewed with responsibility. Designed for real exams.
                     </p>
                     <div className="bg-white p-6 rounded-3xl inline-block shadow-sm border border-slate-100">
@@ -18,7 +31,7 @@ const TestDevDept = () => {
                     </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-20">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-12">
                     {[
                         {
                             title: "Subject Expert Team",
@@ -74,10 +87,16 @@ const TestDevDept = () => {
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                        <button className="px-8 py-4 bg-[#0F766E] text-white rounded-xl font-black text-sm lg:text-base hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 w-full sm:w-auto">
+                        <button 
+                            onClick={() => handleProtectedNavigation('/resources')}
+                            className="px-8 py-4 bg-[#0F766E] text-white rounded-xl font-black text-sm lg:text-base hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 w-full sm:w-auto"
+                        >
                             View Sample Test Paper
                         </button>
-                        <button className="px-8 py-4 bg-white text-[#0F766E] border-2 border-slate-200 rounded-xl font-black text-sm lg:text-base hover:bg-slate-50 transition-all w-full sm:w-auto">
+                        <button 
+                            onClick={() => handleProtectedNavigation('/test-series')}
+                            className="px-8 py-4 bg-white text-[#0F766E] border-2 border-slate-200 rounded-xl font-black text-sm lg:text-base hover:bg-slate-50 transition-all w-full sm:w-auto"
+                        >
                             Try a Demo Test (Free)
                         </button>
                     </div>
@@ -89,4 +108,3 @@ const TestDevDept = () => {
 };
 
 export default TestDevDept;
-

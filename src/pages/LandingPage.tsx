@@ -97,12 +97,12 @@ const LandingPage = () => {
             <LeaderboardSection />
 
             {/* 3. Test Series Section (Moved up) */}
-            <section id="test-series" className="relative py-24 scroll-mt-24">
+            <section id="test-series" className="relative py-10 scroll-mt-24">
 
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                     {/* HEADER */}
-                    <div className="text-center mb-16 md:mb-20">
+                    <div className="text-center mb-10 md:mb-12">
                         <span className="inline-block text-xs font-semibold text-[#0D9488] bg-[#0D9488]/10 px-4 py-1.5 rounded-full tracking-wide mb-4">
                             Practice & Preparation
                         </span>
@@ -119,12 +119,12 @@ const LandingPage = () => {
                     </div>
 
                     {/* Premium Filter Section */}
-                    <div className="relative mb-20 z-10">
+                    <div className="relative mb-12 z-10">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="bg-white/60 backdrop-blur-xl rounded-[40px] border border-slate-100 shadow-sm p-8 md:p-10"
+                            className="bg-white/60 backdrop-blur-xl rounded-[40px] border border-slate-100 shadow-sm p-6 md:p-8"
                         >
                             <div className="flex flex-col lg:flex-row items-center gap-10">
                                 <div className="w-full lg:w-1/3">
@@ -229,8 +229,7 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* PYQ Section */}
-            {/* <PYQSection /> */}
+           
 
             {/* AI Analysis and Real Exam Simulation Demo (Moved down) */}
             <AISimulationSection />

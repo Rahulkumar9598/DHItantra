@@ -150,7 +150,7 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
     };
 
     return (
-        <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-transparent">
+        <section className="relative pt-20 pb-12 lg:pt-28 lg:pb-20 overflow-hidden bg-transparent">
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 

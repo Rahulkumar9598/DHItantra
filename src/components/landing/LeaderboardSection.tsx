@@ -44,15 +44,15 @@ export default function LeaderboardSection() {
 
 
   return (
-    <section className="py-24 bg-transparent relative">
+    <section className="py-10 bg-transparent relative">
       {/* Clean, Professional Background */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-16 border-b border-slate-100 pb-12">
+        <div className="flex flex-col md:flex-row items-end justify-between gap-6 mb-10 border-b border-slate-100 pb-8">
           <div className="max-w-2xl text-left">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
+            <h2 className="text-4xl md:text-5xl font-black text-[#0F766E] tracking-tight mb-4">
               Leader<span className="text-[#0D9488]">board</span>
             </h2>
             <p className="text-slate-500 font-medium text-lg">
@@ -77,7 +77,7 @@ export default function LeaderboardSection() {
         </div>
 
         {/* Top 5 - Modern Institutional Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
           {entries.map((student, index) => {
             const isRank1 = index === 0;
             return (
@@ -133,7 +133,7 @@ export default function LeaderboardSection() {
         </div>
 
         {/* Global Stats Footer - Refined for Mobile */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto py-16 border-y border-slate-100 mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto py-12 border-y border-slate-100 mb-10">
           {[
             { label: 'Total Aspirants', value: '12,500+', color: 'text-slate-900' },
             { label: 'Avg. Accuracy', value: '74.2%', color: 'text-slate-900' },
