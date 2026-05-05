@@ -95,7 +95,7 @@ const TestSeriesCard = ({
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 md:gap-4 mb-8">
                     <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 group-hover:bg-white group-hover:border-slate-200 transition-all duration-300">
                         <div className="flex items-center gap-3">
                             <div className={`p-2 rounded-xl ${currentTheme.iconBg} ${currentTheme.text}`}>
@@ -143,26 +143,25 @@ const TestSeriesCard = ({
                     )}
                 </div>
 
-                {/* Pricing Area */}
-                <div className="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between">
-                    <div>
-                        <div className="flex items-center gap-2 mb-1.5">
-                            <Award size={14} className="text-teal-500" />
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Verified Content</span>
+                <div className="mt-auto pt-6 md:pt-8 border-t border-slate-100 flex items-center justify-between">
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-1 md:mb-1.5">
+                            <Award size={12} className="text-teal-500 shrink-0 md:w-3.5 md:h-3.5" />
+                            <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] truncate">Verified Content</span>
                         </div>
-                        <div className="flex items-baseline gap-3">
-                            <span className="text-4xl font-black text-slate-900 tracking-tighter">
+                        <div className="flex items-baseline gap-2 md:gap-3">
+                            <span className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter whitespace-nowrap">
                                 {price === 'Free' || price === '0' || !price ? 'FREE' : `₹${price}`}
                             </span>
                             {price && price !== 'Free' && price !== '0' && (
-                                <span className="text-slate-300 line-through text-sm font-bold">₹{originalPrice}</span>
+                                <span className="text-slate-300 line-through text-xs md:text-sm font-bold">₹{originalPrice}</span>
                             )}
                         </div>
                     </div>
                     
-                    <div className={`w-14 h-14 rounded-3xl ${currentTheme.bg} flex items-center justify-center ${currentTheme.text} group-hover:scale-110 transition-transform duration-500`}>
-                        <Zap size={28} fill="currentColor" className="opacity-20" />
-                        <Zap size={28} className="absolute" />
+                    <div className={`shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl md:rounded-3xl ${currentTheme.bg} flex items-center justify-center ${currentTheme.text} group-hover:scale-110 transition-transform duration-500`}>
+                        <Zap size={24} fill="currentColor" className="opacity-20 md:w-7 md:h-7" />
+                        <Zap size={24} className="absolute md:w-7 md:h-7" />
                     </div>
                 </div>
             </div>

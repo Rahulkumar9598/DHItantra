@@ -14,8 +14,7 @@ import {
     BookMarked,
     FolderTree,
     Award,
-    ListChecks,
-    PenTool
+    ListChecks
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../firebase';
@@ -46,7 +45,6 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         { icon: <BookOpen size={20} />, label: 'My Tests', path: '/dashboard/tests' },
         { icon: <Award size={20} />, label: 'Test Results', path: '/dashboard/results' },
         { icon: <FileText size={20} />, label: 'Buy Series', path: '/dashboard/market' },
-        { icon: <PenTool size={20} />, label: 'PYQs', path: '/dashboard/pyqs' },
         // { icon: <BookOpen size={20} />, label: 'Resources', path: '/dashboard/resources' },
         { icon: <TrendingUp size={20} />, label: 'Analytics', path: '/dashboard/analytics' },
     ];
@@ -57,7 +55,6 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         { icon: <BookMarked size={20} />, label: 'Question Bank', path: '/admin-dashboard/question-bank' },
         { icon: <FolderTree size={20} />, label: 'Chapters', path: '/admin-dashboard/chapters' },
         { icon: <BookOpen size={20} />, label: 'Manage Tests', path: '/admin-dashboard/tests' },
-        { icon: <FileText size={20} />, label: 'Manage PYQs', path: '/admin-dashboard/pyqs' },
         { icon: <Award size={20} />, label: 'Subjects', path: '/admin-dashboard/subjects' },
         { icon: <FolderTree size={20} />, label: 'Classes', path: '/admin-dashboard/classes' },
         { icon: <BookOpen size={20} />, label: 'Resources', path: '/admin-dashboard/resources' },
@@ -77,7 +74,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity"
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
@@ -85,11 +82,11 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
             {/* Sidebar */}
             <aside
                 className={`
-                    fixed md:sticky top-0 h-screen w-72 
+                    fixed lg:sticky top-0 h-screen w-72 
                     ${isDarkTheme ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'}
                     border-r z-50 transition-transform duration-300 ease-in-out
-                    ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-                    flex flex-col shadow-2xl md:shadow-none print:hidden
+                    ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                    flex flex-col shadow-2xl lg:shadow-none print:hidden
                 `}
             >
                 {/* Logo Area */}
@@ -108,7 +105,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
                     </div>
                     <button
                         onClick={() => setIsSidebarOpen(false)}
-                        className={`ml-auto md:hidden p-2 rounded-lg transition-colors ${isDarkTheme ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}
+                        className={`ml-auto lg:hidden p-2 rounded-lg transition-colors ${isDarkTheme ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}
                     >
                         <X size={20} />
                     </button>
@@ -172,31 +169,31 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Header */}
                 <header className={`sticky top-0 z-30 px-6 py-4 flex items-center justify-between border-b ${isDarkTheme ? 'bg-[#0B0F19]/80 border-slate-800 backdrop-blur-md' : 'bg-white border-slate-200'} print:hidden`}>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
                         <button
                             onClick={() => setIsSidebarOpen(true)}
-                            className={`md:hidden p-1 rounded-lg ${isDarkTheme ? 'text-slate-400 hover:text-white bg-slate-800' : 'text-slate-500 hover:text-slate-700 bg-slate-100'}`}
+                            className={`lg:hidden p-2 rounded-lg ${isDarkTheme ? 'text-slate-400 hover:text-white bg-slate-800' : 'text-slate-500 hover:text-slate-700 bg-slate-100'}`}
                         >
-                            <Menu size={24} />
+                            <Menu size={20} />
                         </button>
-                        <div>
-                            <h1 className={`text-xl font-bold hidden sm:block ${isDarkTheme ? 'text-white' : 'text-slate-800'}`}>
+                        <div className="min-w-0">
+                            <h1 className={`text-lg md:text-xl font-bold truncate ${isDarkTheme ? 'text-white' : 'text-slate-800'}`}>
                                 {role === 'admin' ? 'Admin Portal' : 'Student Dashboard'}
                             </h1>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 md:gap-4">
                         <button className={`relative p-2 rounded-full transition-colors ${isDarkTheme ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}>
-                            <Bell size={20} />
-                            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-inherit"></span>
+                            <Bell size={18} className="md:w-5 md:h-5" />
+                            <span className="absolute top-1.5 right-1.5 w-2 h-2 md:w-2.5 md:h-2.5 bg-red-500 rounded-full border-2 border-inherit"></span>
                         </button>
-                        <div className={`flex items-center gap-3 pl-4 border-l ${isDarkTheme ? 'border-slate-800' : 'border-slate-200'}`}>
-                            <div className="text-right hidden sm:block">
+                        <div className={`flex items-center gap-2 md:gap-3 pl-2 md:pl-4 border-l ${isDarkTheme ? 'border-slate-800' : 'border-slate-200'}`}>
+                            <div className="text-right hidden lg:block">
                                 <p className={`text-sm font-semibold leading-none ${isDarkTheme ? 'text-white' : 'text-slate-700'}`}>{currentUser?.displayName || 'User'}</p>
-                                <p className={`text-xs mt-1 ${isDarkTheme ? 'text-slate-500' : 'text-slate-500'}`}>{role === 'admin' ? 'Administrator' : 'Student'}</p>
+                                <p className={`text-[10px] md:text-xs mt-1 ${isDarkTheme ? 'text-slate-500' : 'text-slate-500'}`}>{role === 'admin' ? 'Administrator' : 'Student'}</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-md shadow-teal-500/20 ring-2 ring-white/10">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white text-sm md:text-base font-bold shadow-md shadow-teal-500/20 ring-2 ring-white/10">
                                 {currentUser?.email?.charAt(0).toUpperCase() || 'U'}
                             </div>
                         </div>

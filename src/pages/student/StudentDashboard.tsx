@@ -1,19 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { PlayCircle, Clock, Award, BarChart2, TrendingUp, ChevronRight, BookOpen, Loader2, FileText } from 'lucide-react';
+import { PlayCircle, Clock, Award, BarChart2, TrendingUp, ChevronRight, BookOpen, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { db } from '../../firebase';
-import { collection, query, onSnapshot as fsOnSnapshot } from 'firebase/firestore';
 import {
     getStudentStats,
     getRecommendedSeries,
-    getRecommendedPYQs,
     formatDurationHours,
     type StudentStats,
-    type RecommendedSeries,
-    type RecommendedPYQ,
-    type ActiveTest
+    type RecommendedSeries
 } from '../../services/studentDashboardService';
 
 const StudentDashboard = () => {
@@ -30,8 +25,6 @@ const StudentDashboard = () => {
         timeTrend: '-'
     });
     const [recommendations, setRecommendations] = useState<RecommendedSeries[]>([]);
-    const [recommendedPYQs, setRecommendedPYQs] = useState<RecommendedPYQ[]>([]);
-    const [activeTests, setActiveTests] = useState<ActiveTest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -40,14 +33,12 @@ const StudentDashboard = () => {
         // 1. Fetch static data
         const loadStats = async () => {
             try {
-                const [statsData, recData, pyqData] = await Promise.all([
+                const [statsData, recData] = await Promise.all([
                     getStudentStats(currentUser.uid),
-                    getRecommendedSeries(),
-                    getRecommendedPYQs()
+                    getRecommendedSeries()
                 ]);
                 setStats(statsData);
                 setRecommendations(recData);
-                setRecommendedPYQs(pyqData);
             } catch (error) {
                 console.error("Failed to load stats", error);
             } finally {
@@ -55,41 +46,6 @@ const StudentDashboard = () => {
             }
         };
         loadStats();
-
-        // 2. Setup live listener for purchases/active tests
-        const purchasesRef = collection(db, 'users', currentUser.uid, 'purchases');
-        const q = query(purchasesRef);
-
-        const unsubscribe = fsOnSnapshot(q, (snapshot) => {
-            const activeData = snapshot.docs.map(doc => {
-                const data = doc.data();
-                const title = data.seriesTitle || data.testTitle || data.title || 'Untitled';
-                const category = data.category || 'Test Series';
-
-                // Intelligent type detection for older data
-                let type = data.type;
-                if (!type) {
-                    if (category.toLowerCase().includes('pyq') || title.toLowerCase().includes('pyq')) {
-                        type = 'pyq';
-                    } else {
-                        type = 'testSeries';
-                    }
-                }
-
-                return {
-                    id: doc.id,
-                    testId: data.seriesId || data.testId,
-                    title: title,
-                    category: category,
-                    purchaseDate: data.purchaseDate,
-                    type: type
-                } as ActiveTest;
-            });
-            console.log("Dashboard Active Data Loaded:", activeData);
-            setActiveTests(activeData);
-        });
-
-        return () => unsubscribe();
     }, [currentUser]);
 
     const containerVariants = {
@@ -126,7 +82,7 @@ const StudentDashboard = () => {
             animate="visible"
         >
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {[
                     {
                         label: 'Tests Completed',
@@ -179,127 +135,6 @@ const StudentDashboard = () => {
             </div>
 
 
-
-            {/* My Purchased PYQs Section */}
-            <motion.section variants={itemVariants} className="space-y-4">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-slate-800">My PYQs</h2>
-                    <button
-                        onClick={() => navigate('/dashboard/pyqs')}
-                        className="text-teal-600 hover:text-teal-700 font-semibold text-sm flex items-center gap-1 transition-colors"
-                    >
-                        View All PYQs <ChevronRight size={16} />
-                    </button>
-                </div>
-
-                {activeTests.filter(t =>
-                    t.category?.toLowerCase().includes('pyq') ||
-                    t.type === 'pyq' ||
-                    t.title?.toLowerCase().includes('pyq') ||
-                    (t as any).id?.toLowerCase().includes('pyq')
-                ).length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {activeTests.filter(t =>
-                            t.category?.toLowerCase().includes('pyq') ||
-                            t.type === 'pyq' ||
-                            t.title?.toLowerCase().includes('pyq') ||
-                            (t as any).id?.toLowerCase().includes('pyq')
-                        ).map((pyq) => (
-                            <div
-                                key={pyq.id}
-                                onClick={() => navigate(`/pyqs/${pyq.testId}`)}
-                                className="bg-white p-5 rounded-2xl border border-slate-200 hover:shadow-md transition-all cursor-pointer flex items-center justify-between group"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:bg-indigo-100 transition-colors">
-                                        <FileText size={24} />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-slate-800 group-hover:text-indigo-700 transition-colors">{pyq.title}</h4>
-                                        <p className="text-xs text-slate-500">Unlocked: {pyq.purchaseDate?.toDate().toLocaleDateString()}</p>
-                                    </div>
-                                </div>
-                                <ChevronRight className="text-slate-300 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-8 flex flex-col items-center justify-center text-center">
-                        <FileText size={32} className="text-slate-400 mb-3" />
-                        <h3 className="text-sm font-semibold text-slate-700 mb-1">No PYQs Unlocked</h3>
-                        <p className="text-xs text-slate-500 mb-4">Start practicing with previous year questions.</p>
-                        <button
-                            onClick={() => navigate('/dashboard/pyqs')}
-                            className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition-all"
-                        >
-                            Browse PYQs
-                        </button>
-                    </div>
-                )}
-            </motion.section>
-
-            {/* Recommended PYQs Section */}
-            <motion.section variants={itemVariants} className="space-y-4">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-slate-800">Available Previous Year Papers</h2>
-                    <button
-                        onClick={() => navigate('/dashboard/pyqs')}
-                        className="text-teal-600 hover:text-teal-700 font-semibold text-sm flex items-center gap-1 transition-colors"
-                    >
-                        View All <ChevronRight size={16} />
-                    </button>
-                </div>
-
-                {recommendedPYQs.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {recommendedPYQs.map((pyq) => (
-                            <motion.div
-                                key={pyq.id}
-                                whileHover={{ y: -4 }}
-                                onClick={() => navigate(`/pyqs/${pyq.id}`)}
-                                className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-teal-200 transition-all duration-300 cursor-pointer"
-                            >
-                                <div className="h-32 bg-gradient-to-br from-indigo-800 to-indigo-900 relative p-6 flex flex-col justify-between">
-                                    <div className="absolute top-0 right-0 p-3 opacity-10">
-                                        <FileText size={80} className="text-white" />
-                                    </div>
-                                    <span className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-medium text-white w-fit border border-white/20">
-                                        {pyq.category || 'PYQ'}
-                                    </span>
-                                </div>
-                                <div className="p-5 space-y-4">
-                                    <h3 className="font-bold text-lg text-slate-800 group-hover:text-teal-600 transition-colors line-clamp-1">
-                                        {pyq.title}
-                                    </h3>
-                                    <div className="flex items-center gap-4 text-slate-500 text-sm">
-                                        <div className="flex items-center gap-1.5">
-                                            <Clock size={16} className="text-slate-400" />
-                                            <span>{pyq.year}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <PlayCircle size={16} className="text-slate-400" />
-                                            <span>{pyq.type === 'pdf' ? 'PDF' : 'Interactive Test'}</span>
-                                        </div>
-                                    </div>
-                                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                                        <span className="text-2xl font-bold text-slate-800">
-                                            {pyq.price === 0 ? 'Free' : `₹${pyq.price}`}
-                                        </span>
-                                        <span className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-teal-600 transition-colors shadow-lg shadow-slate-200">
-                                            View Details
-                                        </span>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                        <p className="text-slate-500">No PYQs found at the moment.</p>
-                    </div>
-                )}
-            </motion.section>
-
             {/* Recommended Tests Section */}
             <motion.section variants={itemVariants} className="space-y-4">
                 <div className="flex justify-between items-center">
@@ -313,7 +148,7 @@ const StudentDashboard = () => {
                 </div>
 
                 {recommendations.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 md:gap-6">
                         {recommendations.map((series) => (
                             <motion.div
                                 key={series.id}

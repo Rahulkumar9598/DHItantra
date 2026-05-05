@@ -137,7 +137,6 @@ type HeroSectionProps = {
 };
 
 const features = [
-    'Real Exam-Like OMR Practice',
     'Time-Scheduled Mock Tests',
     'Expert-Curated Question Papers',
 ];
@@ -159,7 +158,7 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.1 }}
-                    className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 leading-[1.1] tracking-tight max-w-4xl mx-auto mb-8"
+                    className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.2] md:leading-[1.1] tracking-tight max-w-4xl mx-auto mb-6 md:mb-8"
                 >
                     Master Your Exams with <br className="hidden sm:block" />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0F766E] to-[#14B8A6]">
@@ -171,7 +170,7 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-lg sm:text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto mb-10"
+                    className="text-base sm:text-lg md:text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto mb-8 md:mb-10 px-2 sm:px-0"
                 >
                     A comprehensive hybrid mock test platform designed to simulate the real exam environment. Practice online, mark on OMR, and get detailed analytics.
                 </motion.p>
@@ -189,9 +188,7 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
                         Start Practicing Now
                         <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                     </button>
-                    <button className="w-full sm:w-auto px-8 py-4 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-lg hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
-                        View Demo Test
-                    </button>
+               
                 </motion.div>
 
                 <motion.div 

@@ -7,7 +7,7 @@ import type { TestSeries } from '../types/test.types';
 import Navbar from '../components/landing/Navbar';
 import HeroSection from '../components/landing/HeroSection';
 import AISimulationSection from '../components/landing/AISimulationSection';
-import PYQSection from '../components/landing/PYQSection';
+// import PYQSection from '../components/landing/PYQSection';
 import TestDevDept from '../components/landing/TestDevDept';
 import SocialProof from '../components/landing/SocialProof';
 import LeaderboardSection from '../components/landing/LeaderboardSection';
@@ -230,7 +230,7 @@ const LandingPage = () => {
             </section>
 
             {/* PYQ Section */}
-            <PYQSection />
+            {/* <PYQSection /> */}
 
             {/* AI Analysis and Real Exam Simulation Demo (Moved down) */}
             <AISimulationSection />
