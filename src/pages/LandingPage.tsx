@@ -158,13 +158,15 @@ const LandingPage = () => {
                                                 >
                                                     Class {c}
                                                 </button>
-                                                
+
                                             ))}
                                             {availableClasses.length === 0 && (
                                                 <div className="text-slate-300 text-sm italic py-2">Loading classes...</div>
                                             )}
                                         </div>
                                     </div>
+
+                                    
 
                                     <div className="w-full md:w-64 space-y-3">
                                         <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Select Subject</label>
