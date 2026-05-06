@@ -42,51 +42,48 @@ const SocialProof = () => {
   ];
 
   return (
-    <section className="py-12 bg-transparent overflow-hidden">
+    <section className="py-8 bg-transparent overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
 
           {/* LEFT SIDE */}
           <div>
-            <div className="text-center lg:text-left mb-10">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-teal-50 rounded-full text-xs font-bold text-[#0D9488] uppercase tracking-widest mb-6">
+            <div className="text-center lg:text-left mb-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-50 rounded-lg text-[10px] font-bold text-[#0D9488] uppercase tracking-widest mb-4">
                 Top Performers
               </div>
 
-              <h2 className="text-4xl md:text-5xl font-extrabold text-[#0F766E] leading-tight mb-6">
+              <h2 className="text-3xl md:text-4xl font-black text-[#0F766E] leading-tight mb-4">
                 Previous Year <br />
                 <span className="text-[#0D9488]">Toppers</span>
               </h2>
 
-              <p className="text-lg text-slate-500 max-w-md mx-auto lg:mx-0">
+              <p className="text-sm text-slate-500 max-w-sm mx-auto lg:mx-0 leading-relaxed">
                 Our subject experts design questions strictly aligned with real exam difficulty.
               </p>
             </div>
 
             {/* TOPPER CARDS */}
-            <div className="grid grid-cols-3 gap-6 mb-10">
+            <div className="grid grid-cols-3 gap-4 mb-8">
               {toppers.map((topper, i) => (
                 <div key={i} className="text-center group">
-
                   <div className="relative">
-
-                    <div className="rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition duration-300">
+                    <div className="rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition duration-300 border border-slate-100">
                       <img
                         src={topper.image}
                         alt={topper.name}
-                        className="w-full h-44 object-cover group-hover:scale-105 transition duration-500"
+                        className="w-full h-32 md:h-40 object-cover group-hover:scale-105 transition duration-500"
                       />
                     </div>
 
                     <div
-                      className={`absolute -bottom-3 left-1/2 -translate-x-1/2 ${topper.color} text-white px-3 py-1 rounded-lg text-xs font-bold shadow-md`}
+                      className={`absolute -bottom-2 left-1/2 -translate-x-1/2 ${topper.color} text-white px-2 py-0.5 rounded text-[8px] font-black shadow-sm`}
                     >
                       {topper.exam} #{topper.rank}
                     </div>
-
                   </div>
 
-                  <h4 className="mt-4 font-semibold text-[#0F766E]">
+                  <h4 className="mt-3 font-bold text-[#0F766E] text-xs">
                     {topper.name}
                   </h4>
                 </div>
@@ -94,16 +91,16 @@ const SocialProof = () => {
             </div>
 
             {/* FEATURES */}
-            <div className="flex gap-8 justify-center lg:justify-start border-t pt-8">
+            <div className="flex gap-6 justify-center lg:justify-start border-t border-slate-100 pt-6">
               {[
                 { label: "Syllabus-Aligned" },
                 { label: "Pattern-Accurate" },
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-2 text-sm font-semibold text-[#0F766E]"
+                  className="flex items-center gap-2 text-[10px] font-bold text-[#0F766E] uppercase tracking-wider"
                 >
-                  <CheckCircle size={16} className="text-green-500" />
+                  <CheckCircle size={14} className="text-green-500" />
                   {item.label}
                 </div>
               ))}
@@ -112,35 +109,33 @@ const SocialProof = () => {
 
           {/* RIGHT SIDE CTA */}
           <div className="text-center lg:text-left">
-
-            <h3 className="text-lg font-bold text-[#0D9488] uppercase tracking-wider mb-3">
+            <h3 className="text-xs font-black text-[#0D9488] uppercase tracking-widest mb-2">
               Don't Leave Your
             </h3>
 
-            <h2 className="text-5xl md:text-6xl font-extrabold text-[#0F766E] leading-tight mb-8">
+            <h2 className="text-4xl md:text-5xl font-black text-[#0F766E] leading-tight mb-6">
               Rank to <br />
               <span className="text-[#0D9488]">Chance</span>
             </h2>
 
-            <div className="flex flex-col sm:flex-row gap-6 items-center lg:items-start mb-10">
-              <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-[#0D9488]">
-                <Clock size={28} />
+            <div className="flex flex-col sm:flex-row gap-4 items-center lg:items-start mb-8">
+              <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-[#0D9488] border border-slate-100">
+                <Clock size={20} />
               </div>
 
-              <p className="text-lg text-slate-500 max-w-md">
+              <p className="text-sm text-slate-500 max-w-sm leading-relaxed">
                 Every minute matters. Start your practice with precision and engineer your success today.
               </p>
             </div>
 
             {/* BUTTONS */}
-            <div className="flex flex-col gap-4 max-w-sm mx-auto lg:mx-0">
-
+            <div className="flex flex-col gap-3 max-w-xs mx-auto lg:mx-0">
               <button
                 onClick={() => navigate("/signup")}
-                className="w-full py-4 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-bold text-lg flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition"
+                className="w-full py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition"
               >
                 Start Practice
-                <ArrowRight className="group-hover:translate-x-1 transition" />
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition" />
               </button>
 
               <button 

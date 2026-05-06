@@ -97,7 +97,7 @@ const LandingPage = () => {
             <LeaderboardSection />
 
             {/* 3. Test Series Section (Moved up) */}
-            <section id="test-series" className="relative py-10 scroll-mt-24">
+            <section id="test-series" className="relative py-6 scroll-mt-24">
 
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 

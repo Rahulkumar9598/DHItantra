@@ -14,10 +14,12 @@ import {
     ListChecks
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import { dashboardService, type DashboardStats } from '../../services/dashboardService';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
+    const { currentUser } = useAuth() || {};
     const [isLoading, setIsLoading] = useState(true);
     const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
     const [chartData, setChartData] = useState<number[]>([]);
@@ -125,9 +127,9 @@ const AdminDashboard = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-                            Welcome Back, <span className="text-teal-600">Admin</span>
+                            Welcome Back, <span className="text-teal-600">{currentUser?.displayName || 'Admin'}</span>
                         </h1>
-                        <p className="text-slate-500 mt-1">Here's what's happening with your platform today.</p>
+                        <p className="text-slate-500 mt-1">Logged in as: <span className="font-bold text-teal-600">{currentUser?.email}</span></p>
                     </div>
                     <div className="px-4 py-2 bg-white rounded-xl border border-slate-200 text-sm font-bold text-slate-600 shadow-sm">
                         {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}

@@ -81,6 +81,15 @@ const StudentDashboard = () => {
             initial="hidden"
             animate="visible"
         >
+            {/* Welcome Section */}
+            <motion.div variants={itemVariants} className="flex flex-col gap-1">
+                <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">
+                    Welcome back, {currentUser?.displayName || 'Student'}!
+                </h1>
+                <p className="text-slate-500 font-medium text-sm">
+                    Logged in as: <span className="text-teal-600 font-bold">{currentUser?.email}</span>
+                </p>
+            </motion.div>
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {[

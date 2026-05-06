@@ -190,8 +190,15 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
                         </button>
                         <div className={`flex items-center gap-2 md:gap-3 pl-2 md:pl-4 border-l ${isDarkTheme ? 'border-slate-800' : 'border-slate-200'}`}>
                             <div className="text-right hidden lg:block">
-                                <p className={`text-sm font-semibold leading-none ${isDarkTheme ? 'text-white' : 'text-slate-700'}`}>{currentUser?.displayName || 'User'}</p>
-                                <p className={`text-[10px] md:text-xs mt-1 ${isDarkTheme ? 'text-slate-500' : 'text-slate-500'}`}>{role === 'admin' ? 'Administrator' : 'Student'}</p>
+                                <p className={`text-sm font-semibold leading-none ${isDarkTheme ? 'text-white' : 'text-slate-700'}`}>{currentUser?.displayName }</p>
+                                <div className="flex flex-col items-end mt-1">
+                                    <p className={`text-[10px] md:text-xs font-medium ${isDarkTheme ? 'text-slate-500' : 'text-slate-500'}`}>
+                                        {role === 'admin' ? 'Administrator' : 'Student'}
+                                    </p>
+                                    <p className={`text-[10px] md:text-xs font-medium ${isDarkTheme ? 'text-slate-400' : 'text-slate-400'}`}>
+                                        {currentUser?.email}
+                                    </p>
+                                </div>
                             </div>
                             <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white text-sm md:text-base font-bold shadow-md shadow-teal-500/20 ring-2 ring-white/10">
                                 {currentUser?.email?.charAt(0).toUpperCase() || 'U'}
