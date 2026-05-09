@@ -8,185 +8,46 @@ const TermsPage = () => {
                     <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Terms and Conditions</h1>
 
                     <div className="prose prose-lg text-gray-600">
-                        <p className="mb-2 font-semibold">Last Updated: 27th Jan 2026</p>
+                        <p className="mb-2 font-semibold">Last Updated: 15th March 2026</p>
                         <p className="mb-6">
-                            Welcome to DHItantra. By accessing, registering, purchasing, or using any service offered by DHItantra (“Platform”, “We”, “Us”, “Our”), you (“User”, “Student”, “Parent”) agree to be legally bound by the following Terms and Conditions.
-                        </p>
-                        <p className="mb-6 font-medium">
-                            If you do not agree with these terms, please do not use our services.
+                            Welcome to Dhitantra ("Platform", "we", "our", "us"). By accessing or using our website and services, you agree to comply with and be bound by these Terms & Conditions.
                         </p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Nature of Services</h2>
-                        <p className="mb-4">DHItantra provides academic and competitive examination preparation services, including but not limited to:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Online & offline mock tests</li>
-                            <li>Online & offline academic and competition exam coaching</li>
-                            <li>AI-based exam analysis and performance reports</li>
-                            <li>Real exam simulation environments</li>
-                            <li>Test series for competitive exams (NEET, JEE, SSC, Boards, etc.)</li>
-                            <li>Study materials, question banks, and assessments</li>
-                            <li>Academic guidance and analytics tools</li>
-                        </ul>
-                        <p className="mb-6">All services are educational in nature and aim to support exam preparation.</p>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Eligibility</h2>
+                        <p className="mb-6">You must be at least 13 years old to use the platform. If you are under 18, you must use the platform under parental or guardian supervision.</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. Eligibility</h2>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Users must be 13 years or older to use the platform.</li>
-                            <li>Users below 18 years must have parent/guardian consent.</li>
-                            <li>Providing false personal or academic information may lead to account termination.</li>
-                        </ul>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. Services Offered</h2>
+                        <p className="mb-6">Dhitantra provides AI-powered test series, quizzes, performance analytics, and educator-driven content for learning and assessment purposes.</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">3. Account Responsibility</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">3. User Responsibilities</h2>
+                        <p className="mb-4">You agree not to:</p>
                         <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Users are responsible for maintaining the confidentiality of their login credentials.</li>
-                            <li>Any activity performed through your account will be considered your responsibility.</li>
-                            <li>DHItantra is not liable for unauthorized access due to user negligence.</li>
-                        </ul>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">4. Payments & Pricing</h2>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>All prices are displayed in Indian Rupees (INR) unless stated otherwise.</li>
-                            <li>Payments must be made in full before accessing paid services.</li>
-                            <li>DHItantra reserves the right to change pricing at any time without prior notice.</li>
-                        </ul>
-
-                        <div className="border-l-4 border-red-500 bg-red-50 p-6 my-8 rounded-r-lg">
-                            <h2 className="text-2xl font-bold text-red-700 mb-4">5. Strict No Refund Policy</h2>
-                            <p className="font-bold text-red-600 mb-4">⚠️ IMPORTANT – PLEASE READ CAREFULLY</p>
-                            <ul className="list-disc pl-5 space-y-2 mb-4 text-red-800 font-medium">
-                                <li>All payments made to DHItantra are NON-REFUNDABLE and NON-TRANSFERABLE.</li>
-                            </ul>
-                            <p className="mb-4 text-gray-800">No refunds will be provided under any circumstances, including but not limited to:</p>
-                            <ul className="list-disc pl-5 space-y-2 mb-6 text-gray-800">
-                                <li>Change of mind</li>
-                                <li>Dissatisfaction with performance or results</li>
-                                <li>Non-usage of purchased services</li>
-                                <li>Technical issues from the user’s side</li>
-                                <li>Exam postponement, cancellation, or syllabus changes</li>
-                                <li>Admission denial or exam failure</li>
-                            </ul>
-                            <p className="font-semibold text-gray-900">Once a service, test series, or subscription is purchased, it cannot be canceled, refunded, or exchanged.</p>
-                        </div>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">6. No Guarantee of Results</h2>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>DHItantra does not guarantee selection, rank, marks, percentile, or exam success.</li>
-                            <li>Performance depends on multiple factors including:
-                                <ul className="list-[circle] pl-5 mt-2 space-y-1">
-                                    <li>Student effort & consistency</li>
-                                    <li>Exam difficulty</li>
-                                    <li>Competition level</li>
-                                </ul>
-                            </li>
-                            <li>AI analysis and predictions are indicative only, not absolute outcomes.</li>
-                        </ul>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">7. Intellectual Property Rights</h2>
-                        <p className="mb-4">All content including:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-4">
-                            <li>Questions, solutions, mock tests</li>
-                            <li>Study materials</li>
-                            <li>AI reports & analytics</li>
-                            <li>Website/app design</li>
-                        </ul>
-                        <p className="mb-6">are the exclusive intellectual property of DHItantra.</p>
-                        <p className="font-bold text-red-600 mb-2">🚫 Users may NOT:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Copy, share, resell, record, distribute, or reproduce content</li>
+                            <li>Use the platform for unlawful purposes</li>
+                            <li>Attempt to manipulate test results or rankings</li>
                             <li>Share login credentials with others</li>
-                        </ul>
-                        <p className="mb-6 font-medium">Violation may result in legal action and permanent account termination.</p>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">8. Fair Usage & Misconduct</h2>
-                        <p className="mb-2">Users must NOT:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-4">
-                            <li>Attempt to hack, manipulate, or misuse the platform</li>
-                            <li>Use unfair means during tests</li>
-                            <li>Share exam questions publicly</li>
-                            <li>Use automated tools or bots</li>
-                        </ul>
-                        <p className="mb-6">DHItantra reserves the right to suspend or terminate accounts without refund if misconduct is detected.</p>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">9. Technical Limitations</h2>
-                        <p className="mb-4">DHItantra is not responsible for issues caused by:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Poor internet connection</li>
-                            <li>Device incompatibility</li>
-                            <li>Power failure</li>
-                            <li>Server downtime due to maintenance or force majeure</li>
-                        </ul>
-                        <p className="mb-6">Temporary service interruptions do not qualify for refunds or compensation.</p>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">10. Modifications to Services</h2>
-                        <p className="mb-4">DHItantra may:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Modify test patterns</li>
-                            <li>Add/remove features</li>
-                            <li>Update AI models</li>
-                        </ul>
-                        <p className="mb-6">without prior notice, to improve educational quality.</p>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">11. Third-Party Links & Tools</h2>
-                        <p className="mb-6">
-                            The platform may contain links or integrations with third-party tools. DHItantra is not responsible for their content, accuracy, or policies.
-                        </p>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">12. Privacy & Data Usage</h2>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>User data is handled as per our Privacy Policy.</li>
-                            <li>Performance data may be used anonymously for:
-                                <ul className="list-[circle] pl-5 mt-2 space-y-1">
-                                    <li>Research</li>
-                                    <li>AI improvement</li>
-                                    <li>Platform analytics</li>
-                                </ul>
-                            </li>
+                            <li>Copy, reproduce, or distribute content without permission</li>
                         </ul>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">13. Limitation of Liability</h2>
-                        <p className="mb-4">To the maximum extent permitted by law, DHItantra shall not be liable for:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Academic losses</li>
-                            <li>Emotional distress</li>
-                            <li>Missed exams</li>
-                            <li>Career outcomes</li>
-                            <li>Indirect or consequential damages</li>
-                        </ul>
-                        <p className="mb-6">Use of services is at the user’s own risk.</p>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">4. Account Usage</h2>
+                        <p className="mb-6">Users are responsible for maintaining the confidentiality of their login credentials. Any activity under your account will be deemed your responsibility.</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">14. Termination of Access</h2>
-                        <p className="mb-4">DHItantra reserves the right to:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Suspend or terminate access</li>
-                            <li>Block accounts</li>
-                            <li>Restrict services</li>
-                        </ul>
-                        <p className="mb-6">without notice if terms are violated. No refunds will be issued after termination.</p>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">5. Subscription & Payments</h2>
+                        <p className="mb-6">Access to certain features requires a paid subscription. Subscription terms, validity, and usage limits will be clearly communicated at the time of purchase.</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">15. Governing Law & Jurisdiction</h2>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>These Terms are governed by the laws of India.</li>
-                            <li>Any disputes shall be subject to the exclusive jurisdiction of courts in India.</li>
-                        </ul>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">6. Intellectual Property</h2>
+                        <p className="mb-6">All content, including tests, questions, designs, and branding, is the intellectual property of Dhitantra and protected under applicable laws.</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">16. Acceptance of Terms</h2>
-                        <p className="mb-4">By registering, purchasing, or using DHItantra services, you confirm that:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>You have read and understood these Terms</li>
-                            <li>You agree to the No Refund Policy</li>
-                            <li>You accept all responsibilities mentioned above</li>
-                        </ul>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">7. Termination</h2>
+                        <p className="mb-6">We reserve the right to suspend or terminate accounts for violations of these terms without prior notice.</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">📌 Contact Information</h2>
-                        <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                            <p className="mb-2">For official communication:</p>
-                            <p className="flex items-center gap-2 mb-2 font-medium text-gray-900">
-                                📧 Email: support@dhitantra.com
-                            </p>
-                            <p className="font-medium text-gray-900">
-                                Platform: DHItantra
-                            </p>
-                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">8. Limitation of Liability</h2>
+                        <p className="mb-6">We are not liable for any direct or indirect damages arising from the use of the platform.</p>
+
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">9. Modifications</h2>
+                        <p className="mb-6">We may update these Terms at any time. Continued use of the platform implies acceptance of updated terms.</p>
+
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">10. Governing Law</h2>
+                        <p className="mb-6">These terms shall be governed by the laws of India.</p>
                     </div>
                 </div>
             </div>

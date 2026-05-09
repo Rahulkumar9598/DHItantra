@@ -8,127 +8,51 @@ const PrivacyPolicyPage = () => {
                     <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Privacy Policy</h1>
 
                     <div className="prose prose-lg text-gray-600">
-                        <p className="mb-2 font-semibold">Effective Date: 27 January 2026</p>
+                        <p className="mb-2 font-semibold">Last Updated: 18th March 2026</p>
                         <p className="mb-6">
-                            DHItantra ("we", "our", "us") is committed to protecting the privacy and personal information of students, parents, and users ("you", "your"). This Privacy Policy explains how we collect, use, store, and protect your information when you use our website, apps, tests, and related services.
-                        </p>
-                        <p className="mb-6">
-                            By using DHItantra, you agree to the practices described in this policy.
+                            Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information.
                         </p>
 
                         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">1. Information We Collect</h2>
-                        <p className="mb-4">We collect only the information that is necessary to provide, improve, and personalize our educational services.</p>
-
-                        <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">a) Personal Information</h3>
                         <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Student name</li>
-                            <li>Email address</li>
-                            <li>Phone number</li>
-                            <li>Address (city/state only, where required)</li>
-                            <li>Exam you are preparing for (e.g., NEET, JEE, board exams)</li>
-                        </ul>
-
-                        <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">b) Academic & Test Information</h3>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Test responses and scores</li>
-                            <li>Performance analytics</li>
-                            <li>Strengths and weaknesses by topic</li>
-                            <li>Progress history and rankings (if applicable)</li>
-                        </ul>
-
-                        <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">c) Technical Information</h3>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Device type and browser</li>
-                            <li>IP address</li>
-                            <li>App/website usage data (for performance and security)</li>
+                            <li>Personal Information: Name, email, phone number</li>
+                            <li>Usage Data: Test attempts, scores, performance metrics</li>
+                            <li>Technical Data: IP address, browser type, device information</li>
                         </ul>
 
                         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. How We Use Your Information</h2>
-                        <p className="mb-4">We use your information only for legitimate educational and platform-related purposes, including:</p>
                         <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Conducting tests and evaluations</li>
-                            <li>Generating performance analysis and reports</li>
-                            <li>Personalizing study recommendations</li>
-                            <li>Improving test quality, difficulty level, and accuracy</li>
-                            <li>Communicating important updates, results, or support messages</li>
-                            <li>Enhancing platform security and preventing misuse</li>
+                            <li>To provide and improve services</li>
+                            <li>To personalize user experience</li>
+                            <li>To analyze performance and usage trends</li>
+                            <li>To enhance AI-driven recommendations</li>
                         </ul>
-                        <div className="bg-teal-50 border-l-4 border-teal-500 p-4 mb-6">
-                            <p className="text-teal-700 font-medium">
-                                ❗ We do NOT sell or rent student data to any third party.
-                            </p>
-                        </div>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">3. Use of Test Performance Data</h2>
-                        <p className="mb-4">Student test performance data is used to:</p>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">3. Data Sharing</h2>
+                        <p className="mb-4">We do not sell your personal data. Data may be shared:</p>
                         <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Improve question quality and exam simulation accuracy</li>
-                            <li>Enhance AI-based analysis and feedback</li>
-                            <li>Conduct internal academic research (data is anonymized where possible)</li>
+                            <li>With service providers (payment gateways, hosting)</li>
+                            <li>When required by law</li>
                         </ul>
-                        <p className="mb-6">Performance data may be analyzed in aggregate form, without identifying individual students.</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">4. Data Sharing & Disclosure</h2>
-                        <p className="mb-4">We may share limited data only in the following cases:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>With trusted service providers (hosting, analytics, messaging) strictly for platform operations</li>
-                            <li>When required by law, court order, or government authority</li>
-                            <li>To protect the rights, safety, and security of DHItantra and its users</li>
-                        </ul>
-                        <p className="mb-6">All partners are bound by confidentiality obligations.</p>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">4. Data Security</h2>
+                        <p className="mb-6">We implement reasonable security practices as per applicable IT laws in India to protect your data.</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">5. Data Security</h2>
-                        <p className="mb-4">We take data protection seriously and use:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Secure servers and encrypted connections</li>
-                            <li>Access controls and internal data protection policies</li>
-                            <li>Regular system monitoring and updates</li>
-                        </ul>
-                        <p className="mb-6">While no system is 100% secure, we follow industry-standard security practices to safeguard your data.</p>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">5. Cookies</h2>
+                        <p className="mb-6">We use cookies to enhance user experience. (Refer to Cookie Policy)</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">6. Children’s Privacy</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">6. User Rights</h2>
+                        <p className="mb-4">You may request:</p>
                         <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>DHItantra is designed for students preparing for competitive and academic exams.</li>
-                            <li>If a user is under 18, we assume parental or guardian consent has been obtained for using our services.</li>
-                            <li>We do not knowingly collect unnecessary personal information from minors.</li>
+                            <li>Access to your data</li>
+                            <li>Correction or deletion of your data</li>
                         </ul>
 
                         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">7. Data Retention</h2>
-                        <p className="mb-4">We retain user data only for as long as:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Your account remains active, or</li>
-                            <li>It is necessary for academic analysis, legal compliance, or service improvement</li>
-                        </ul>
-                        <p className="mb-6">You may request account deletion, subject to legal and academic record requirements.</p>
+                        <p className="mb-6">We retain data only as long as necessary for service and compliance purposes.</p>
 
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">8. Your Rights</h2>
-                        <p className="mb-4">You have the right to:</p>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>Access your personal data</li>
-                            <li>Request correction of incorrect information</li>
-                            <li>Request deletion of your account (where applicable)</li>
-                            <li>Withdraw consent for non-essential communications</li>
-                        </ul>
-                        <p className="mb-6">Requests can be made by contacting us (see Section 10).</p>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">9. Changes to This Privacy Policy</h2>
-                        <ul className="list-disc pl-5 space-y-2 mb-6">
-                            <li>We may update this Privacy Policy from time to time.</li>
-                            <li>Any changes will be posted on this page with an updated effective date.</li>
-                            <li>Continued use of DHItantra after updates means you accept the revised policy.</li>
-                        </ul>
-
-                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">10. Contact Us</h2>
-                        <p className="mb-4">If you have any questions, concerns, or data-related requests, please contact:</p>
-                        <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                            <p className="font-bold text-gray-900 mb-2">DHItantra Support Team</p>
-                            <p className="flex items-center gap-2 mb-2 text-gray-700">
-                                📧 Email: support@dhitantra.com
-                            </p>
-                            <p className="flex items-center gap-2 text-gray-700">
-                                🌐 Website: www.dhitantra.com
-                            </p>
-                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">8. Updates</h2>
+                        <p className="mb-6">We may update this policy from time to time.</p>
                     </div>
                 </div>
             </div>

@@ -66,7 +66,10 @@ const Footer = () => {
                                 <li><Link to="/privacy" className="text-slate-500 hover:text-[#0D9488] transition-colors text-sm font-medium">Privacy Policy</Link></li>
                                 <li><Link to="/terms" className="text-slate-500 hover:text-[#0D9488] transition-colors text-sm font-medium">Terms of Service</Link></li>
                                 <li><Link to="/refund-policy" className="text-slate-500 hover:text-[#0D9488] transition-colors text-sm font-medium">Refund Policy</Link></li>
-                                <li><Link to="/sla" className="text-slate-500 hover:text-[#0D9488] transition-colors text-sm font-medium">SLA</Link></li>
+                                <li><Link to="/user-agreement" className="text-slate-500 hover:text-[#0D9488] transition-colors text-sm font-medium">User Agreement</Link></li>
+                                <li><Link to="/cookie-policy" className="text-slate-500 hover:text-[#0D9488] transition-colors text-sm font-medium">Cookie Policy</Link></li>
+                                <li><Link to="/disclaimer" className="text-slate-500 hover:text-[#0D9488] transition-colors text-sm font-medium">Disclaimer</Link></li>
+                                <li><Link to="/sla" className="text-slate-500 hover:text-[#0D9488] transition-colors text-sm font-medium">GRP</Link></li>
                             </ul>
                         </div>
                     </div>

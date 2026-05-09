@@ -17,8 +17,11 @@ import AboutPage from './pages/AboutPage';
 import NotFound from './pages/NotFound';
 import TermsPage from './pages/TermsPage';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import RefundPolicyPage from './pages/RefundPolicyPage';
-import SLAPage from './pages/SLAPage';
+import RefundCancellationPolicyPage from './pages/RefundCancellationPolicyPage';
+import GRPPage from './pages/GRPPage';
+import UserAgreementPage from './pages/UserAgreementPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
+import DisclaimerPage from './pages/DisclaimerPage';
 
 // Lazy Loaded Pages
 const StudentDashboard = React.lazy(() => import('./pages/student/StudentDashboard'));
@@ -110,8 +113,12 @@ function App() {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy" element={<PrivacyPolicyPage />} />
-              <Route path="/refund-policy" element={<RefundPolicyPage />} />
-              <Route path="/sla" element={<SLAPage />} />
+              <Route path="/refund-policy" element={<RefundCancellationPolicyPage />} />
+              <Route path="/grp" element={<GRPPage />} />
+              <Route path="/sla" element={<Navigate to="/grp" replace />} />
+              <Route path="/user-agreement" element={<UserAgreementPage />} />
+              <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+              <Route path="/disclaimer" element={<DisclaimerPage />} />
 
               <Route element={<ProtectedRoute allowedRoles={['student']} />}>
                 {/* Dashboard Layout Routes */}
