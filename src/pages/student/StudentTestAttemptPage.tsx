@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -314,10 +314,39 @@ const StudentTestAttemptPage = () => {
         }
     };
 
+    const getNextQuestionIndexInSubject = () => {
+        if (!testData) return null;
+        const currentSubject = testData.questions[currentQuestionIndex]?.subject;
+        if (!currentSubject) return null;
+
+        const subjectIndices = testData.questions
+            .map((q, idx) => q.subject === currentSubject ? idx : -1)
+            .filter(idx => idx !== -1);
+
+        const currentPosition = subjectIndices.indexOf(currentQuestionIndex);
+        if (currentPosition !== -1 && currentPosition < subjectIndices.length - 1) {
+            return subjectIndices[currentPosition + 1];
+        }
+        return null;
+    };
+
     const saveAndNext = () => {
         saveProgress();
-        nextQuestion();
+        const nextSubjectIndex = getNextQuestionIndexInSubject();
+        if (nextSubjectIndex !== null) {
+            goToQuestion(nextSubjectIndex);
+        } else {
+            nextQuestion();
+        }
     };
+
+    useEffect(() => {
+        if (!testData) return;
+        const currentSubject = testData.questions[currentQuestionIndex]?.subject;
+        if (currentSubject && currentSubject !== activeSubject) {
+            setActiveSubject(currentSubject);
+        }
+    }, [currentQuestionIndex, testData, activeSubject]);
 
     const handleSubmit = async (autoSubmit = false) => {
         if (!currentUser || !testData) return;
@@ -494,7 +523,7 @@ const StudentTestAttemptPage = () => {
     }
 
     const currentQuestion = testData.questions[currentQuestionIndex];
-    const subjectQuestions = testData.questions.filter(q => q.subject === activeSubject);
+    const subjectQuestions = useMemo(() => testData.questions.filter(q => q.subject === activeSubject), [testData.questions, activeSubject]);
     const sectionBCount = sectionBSelections[activeSubject]?.size || 0;
 
     return (
