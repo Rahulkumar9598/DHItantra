@@ -58,9 +58,11 @@ const LandingPage = () => {
     const normalizeText = (value: unknown) => String(value ?? '').trim().toLowerCase();
     const getCourseClass = (item: TestSeries) => (item as any).courseClass || (item as any).className || '';
     const getSubject = (item: TestSeries) => (item as any).subject || (item as any).subjectName || '';
+    const isJeeSeries = (item: TestSeries) => String(item.examCategory || '').trim().toUpperCase().includes('JEE');
 
     // Dynamic Filter Logic for Test Series
     const filteredSeries = testSeries.filter((item) => {
+        if (isJeeSeries(item)) return false;
         if (!selectedClass && !selectedSubject) return true;
 
         const matchesClass = !selectedClass || getCourseClass(item) === selectedClass;

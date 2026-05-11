@@ -472,13 +472,13 @@ const AdminQuestionBank = () => {
                         onClick={() => downloadTemplate('questions')}
                         className="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors"
                     >
-                        <Download size={18} /> Download CSV Template
+                        <Download size={18} /> Download Template
                     </button>
                     <button
                         onClick={() => setIsImporting(true)}
                         className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors"
                     >
-                        <Upload size={18} /> Import CSV
+                        <Upload size={18} /> Import CSV/XLSX
                     </button>
                     <button
                         onClick={() => setShowStats(!showStats)}
@@ -1232,8 +1232,8 @@ const AdminQuestionBank = () => {
                         >
                             <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
                                 <div>
-                                    <h2 className="text-xl font-bold text-slate-800">Import Questions from CSV</h2>
-                                    <p className="text-sm text-slate-500 mt-1">Upload a CSV file to bulk import questions</p>
+                                    <h2 className="text-xl font-bold text-slate-800">Import Questions from CSV or XLSX</h2>
+                                    <p className="text-sm text-slate-500 mt-1">Upload a CSV or XLSX file to bulk import questions. Subject values map to Physics, Chemistry, or Mathematics categories.</p>
                                 </div>
                                 <button onClick={() => { setIsImporting(false); setParsedRows([]); setValidationResults(new Map()); }}>
                                     <X size={24} className="text-slate-400" />
@@ -1243,10 +1243,10 @@ const AdminQuestionBank = () => {
                             <div className="p-6 space-y-4">
                                 {/* File Upload */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Select CSV File</label>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Select CSV or XLSX File</label>
                                     <input
                                         type="file"
-                                        accept=".csv"
+                                        accept=".csv,.xlsx,.xls"
                                         onChange={handleFileSelect}
                                         className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                                     />

@@ -16,6 +16,7 @@ const TestSeriesPage = () => {
     const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
     const [selectedClass, setSelectedClass] = useState<string>('');
     const [selectedSubject, setSelectedSubject] = useState<string>('');
+    const [selectedExamCategory, setSelectedExamCategory] = useState<string>('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -46,24 +47,28 @@ const TestSeriesPage = () => {
 
     const getCourseClass = (item: TestSeries) => (item as any).courseClass || (item as any).className || '';
     const getSubject = (item: TestSeries) => (item as any).subject || (item as any).subjectName || '';
+    const getExamCategory = (item: TestSeries) => (item as any).examCategory || '';
+    const isJeeSeries = (item: TestSeries) => String(item.examCategory || '').trim().toUpperCase().includes('JEE');
 
     // Filter Logic
     const filteredSeries = series.filter((item) => {
+        if (isJeeSeries(item)) return false;
         // If nothing is selected, we want to include it (so we can slice to 9 later)
-        if (!selectedClass && !selectedSubject) return true;
+        if (!selectedClass && !selectedSubject && !selectedExamCategory) return true;
         
         const matchesClass = !selectedClass || getCourseClass(item) === selectedClass;
         const matchesSubject = !selectedSubject || normalizeText(getSubject(item)) === normalizeText(selectedSubject);
+        const matchesExamCategory = !selectedExamCategory || getExamCategory(item) === selectedExamCategory;
         
-        return matchesClass && matchesSubject;
+        return matchesClass && (selectedClass === 'Class 12' ? matchesExamCategory : matchesSubject);
     });
 
     // Display Logic: Show 9 by default, or all if filtered
-    const displaySeries = (!selectedClass && !selectedSubject) 
+    const displaySeries = (!selectedClass && !selectedSubject && !selectedExamCategory) 
         ? filteredSeries.slice(0, 9) 
         : filteredSeries;
 
-    const isFiltering = !!selectedClass || !!selectedSubject;
+    const isFiltering = !!selectedClass || !!selectedSubject || !!selectedExamCategory;
 
     return (
         <PageLayout>
@@ -98,6 +103,7 @@ const TestSeriesPage = () => {
                                         onClick={() => {
                                             setSelectedClass('');
                                             setSelectedSubject('');
+                                            setSelectedExamCategory('');
                                         }}
                                         className={`
                                             px-8 py-4 rounded-2xl font-black text-sm transition-all duration-300
@@ -114,6 +120,7 @@ const TestSeriesPage = () => {
                                             onClick={() => {
                                                 setSelectedClass(c);
                                                 setSelectedSubject('');
+                                                setSelectedExamCategory('');
                                             }}
                                             className={`
                                                 px-8 py-4 rounded-2xl font-black text-sm transition-all duration-300
@@ -128,39 +135,81 @@ const TestSeriesPage = () => {
                                 </div>
                             </div>
 
-                            {/* Subject Selection */}
+                            {/* Subject/Exam Selection */}
                             <motion.div 
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: selectedClass ? 1 : 0.5, y: 0 }}
                                 className="flex flex-col items-center"
                             >
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Step 2: Choose Your Subject</span>
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">
+                                    Step 2: {selectedClass === 'Class 12' ? 'Choose Your Exam' : 'Choose Your Subject'}
+                                </span>
                                 <div className="flex flex-wrap justify-center gap-3">
-                                    <button
-                                        onClick={() => setSelectedSubject('')}
-                                        className={`
-                                            px-6 py-3 rounded-xl font-bold text-xs transition-all duration-300
-                                            ${selectedClass && !selectedSubject 
-                                                ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20' 
-                                                : 'bg-white text-slate-500 border border-slate-100 hover:border-teal-200 hover:text-teal-500'}
-                                        `}
-                                    >
-                                        All Subjects
-                                    </button>
-                                    {availableSubjects.map((s) => (
-                                        <button
-                                            key={s}
-                                            onClick={() => setSelectedSubject(s)}
-                                            className={`
-                                                px-6 py-3 rounded-xl font-bold text-xs transition-all duration-300
-                                                ${selectedSubject === s 
-                                                    ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20' 
-                                                    : 'bg-white text-slate-500 border border-slate-100 hover:border-teal-200 hover:text-teal-500'}
-                                            `}
-                                        >
-                                            {s}
-                                        </button>
-                                    ))}
+                                    {selectedClass === 'Class 12' ? (
+                                        <>
+                                            <button
+                                                onClick={() => setSelectedExamCategory('')}
+                                                className={`
+                                                    px-6 py-3 rounded-xl font-bold text-xs transition-all duration-300
+                                                    ${selectedClass && !selectedExamCategory 
+                                                        ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20' 
+                                                        : 'bg-white text-slate-500 border border-slate-100 hover:border-teal-200 hover:text-teal-500'}
+                                                `}
+                                            >
+                                                All Exams
+                                            </button>
+                                            <button
+                                                onClick={() => setSelectedExamCategory('JEE')}
+                                                className={`
+                                                    px-6 py-3 rounded-xl font-bold text-xs transition-all duration-300
+                                                    ${selectedExamCategory === 'JEE' 
+                                                        ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20' 
+                                                        : 'bg-white text-slate-500 border border-slate-100 hover:border-teal-200 hover:text-teal-500'}
+                                                `}
+                                            >
+                                                JEE
+                                            </button>
+                                            <button
+                                                onClick={() => setSelectedExamCategory('NEET UG')}
+                                                className={`
+                                                    px-6 py-3 rounded-xl font-bold text-xs transition-all duration-300
+                                                    ${selectedExamCategory === 'NEET UG' 
+                                                        ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20' 
+                                                        : 'bg-white text-slate-500 border border-slate-100 hover:border-teal-200 hover:text-teal-500'}
+                                                `}
+                                            >
+                                                NEET UG
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() => setSelectedSubject('')}
+                                                className={`
+                                                    px-6 py-3 rounded-xl font-bold text-xs transition-all duration-300
+                                                    ${selectedClass && !selectedSubject 
+                                                        ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20' 
+                                                        : 'bg-white text-slate-500 border border-slate-100 hover:border-teal-200 hover:text-teal-500'}
+                                                `}
+                                            >
+                                                All Subjects
+                                            </button>
+                                            {availableSubjects.map((s) => (
+                                                <button
+                                                    key={s}
+                                                    onClick={() => setSelectedSubject(s)}
+                                                    className={`
+                                                        px-6 py-3 rounded-xl font-bold text-xs transition-all duration-300
+                                                        ${selectedSubject === s 
+                                                            ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20' 
+                                                            : 'bg-white text-slate-500 border border-slate-100 hover:border-teal-200 hover:text-teal-500'}
+                                                    `}
+                                                >
+                                                    {s}
+                                                </button>
+                                            ))}
+                                        </>
+                                    )}
                                 </div>
                             </motion.div>
                         </div>

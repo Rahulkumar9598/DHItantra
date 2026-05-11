@@ -46,6 +46,14 @@ const TestSeriesCard = ({
             gradient: 'from-emerald-600 to-teal-600',
             iconBg: 'bg-emerald-100/50'
         },
+        amber: {
+            bg: 'bg-amber-50/70',
+            border: 'border-amber-100',
+            text: 'text-amber-600',
+            glow: 'shadow-amber-500/20',
+            gradient: 'from-amber-500 to-orange-500',
+            iconBg: 'bg-amber-100/50'
+        },
         orange: {
             bg: 'bg-teal-50/50',
             border: 'border-teal-100',
@@ -56,7 +64,26 @@ const TestSeriesCard = ({
         }
     };
 
-    const currentTheme = themeConfig[examCategory === 'NEET' ? 'green' : examCategory === 'JEE' ? 'blue' : 'orange'];
+    const normalizedCategory = String(examCategory || '').trim().toUpperCase();
+    const themeKey = normalizedCategory.includes('NEET')
+        ? 'green'
+        : normalizedCategory.includes('JEE')
+            ? 'blue'
+            : normalizedCategory.includes('SSC')
+                ? 'amber'
+                : 'orange';
+
+    const currentTheme = themeConfig[themeKey];
+
+    const defaultFeatures = normalizedCategory.includes('SSC')
+        ? ['Quantitative Aptitude', 'Reasoning & English', 'General Awareness', 'Speed & Accuracy Drills']
+        : normalizedCategory.includes('JEE')
+            ? ['Full syllabus coverage', 'NTA-style mock tests', 'Chapter-wise practice', 'Rank predictor']
+            : normalizedCategory.includes('NEET')
+                ? ['NCERT-aligned practice', 'Biology-centric tests', 'Detailed video solutions', 'Performance analytics']
+                : ['Detailed Performance Analytics', 'All India Ranking (AIR)', 'Step-by-step Video Solutions'];
+
+    const renderedFeatures = (features.length > 0 ? features : defaultFeatures).slice(0, 3);
 
     return (
         <motion.div 
@@ -122,25 +149,14 @@ const TestSeriesCard = ({
 
                 {/* Features */}
                 <div className="space-y-3.5 mb-8">
-                    {features.length > 0 ? (
-                        features.slice(0, 3).map((feature, i) => (
-                            <div key={i} className="flex items-center gap-3 group/item">
-                                <div className={`shrink-0 w-5 h-5 rounded-lg ${currentTheme.bg} ${currentTheme.text} flex items-center justify-center group-hover/item:scale-110 transition-transform`}>
-                                    <CheckCircle size={14} strokeWidth={3} />
-                                </div>
-                                <span className="text-xs font-bold text-slate-700 tracking-tight">{feature}</span>
+                    {renderedFeatures.map((feature, i) => (
+                        <div key={i} className="flex items-center gap-3 group/item">
+                            <div className={`shrink-0 w-5 h-5 rounded-lg ${currentTheme.bg} ${currentTheme.text} flex items-center justify-center group-hover/item:scale-110 transition-transform`}>
+                                <CheckCircle size={14} strokeWidth={3} />
                             </div>
-                        ))
-                    ) : (
-                        ['Detailed Performance Analytics', 'All India Ranking (AIR)', 'Step-by-step Video Solutions'].map((feature, i) => (
-                            <div key={i} className="flex items-center gap-3 group/item">
-                                <div className={`shrink-0 w-5 h-5 rounded-lg ${currentTheme.bg} ${currentTheme.text} flex items-center justify-center group-hover/item:scale-110 transition-transform`}>
-                                    <CheckCircle size={14} strokeWidth={3} />
-                                </div>
-                                <span className="text-xs font-bold text-slate-700 tracking-tight">{feature}</span>
-                            </div>
-                        ))
-                    )}
+                            <span className="text-xs font-bold text-slate-700 tracking-tight">{feature}</span>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="mt-auto pt-6 md:pt-8 border-t border-slate-100 flex items-center justify-between">

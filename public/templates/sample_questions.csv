@@ -1,0 +1,6 @@
+text,subject,chapter,topic,type,difficulty,marks,negativeMarks,optionA,optionB,optionC,optionD,correctAnswer,explanation
+"What is the SI unit of force?",Physics,Force and Motion,Units,MCQ,Easy,4,-1,"Newton","Joule","Watt","Pascal",0,"Force is measured in Newtons (N) in the SI system."
+"Calculate the acceleration if force is 10N and mass is 2kg.",Physics,Force and Motion,Newton's Laws,Numerical,Medium,4,0,,,,5,"Using F = ma, a = F/m = 10/2 = 5 m/s²"
+"What is the chemical formula for water?",Chemistry,Basic Concepts,Chemical Formulas,MCQ,Easy,4,-1,"H2O","CO2","NaCl","CH4",0,"Water consists of 2 hydrogen atoms and 1 oxygen atom."
+"If sinθ = 0.5, what is the value of θ in degrees?",Mathematics,Trigonometry,Basic Trigonometric Ratios,Numerical,Medium,4,0,,,,30,"sin(30°) = 0.5, so θ = 30°"
+"What is the derivative of x²?",Mathematics,Calculus,Differentiation,MCQ,Medium,4,-1,"x","2x","2","x³",1,"The derivative of x² is 2x."

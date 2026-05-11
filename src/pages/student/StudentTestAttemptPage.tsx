@@ -185,7 +185,7 @@ const StudentTestAttemptPage = () => {
                 Chemistry: new Set(parsed.sectionBSelections?.Chemistry || []),
                 Mathematics: new Set(parsed.sectionBSelections?.Mathematics || []),
             });
-            setCurrentQuestionIndex(Math.min(parsed.currentQuestionIndex ?? 0, testData.questions.length - 1));
+            setCurrentQuestionIndex(Math.max(0, Math.min(parsed.currentQuestionIndex ?? 0, testData.questions.length - 1)));
             setActiveSubject(parsed.activeSubject || 'Physics');
             if (parsed.timeRemaining !== undefined) {
                 setTimeRemaining(parsed.timeRemaining);
@@ -314,6 +314,17 @@ const StudentTestAttemptPage = () => {
         }
     };
 
+    const getFirstQuestionIndexForSubject = (subject: 'Physics' | 'Chemistry' | 'Mathematics') => {
+        if (!testData) return -1;
+
+        const unansweredSubjectIndex = testData.questions.findIndex((q, idx) => q.subject === subject && answers[idx] === undefined);
+        if (unansweredSubjectIndex !== -1) {
+            return unansweredSubjectIndex;
+        }
+
+        return testData.questions.findIndex(q => q.subject === subject);
+    };
+
     const getNextQuestionIndexInSubject = () => {
         if (!testData) return null;
         const currentSubject = testData.questions[currentQuestionIndex]?.subject;
@@ -347,6 +358,11 @@ const StudentTestAttemptPage = () => {
             setActiveSubject(currentSubject);
         }
     }, [currentQuestionIndex, testData, activeSubject]);
+
+    const subjectQuestions = useMemo(
+        () => testData ? testData.questions.filter(q => q.subject === activeSubject) : [],
+        [testData, activeSubject]
+    );
 
     const handleSubmit = async (autoSubmit = false) => {
         if (!currentUser || !testData) return;
@@ -437,7 +453,16 @@ const StudentTestAttemptPage = () => {
         );
     }
 
-    if (!testData) return <div>Test failed to load.</div>;
+    if (!testData || testData.questions.length === 0) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-slate-50">
+                <div className="text-center p-6 bg-white rounded-3xl shadow-lg border border-slate-200">
+                    <h2 className="text-xl font-bold text-slate-900 mb-2">No questions available</h2>
+                    <p className="text-slate-600">This test currently has no questions assigned. Please contact support or try another test.</p>
+                </div>
+            </div>
+        );
+    }
 
     // Instructions Overlay
     if (showInstructions) {
@@ -448,7 +473,7 @@ const StudentTestAttemptPage = () => {
                     animate={{ scale: 1, opacity: 1 }}
                     className="bg-white w-full max-w-3xl rounded-2xl shadow-xl overflow-hidden max-h-[90vh] overflow-y-auto"
                 >
-                    <div className="bg-gradient-to-r from-teal-600 to-indigo-600 p-6 text-white">
+                    <div className="bg-linear-to-r from-teal-600 to-indigo-600 p-6 text-white">
                         <h2 className="text-2xl font-bold">{testData.title}</h2>
                         <p className="text-teal-100 mt-1">Please read the instructions carefully before starting</p>
                     </div>
@@ -523,7 +548,6 @@ const StudentTestAttemptPage = () => {
     }
 
     const currentQuestion = testData.questions[currentQuestionIndex];
-    const subjectQuestions = useMemo(() => testData.questions.filter(q => q.subject === activeSubject), [testData.questions, activeSubject]);
     const sectionBCount = sectionBSelections[activeSubject]?.size || 0;
 
     return (
@@ -575,8 +599,8 @@ const StudentTestAttemptPage = () => {
                             key={subject}
                             onClick={() => {
                                 setActiveSubject(subject);
-                                const firstQuestionOfSubject = testData.questions.findIndex(q => q.subject === subject);
-                                if (firstQuestionOfSubject !== -1) goToQuestion(firstQuestionOfSubject);
+                                const targetQuestionIndex = getFirstQuestionIndexForSubject(subject);
+                                if (targetQuestionIndex !== -1) goToQuestion(targetQuestionIndex);
                             }}
                             className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-colors ${activeSubject === subject
                                 ? 'bg-teal-600 text-white shadow-md'
@@ -604,7 +628,7 @@ const StudentTestAttemptPage = () => {
                             {/* Question Header */}
                             <div className="flex justify-between items-start mb-6">
                                 <div className="flex items-center gap-3">
-                                    <span className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-teal-500 to-indigo-600 text-white font-bold rounded-xl flex items-center justify-center shadow-lg">
+                                    <span className="shrink-0 w-10 h-10 bg-linear-to-br from-teal-500 to-indigo-600 text-white font-bold rounded-xl flex items-center justify-center shadow-lg">
                                         {currentQuestionIndex + 1}
                                     </span>
                                     <div>
@@ -638,7 +662,7 @@ const StudentTestAttemptPage = () => {
                                                 : 'border-slate-200 hover:bg-slate-50 hover:border-slate-300'
                                                 }`}
                                         >
-                                            <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${answers[currentQuestionIndex] === oIdx
+                                            <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${answers[currentQuestionIndex] === oIdx
                                                 ? 'border-teal-600 bg-teal-600'
                                                 : 'border-slate-300 bg-white'
                                                 }`}>

@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
 import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -41,10 +42,33 @@ export interface ParsedData<T> {
     data: T[];
     errors: any[];
 }
+const isExcelFile = (file: File): boolean => /\.(xlsx|xls)$/i.test(file.name);
 
+const parseExcelFile = async <T>(file: File): Promise<ParsedData<T>> => {
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const data = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as T[];
+        return {
+            data,
+            errors: []
+        };
+    } catch (error) {
+        return {
+            data: [],
+            errors: [error]
+        };
+    }
+};
 // ========== CSV PARSERS ==========
 
-export const parseChaptersCSV = (file: File): Promise<ParsedData<ChapterCSVRow>> => {
+export const parseChaptersCSV = async (file: File): Promise<ParsedData<ChapterCSVRow>> => {
+    if (isExcelFile(file)) {
+        return parseExcelFile<ChapterCSVRow>(file);
+    }
+
     return new Promise((resolve, reject) => {
         Papa.parse(file, {
             header: true,
@@ -60,7 +84,11 @@ export const parseChaptersCSV = (file: File): Promise<ParsedData<ChapterCSVRow>>
     });
 };
 
-export const parseQuestionsCSV = (file: File): Promise<ParsedData<QuestionCSVRow>> => {
+export const parseQuestionsCSV = async (file: File): Promise<ParsedData<QuestionCSVRow>> => {
+    if (isExcelFile(file)) {
+        return parseExcelFile<QuestionCSVRow>(file);
+    }
+
     return new Promise((resolve, reject) => {
         Papa.parse(file, {
             header: true,
@@ -307,30 +335,38 @@ export const batchUploadQuestions = async (
                 console.log(`Skipping duplicate question`);
                 skipped++;
             } else {
+                const text = String(rows[i].text ?? '').trim();
+                const subject = String(rows[i].subject ?? '').trim();
+                const chapter = String(rows[i].chapter ?? '').trim();
+                const topic = String(rows[i].topic ?? '').trim();
+                const type = String(rows[i].type ?? '').trim();
+                const difficulty = String(rows[i].difficulty ?? '').trim();
+                const explanation = String(rows[i].explanation ?? '').trim();
+
                 const questionData: any = {
-                    text: rows[i].text.trim(),
-                    subject: rows[i].subject.trim(),
-                    chapter: rows[i].chapter.trim(),
-                    topic: rows[i].topic.trim(),
-                    type: rows[i].type.trim(),
-                    difficulty: rows[i].difficulty.trim(),
+                    text,
+                    subject,
+                    chapter,
+                    topic,
+                    type,
+                    difficulty,
                     marks: Number(rows[i].marks),
-                    negativeMarks: rows[i].negativeMarks ? Number(rows[i].negativeMarks) : (rows[i].type === 'MCQ' ? -1 : 0),
-                    explanation: rows[i].explanation?.trim() || '',
+                    negativeMarks: rows[i].negativeMarks != null && rows[i].negativeMarks !== '' ? Number(rows[i].negativeMarks) : (type === 'MCQ' ? -1 : 0),
+                    explanation,
                     createdAt: serverTimestamp()
                 };
 
-                if (rows[i].type === 'MCQ') {
+                if (type === 'MCQ') {
                     questionData.options = [
-                        rows[i].optionA.trim(),
-                        rows[i].optionB.trim(),
-                        rows[i].optionC.trim(),
-                        rows[i].optionD.trim()
+                        String(rows[i].optionA).trim(),
+                        String(rows[i].optionB).trim(),
+                        String(rows[i].optionC).trim(),
+                        String(rows[i].optionD).trim()
                     ];
                     questionData.correctAnswer = Number(rows[i].correctAnswer);
                 } else {
                     questionData.options = [];
-                    questionData.correctAnswer = rows[i].correctAnswer.trim();
+                    questionData.correctAnswer = String(rows[i].correctAnswer).trim();
                 }
 
                 await addDoc(collection(db, 'questions'), questionData);

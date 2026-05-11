@@ -270,7 +270,7 @@ const AdminChaptersPage = () => {
                         onClick={() => setIsImporting(true)}
                         className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors"
                     >
-                        <Upload size={18} /> Import CSV
+                        <Upload size={18} /> Import CSV/XLSX
                     </button>
                     <button
                         onClick={() => setIsCreating(true)}
@@ -797,8 +797,8 @@ const AdminChaptersPage = () => {
                         >
                             <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
                                 <div>
-                                    <h2 className="text-xl font-bold text-slate-800">Import Chapters from CSV</h2>
-                                    <p className="text-sm text-slate-500 mt-1">Upload a CSV file to bulk import chapters</p>
+                                    <h2 className="text-xl font-bold text-slate-800">Import Chapters from CSV or XLSX</h2>
+                                    <p className="text-sm text-slate-500 mt-1">Upload a CSV or XLSX file to bulk import chapters</p>
                                 </div>
                                 <button onClick={() => { setIsImporting(false); setParsedRows([]); setValidationResults(new Map()); }}>
                                     <X size={24} className="text-slate-400" />
@@ -808,10 +808,10 @@ const AdminChaptersPage = () => {
                             <div className="p-6 space-y-4">
                                 {/* File Upload */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Select CSV File</label>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Select CSV or XLSX File</label>
                                     <input
                                         type="file"
-                                        accept=".csv"
+                                        accept=".csv,.xlsx,.xls"
                                         onChange={handleFileSelect}
                                         className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                                     />
@@ -901,7 +901,7 @@ const AdminChaptersPage = () => {
                                 {importFile === null && parsedRows.length === 0 && (
                                     <div className="text-center py-8 text-slate-500">
                                         <Upload size={48} className="mx-auto mb-2 opacity-50" />
-                                        <p>Select a CSV file to begin importing</p>
+                                        <p>Select a CSV or XLSX file to begin importing</p>
                                     </div>
                                 )}
                             </div>
