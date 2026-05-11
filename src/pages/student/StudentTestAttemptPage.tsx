@@ -61,6 +61,37 @@ const StudentTestAttemptPage = () => {
     const [showInstructions, setShowInstructions] = useState(true);
     const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
+    const getStorageKey = () => {
+        if (!currentUser || !testId) return '';
+        return `dhitantra_test_progress_${currentUser.uid}_${testId}`;
+    };
+
+    const saveProgress = () => {
+        const key = getStorageKey();
+        if (!key) return;
+
+        const payload = {
+            answers,
+            markedForReview: Array.from(markedForReview),
+            visitedQuestions: Array.from(visitedQuestions),
+            sectionBSelections: {
+                Physics: Array.from(sectionBSelections.Physics),
+                Chemistry: Array.from(sectionBSelections.Chemistry),
+                Mathematics: Array.from(sectionBSelections.Mathematics),
+            },
+            currentQuestionIndex,
+            activeSubject,
+            timeRemaining,
+        };
+
+        localStorage.setItem(key, JSON.stringify(payload));
+    };
+
+    const clearProgress = () => {
+        const key = getStorageKey();
+        if (key) localStorage.removeItem(key);
+    };
+
     useEffect(() => {
         const fetchTest = async () => {
             if (testId) {
@@ -134,6 +165,35 @@ const StudentTestAttemptPage = () => {
         };
         fetchTest();
     }, [testId, navigate]);
+
+    useEffect(() => {
+        if (!testData || !currentUser || !testId) return;
+
+        const key = getStorageKey();
+        if (!key) return;
+
+        const stored = localStorage.getItem(key);
+        if (!stored) return;
+
+        try {
+            const parsed = JSON.parse(stored);
+            setAnswers(parsed.answers || {});
+            setMarkedForReview(new Set(parsed.markedForReview || []));
+            setVisitedQuestions(new Set(parsed.visitedQuestions || [0]));
+            setSectionBSelections({
+                Physics: new Set(parsed.sectionBSelections?.Physics || []),
+                Chemistry: new Set(parsed.sectionBSelections?.Chemistry || []),
+                Mathematics: new Set(parsed.sectionBSelections?.Mathematics || []),
+            });
+            setCurrentQuestionIndex(Math.min(parsed.currentQuestionIndex ?? 0, testData.questions.length - 1));
+            setActiveSubject(parsed.activeSubject || 'Physics');
+            if (parsed.timeRemaining !== undefined) {
+                setTimeRemaining(parsed.timeRemaining);
+            }
+        } catch (error) {
+            console.warn('Failed to restore saved test progress:', error);
+        }
+    }, [testData, currentUser, testId]);
 
     // Timer Logic
     useEffect(() => {
@@ -255,7 +315,7 @@ const StudentTestAttemptPage = () => {
     };
 
     const saveAndNext = () => {
-        // Answer is already saved via handleAnswer
+        saveProgress();
         nextQuestion();
     };
 
@@ -323,6 +383,7 @@ const StudentTestAttemptPage = () => {
 
             // Write to top-level testResults (covered by Firestore rules)
             await addDoc(collection(db, 'testResults'), resultData);
+            clearProgress();
 
             setShowSubmitConfirm(false);
             alert(`Test Submitted!${autoSubmit ? ' (Time Up)' : ''}\n\nYour Score: ${score}\nCorrect: ${correctCount}\nAttempted: ${attemptedCount}`);
