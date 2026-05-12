@@ -95,12 +95,35 @@ const StudentMarketPage = () => {
             createdAt: { seconds: 0, nanoseconds: 0 } as any,
             updatedAt: { seconds: 0, nanoseconds: 0 } as any,
             status: 'published'
+        },
+        {
+            id: 'class-10-mcq-series',
+            name: 'Class 10 MCQ Practice Series',
+            examCategory: 'Class 10',
+            courseClass: 'Class 10',
+            pricing: { type: 'free', currency: 'INR' },
+            description: 'Comprehensive MCQ practice for Class 10 Physics, Chemistry, and Mathematics with detailed explanations.',
+            features: [
+                'Physics, Chemistry & Maths MCQs',
+                'Topic-wise Practice',
+                'Detailed Solutions',
+                'Progress Tracking'
+            ],
+            testIds: ['class10-physics-test', 'class10-chemistry-test', 'class10-maths-test'],
+            createdBy: 'system',
+            createdAt: { seconds: 0, nanoseconds: 0 } as any,
+            updatedAt: { seconds: 0, nanoseconds: 0 } as any,
+            status: 'published'
         }
     ] as TestSeries[];
 
     const getFallbackTests = () => {
         if (selectedCategory === 'SSC') {
             return fallbackTests.filter(item => item.examCategory === 'SSC');
+        }
+
+        if (selectedCategory === 'Class 10') {
+            return fallbackTests.filter(item => item.courseClass === 'Class 10');
         }
 
         if (selectedCategory === 'Class 12') {
@@ -129,10 +152,18 @@ const StudentMarketPage = () => {
                     data = await getAllTestSeries();
                 }
 
+                // 3. If still no data, use fallback tests
+                if (data.length === 0) {
+                    console.warn("No series found in database, using fallback data.");
+                    data = fallbackTests;
+                }
+
                 console.log("Marketplace Data Loaded:", data);
                 setTests(data);
             } catch (error) {
                 console.error("Error fetching test series:", error);
+                // Use fallback data on error
+                setTests(fallbackTests);
             } finally {
                 setIsLoading(false);
             }
