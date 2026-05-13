@@ -522,7 +522,7 @@ const AdminQuestionBank = () => {
                 <div className="overflow-x-auto">
                     <div className="min-w-[800px]">
                     <table className="w-full text-left">
-                        <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
+                        <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm font-semibold uppercase tracking-wider">
                             <tr>
                                 <th className="px-4 py-3">Question</th>
                                 <th className="px-4 py-3">Subject</th>
@@ -546,7 +546,7 @@ const AdminQuestionBank = () => {
                                             {q.text}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className={`text-xs font-medium text-slate-600`}>
+                                            <span className={`text-sm font-medium text-slate-600`}>
                                                 {q.subject}
                                             </span>
                                         </td>

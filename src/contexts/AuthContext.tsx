@@ -7,6 +7,7 @@ interface AuthContextType {
     currentUser: User | null;
     loading: boolean;
     userRole: 'student' | 'admin' | null;
+    userData: any | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,6 +19,7 @@ export function useAuth() {
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [userRole, setUserRole] = useState<'student' | 'admin' | null>(null);
+    const [userData, setUserData] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -30,13 +32,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // If we have a user, fetch their role before finishing loading
                 const unsubRole = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
                     if (docSnap.exists()) {
-                        setUserRole(docSnap.data().role as 'student' | 'admin' || 'student');
+                        const data = docSnap.data();
+                        setUserData(data);
+                        setUserRole(data.role as 'student' | 'admin' || 'student');
                     } else {
+                        setUserData(null);
                         setUserRole('student');
                     }
                     setLoading(false);
                 }, (error) => {
                     console.warn("Role listener error:", error);
+                    setUserData(null);
                     setUserRole('student');
                     setLoading(false);
                 });
@@ -44,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return () => unsubRole();
             } else {
                 setUserRole(null);
+                setUserData(null);
                 setLoading(false);
             }
         });
@@ -54,7 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const value = {
         currentUser,
         loading,
-        userRole
+        userRole,
+        userData
     };
 
     return (

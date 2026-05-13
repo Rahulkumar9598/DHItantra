@@ -248,11 +248,7 @@ const AdminChaptersPage = () => {
     }
 
     return (
-        <motion.div
-            className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-        >
+        <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
@@ -268,13 +264,13 @@ const AdminChaptersPage = () => {
                     </button>
                     <button
                         onClick={() => setIsImporting(true)}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-teal-600 text-white font-semibold rounded-xl hover:bg-teal-700 transition-colors"
                     >
                         <Upload size={18} /> Import CSV/XLSX
                     </button>
                     <button
                         onClick={() => setIsCreating(true)}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-teal-600 text-white font-bold rounded-xl hover:bg-teal-700 transition-colors shadow-lg shadow-teal-500/20"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-teal-600 text-white font-bold rounded-md hover:bg-teal-700 transition-colors"
                     >
                         <Plus size={20} />
                         Create Chapter
@@ -284,23 +280,23 @@ const AdminChaptersPage = () => {
 
             {/* Statistics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-gradient-to-br from-teal-50 to-indigo-50 p-4 rounded-xl border border-teal-200">
+                <div className="bg-slate-100 p-4 rounded-md border border-slate-200">
                     <div className="text-3xl font-bold text-teal-600">{chapters.length}</div>
                     <div className="text-sm text-slate-600 mt-1">Total Chapters</div>
                 </div>
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
-                    <div className="text-3xl font-bold text-green-600">
+                <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
+                    <div className="text-3xl font-bold text-teal-600">
                         {chapters.filter(t => t.subject === 'Physics').length}
                     </div>
                     <div className="text-sm text-slate-600 mt-1">Physics</div>
                 </div>
-                <div className="bg-gradient-to-br from-purple-50 to-violet-50 p-4 rounded-xl border border-purple-200">
-                    <div className="text-3xl font-bold text-purple-600">
+                <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
+                    <div className="text-3xl font-bold text-teal-600">
                         {chapters.filter(t => t.subject === 'Chemistry').length}
                     </div>
                     <div className="text-sm text-slate-600 mt-1">Chemistry</div>
                 </div>
-                <div className="bg-gradient-to-br from-teal-50 to-teal-50 p-4 rounded-xl border border-teal-200">
+                <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
                     <div className="text-3xl font-bold text-teal-600">
                         {chapters.filter(t => t.subject === 'Mathematics').length}
                     </div>
@@ -309,7 +305,7 @@ const AdminChaptersPage = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+            <div className="bg-white rounded-md border border-slate-200 p-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="md:col-span-2 relative">
                         <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -407,7 +403,7 @@ const AdminChaptersPage = () => {
                                 )}
 
                                 {chapter.status && chapter.status !== 'active' && (
-                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${chapter.status === 'draft' ? 'bg-gray-100 text-gray-700' :
+                                    <span className={`px-3 py-1 rounded-full text-sm font-bold ${chapter.status === 'draft' ? 'bg-gray-100 text-gray-700' :
                                         'bg-slate-100 text-slate-700'
                                         }`}>
                                         {chapter.status.charAt(0).toUpperCase() + chapter.status.slice(1)}
@@ -417,18 +413,18 @@ const AdminChaptersPage = () => {
 
                             {chapter.topics && chapter.topics.length > 0 && (
                                 <div className="border-t border-slate-100 pt-3">
-                                    <p className="text-xs text-slate-500 mb-2">Topics ({chapter.topics.length})</p>
+                                    <p className="text-sm text-slate-500 mb-2">Topics ({chapter.topics.length})</p>
                                     <div className="flex flex-wrap gap-1">
                                         {chapter.topics.slice(0, 3).map((topic, idx) => (
                                             <span
                                                 key={idx}
-                                                className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs"
+                                                className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-sm"
                                             >
                                                 {topic}
                                             </span>
                                         ))}
                                         {chapter.topics.length > 3 && (
-                                            <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs">
+                                            <span className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-sm">
                                                 +{chapter.topics.length - 3} more
                                             </span>
                                         )}
@@ -601,7 +597,7 @@ const AdminChaptersPage = () => {
                                 <div className="pt-2">
                                     <button
                                         type="submit"
-                                        className="w-full py-3 bg-gradient-to-r from-teal-600 to-indigo-600 text-white font-bold rounded-lg hover:shadow-lg transition-shadow flex items-center justify-center gap-2"
+                                        className="w-full py-3 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 hover:shadow-lg transition-all flex items-center justify-center gap-2"
                                     >
                                         <Save size={18} />
                                         Create Chapter
@@ -772,7 +768,7 @@ const AdminChaptersPage = () => {
                                 <div className="pt-2">
                                     <button
                                         type="submit"
-                                        className="w-full py-3 bg-gradient-to-r from-teal-600 to-indigo-600 text-white font-bold rounded-lg hover:shadow-lg transition-shadow flex items-center justify-center gap-2"
+                                        className="w-full py-3 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700 hover:shadow-lg transition-all flex items-center justify-center gap-2"
                                     >
                                         <Save size={18} />
                                         Update Chapter
@@ -909,7 +905,7 @@ const AdminChaptersPage = () => {
                     </div>
                 )}
             </AnimatePresence>
-        </motion.div>
+        </div>
     );
 };
 
