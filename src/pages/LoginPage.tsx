@@ -27,9 +27,17 @@ const LoginPage = () => {
         setLoading(true);
 
         try {
-            await signInWithEmailAndPassword(auth, email, password);
-            // Don't block login on Firestore profile/role fetch; AuthContext handles role loading.
-            const returnTo = location.state?.returnTo || '/dashboard';
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            
+            // Check role from Firestore for immediate redirection
+            const { doc, getDoc } = await import('firebase/firestore');
+            const { db } = await import('../firebase');
+            
+            const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+            const userData = userDoc.data();
+            const role = userData?.role || 'student';
+
+            const returnTo = location.state?.returnTo || (role === 'admin' ? '/admin-dashboard' : '/dashboard');
             navigate(returnTo, { replace: true });
         } catch (err: any) {
             console.error(err);

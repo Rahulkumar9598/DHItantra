@@ -16,7 +16,8 @@ export const DEFAULT_SUBJECTS: string[] = [
     'General Intelligence & Reasoning',
     'General Awarencess',
     'Quantitative Aptitude ',
-    'English Comprehension'
+    'English Comprehension',
+    'Accountancy'
 ];
 
 const subjectsCollection = collection(db, 'subjects');

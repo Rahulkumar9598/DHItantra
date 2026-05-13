@@ -59,6 +59,7 @@ const AdminQuestionBank = () => {
     const [validationResults, setValidationResults] = useState<Map<number, ValidationResult>>(new Map());
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [importView, setImportView] = useState<'table' | 'mcq'>('table');
     const subjects = useSubjectList();
 
 
@@ -391,112 +392,43 @@ const AdminQuestionBank = () => {
 
     const stats = getStatistics();
 
-
-    const handleSeed = async () => {
-        if (!window.confirm('Seed 150 dummy questions (aligned with JEE Weightage)?')) return;
-        setIsLoading(true);
-        try {
-            await delay(1500); // Artificial delay for seed
-            const batch = writeBatch(db);
-            const subjects = ['Physics', 'Chemistry', 'Mathematics'];
-            const types = ['MCQ', 'Numerical'];
-            const difficulties = ['Easy', 'Medium', 'Hard'];
-
-            let count = 0;
-            const target = 300;
-
-            // Flatten validation map for easier access
-            const subjectChapters: Record<string, string[]> = {};
-
-            subjects.forEach(sub => {
-                subjectChapters[sub] = [];
-                // @ts-ignore
-                const subData = JEE_MAINS_2024_WEIGHTAGE[sub] || {};
-                Object.values(subData).forEach((unit: any) => {
-                    if (unit.chapters) subjectChapters[sub].push(...unit.chapters);
-                });
-            });
-
-            while (count < target) {
-                const subject = subjects[count % 3];
-                const chaptersList = subjectChapters[subject];
-                // Fallback to 'General' if undefined or empty
-                const availableChapters = (chaptersList && chaptersList.length > 0) ? chaptersList : ['General'];
-                const chapter = availableChapters[count % availableChapters.length];
-                const type = types[count % 2] as 'MCQ' | 'Numerical';
-                const difficulty = difficulties[count % 3] as 'Easy' | 'Medium' | 'Hard';
-
-                const newDocRef = doc(collection(db, 'questions'));
-
-                batch.set(newDocRef, {
-                    text: `Dummy Question ${count + 1} for ${subject} - ${chapter} (${type})`,
-                    subject,
-                    chapter,
-                    topic: 'Basics',
-                    type,
-                    difficulty,
-                    marks: 4,
-                    negativeMarks: type === 'MCQ' ? -1 : 0,
-                    options: type === 'MCQ' ? ['Option A', 'Option B', 'Option C', 'Option D'] : [],
-                    correctAnswer: type === 'MCQ' ? 0 : '10',
-                    explanation: 'This is a dummy explanation.',
-                    createdAt: serverTimestamp()
-                });
-                count++;
-            }
-
-            await batch.commit();
-            alert('Seeded 150 questions!');
-        } catch (error) {
-            console.error("Error seeding:", error);
-            alert("Error seeding questions.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
         <motion.div
-            className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-8"
+            className="p-6 max-w-7xl mx-auto space-y-6 font-sans"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
         >
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Question Bank</h1>
-                    <p className="text-slate-500 mt-1">Manage questions for JEE Mains test generation.</p>
+                    <h1 className="text-xl font-semibold text-slate-800">Question Bank</h1>
+                    <p className="text-sm text-slate-500 mt-1">Manage questions for test generation.</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                     <button
                         onClick={() => downloadTemplate('questions')}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 transition-colors"
                     >
-                        <Download size={18} /> Download Template
+                        <Download size={16} /> Download Template
                     </button>
                     <button
                         onClick={() => setIsImporting(true)}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 transition-colors"
                     >
-                        <Upload size={18} /> Import CSV/XLSX
+                        <Upload size={16} /> Import CSV/XLSX
                     </button>
                     <button
                         onClick={() => setShowStats(!showStats)}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors"
+                        className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 transition-colors"
                     >
-                        <BarChart3 size={20} /> Statistics
+                        <BarChart3 size={16} /> Statistics
                     </button>
-                    <button
-                        onClick={handleSeed}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-yellow-600 text-white font-semibold rounded-xl hover:bg-yellow-700 transition-colors"
-                    >
-                        Seed DB
-                    </button>
+
                     <button
                         onClick={() => setIsCreating(true)}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-teal-600 text-white font-bold rounded-xl hover:bg-teal-700 transition-colors shadow-lg shadow-teal-500/20"
+                        className="flex items-center gap-2 px-4 py-1.5 bg-teal-600 text-white text-sm font-medium rounded-md hover:bg-teal-700 transition-colors"
                     >
-                        <Plus size={20} /> Add Question
+                        <Plus size={16} /> Add Question
                     </button>
                 </div>
             </div>
@@ -504,63 +436,68 @@ const AdminQuestionBank = () => {
             {/* Statistics Panel */}
             {showStats && (
                 <motion.div
-                    initial={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-gradient-to-br from-teal-50 to-indigo-50 rounded-2xl p-6 border border-teal-100"
+                    className="bg-slate-50 rounded-md p-4 border border-slate-200"
                 >
-                    <h2 className="text-lg font-bold text-slate-800 mb-4">Question Bank Statistics</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div className="bg-white rounded-xl p-4 text-center">
-                            <div className="text-3xl font-bold text-teal-600">{stats.total}</div>
-                            <div className="text-sm text-slate-500 mt-1">Total Questions</div>
+                    <h2 className="text-sm font-semibold text-slate-700 mb-3">Question Bank Statistics</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+                        <div className="bg-white rounded border border-slate-100 p-3 text-center">
+                            <div className="text-lg font-semibold text-slate-800">{stats.total}</div>
+                            <div className="text-xs text-slate-500 mt-0.5">Total Questions</div>
                         </div>
-                        <div className="bg-white rounded-xl p-4 text-center">
-                            <div className="text-2xl font-bold text-green-600">{stats.bySubject['Physics'] || 0}</div>
-                            <div className="text-sm text-slate-500 mt-1">Physics</div>
+                        <div className="bg-white rounded border border-slate-100 p-3 text-center">
+                            <div className="text-lg font-semibold text-slate-800">{stats.bySubject['Physics'] || 0}</div>
+                            <div className="text-xs text-slate-500 mt-0.5">Physics</div>
                         </div>
-                        <div className="bg-white rounded-xl p-4 text-center">
-                            <div className="text-2xl font-bold text-purple-600">{stats.bySubject['Chemistry'] || 0}</div>
-                            <div className="text-sm text-slate-500 mt-1">Chemistry</div>
+                        <div className="bg-white rounded border border-slate-100 p-3 text-center">
+                            <div className="text-lg font-semibold text-slate-800">{stats.bySubject['Chemistry'] || 0}</div>
+                            <div className="text-xs text-slate-500 mt-0.5">Chemistry</div>
                         </div>
-                        <div className="bg-white rounded-xl p-4 text-center">
-                            <div className="text-2xl font-bold text-teal-600">{stats.bySubject['Mathematics'] || 0}</div>
-                            <div className="text-sm text-slate-500 mt-1">Mathematics</div>
+                        <div className="bg-white rounded border border-slate-100 p-3 text-center">
+                            <div className="text-lg font-semibold text-slate-800">{stats.bySubject['Mathematics'] || 0}</div>
+                            <div className="text-xs text-slate-500 mt-0.5">Mathematics</div>
                         </div>
-                        <div className="bg-white rounded-xl p-4 text-center">
-                            <div className="text-xl font-bold text-slate-600">{stats.byType.MCQ} / {stats.byType.Numerical}</div>
-                            <div className="text-sm text-slate-500 mt-1">MCQ / Numerical</div>
+                        <div className="bg-white rounded border border-slate-100 p-3 text-center">
+                            <div className="text-lg font-semibold text-slate-800">{stats.bySubject['Accountancy'] || 0}</div>
+                            <div className="text-xs text-slate-500 mt-0.5">Accountancy</div>
+                        </div>
+                        <div className="bg-white rounded border border-slate-100 p-3 text-center">
+                            <div className="text-sm font-semibold text-slate-800 mt-1">{stats.byType.MCQ} / {stats.byType.Numerical}</div>
+                            <div className="text-xs text-slate-500 mt-0.5">MCQ / Numerical</div>
                         </div>
                     </div>
                 </motion.div>
             )}
 
             {/* Filters and Search */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="bg-white rounded-md border border-slate-200 p-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                     <div className="md:col-span-2 relative">
-                        <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input
                             type="text"
                             placeholder="Search questions..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500"
+                            className="w-full pl-9 pr-3 py-1.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                         />
                     </div>
                     <select
                         value={filterSubject}
                         onChange={(e) => setFilterSubject(e.target.value)}
-                        className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 bg-white"
+                        className="px-3 py-1.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:border-teal-500 bg-white"
                     >
                         <option value="all">All Subjects</option>
                         <option value="Physics">Physics</option>
                         <option value="Chemistry">Chemistry</option>
                         <option value="Mathematics">Mathematics</option>
+                        <option value="Accountancy">Accountancy</option>
                     </select>
                     <select
                         value={filterType}
                         onChange={(e) => setFilterType(e.target.value)}
-                        className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 bg-white"
+                        className="px-3 py-1.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:border-teal-500 bg-white"
                     >
                         <option value="all">All Types</option>
                         <option value="MCQ">MCQ</option>
@@ -569,90 +506,72 @@ const AdminQuestionBank = () => {
                     <select
                         value={filterDifficulty}
                         onChange={(e) => setFilterDifficulty(e.target.value)}
-                        className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 bg-white"
+                        className="px-3 py-1.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:border-teal-500 bg-white"
                     >
                         <option value="all">All Difficulties</option>
                         <option value="Easy">Easy</option>
                         <option value="Medium">Medium</option>
                         <option value="Hard">Hard</option>
                     </select>
-                    <select
-                        value={filterExam}
-                        onChange={(e) => setFilterExam(e.target.value)}
-                        className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-500 bg-white"
-                    >
-                        <option value="all">All Exams</option>
-                        <option value="JEE">JEE</option>
-                        <option value="NEET">NEET</option>
-                        <option value="SSC">SSC</option>
-                        <option value="Boards">Boards</option>
-                        <option value="Other">Other</option>
-                    </select>
                 </div>
 
             </div>
 
             {/* Questions Table */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-md border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <div className="min-w-[800px]">
                     <table className="w-full text-left">
-                        <thead className="bg-slate-50/50 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                        <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
                             <tr>
-                                <th className="px-6 py-4">Question</th>
-                                <th className="px-6 py-4">Subject</th>
-                                <th className="px-6 py-4">Chapter</th>
-                                <th className="px-6 py-4">Topic</th>
-                                <th className="px-6 py-4">Exam</th>
-                                <th className="px-6 py-4">Type</th>
-                                <th className="px-6 py-4">Marks</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
+                                <th className="px-4 py-3">Question</th>
+                                <th className="px-4 py-3">Subject</th>
+                                <th className="px-4 py-3">Chapter</th>
+                                <th className="px-4 py-3">Topic</th>
+                                <th className="px-4 py-3">Exam</th>
+                                <th className="px-4 py-3">Type</th>
+                                <th className="px-4 py-3">Marks</th>
+                                <th className="px-4 py-3 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-slate-100 text-sm">
                             {isLoading ? (
-                                <tr><td colSpan={8} className="text-center py-8"><Loader2 className="animate-spin inline" /></td></tr>
+                                <tr><td colSpan={8} className="text-center py-6"><Loader2 className="animate-spin inline" size={20} /></td></tr>
                             ) : filteredQuestions.length === 0 ? (
-                                <tr><td colSpan={8} className="text-center py-8 text-slate-500">No questions found. Add some to get started.</td></tr>
+                                <tr><td colSpan={8} className="text-center py-6 text-slate-500">No questions found. Add some to get started.</td></tr>
                             ) : (
                                 filteredQuestions.map((q) => (
-                                    <tr key={q.id} className="hover:bg-slate-50/50">
-                                        <td className="px-6 py-4 font-medium text-slate-700 max-w-md truncate">
+                                    <tr key={q.id} className="hover:bg-slate-50 transition-colors">
+                                        <td className="px-4 py-3 font-medium text-slate-700 max-w-md truncate">
                                             {q.text}
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded text-xs font-bold ${q.subject === 'Physics' ? 'bg-green-100 text-green-700' :
-                                                q.subject === 'Chemistry' ? 'bg-purple-100 text-purple-700' :
-                                                    'bg-teal-100 text-teal-700'
-                                                }`}>
+                                        <td className="px-4 py-3">
+                                            <span className={`text-xs font-medium text-slate-600`}>
                                                 {q.subject}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">{q.chapter}</td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">{q.topic || '-'}</td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">{q.examCategory || 'General'}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded text-xs font-bold ${q.type === 'MCQ' ? 'bg-teal-100 text-teal-700' : 'bg-teal-100 text-teal-700'
-                                                }`}>
-                                                {q.type}
-                                            </span>
+                                        <td className="px-4 py-3 text-slate-600">{q.chapter}</td>
+                                        <td className="px-4 py-3 text-slate-600">{q.topic || '-'}</td>
+                                        <td className="px-4 py-3 text-slate-600">{q.examCategory || 'General'}</td>
+                                        <td className="px-4 py-3 text-slate-600">
+                                            {q.type}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">{q.marks || 4}</td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
+                                        <td className="px-4 py-3 text-slate-600">{q.marks || 4}</td>
+                                        <td className="px-4 py-3 text-right">
+                                            <div className="flex items-center justify-end gap-3">
                                                 <button
                                                     onClick={() => handleEdit(q)}
                                                     className="text-slate-400 hover:text-teal-600 transition-colors"
                                                     title="Edit question"
                                                 >
-                                                    <Edit2 size={18} />
+                                                    <Edit2 size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => setConfirmDeleteId(q.id)}
                                                     className="text-slate-400 hover:text-red-600 transition-colors"
                                                     title="Delete question"
                                                 >
-                                                    <Trash2 size={18} />
+                                                    <Trash2 size={16} />
                                                 </button>
                                             </div>
                                         </td>
@@ -1251,75 +1170,171 @@ const AdminQuestionBank = () => {
                                         className="w-full px-4 py-2 border border-slate-300 rounded-lg"
                                     />
                                     <p className="text-xs text-slate-500 mt-1">
-                                        Required columns: text, subject, chapter, topic, type, difficulty, marks, negativeMarks, optionA-D (for MCQ), correctAnswer, explanation
+                                        Required columns: text, textHindi, subject, chapter, topic, type, difficulty, marks, negativeMarks, optionA-D, optionHindiA-D, correctAnswer, explanation, examCategory
                                     </p>
                                 </div>
 
                                 {/* Preview and Validation */}
                                 {parsedRows.length > 0 && (
                                     <div className="space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <h3 className="font-semibold text-slate-700">
-                                                Preview ({parsedRows.length} rows found)
-                                            </h3>
-                                            <div className="text-sm text-slate-600">
-                                                Valid: {Array.from(validationResults.values()).filter(v => v.valid).length} |
-                                                Invalid: {Array.from(validationResults.values()).filter(v => !v.valid).length}
+                                        <div className="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                            <div>
+                                                <h3 className="font-bold text-slate-800">
+                                                    Preview ({parsedRows.length} rows found)
+                                                </h3>
+                                                <div className="text-sm text-slate-500 mt-0.5">
+                                                    Valid: <span className="text-green-600 font-bold">{Array.from(validationResults.values()).filter(v => v.valid).length}</span> |
+                                                    Invalid: <span className="text-red-600 font-bold">{Array.from(validationResults.values()).filter(v => !v.valid).length}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex bg-white border border-slate-200 rounded-lg p-1">
+                                                <button
+                                                    onClick={() => setImportView('table')}
+                                                    className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${importView === 'table' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+                                                >
+                                                    Table View
+                                                </button>
+                                                <button
+                                                    onClick={() => setImportView('mcq')}
+                                                    className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${importView === 'mcq' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+                                                >
+                                                    MCQ Format
+                                                </button>
                                             </div>
                                         </div>
 
-                                        {/* Preview Table */}
-                                        <div className="max-h-96 overflow-auto border rounded-lg">
-                                            <table className="w-full text-sm">
-                                                <thead className="bg-slate-50 sticky top-0">
-                                                    <tr>
-                                                        <th className="px-3 py-2 text-left">Status</th>
-                                                        <th className="px-3 py-2 text-left">Question</th>
-                                                        <th className="px-3 py-2 text-left">Subject</th>
-                                                        <th className="px-3 py-2 text-left">Chapter</th>
-                                                        <th className="px-3 py-2 text-left">Type</th>
-                                                        <th className="px-3 py-2 text-left">Errors</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y">
+                                        {/* Preview Content */}
+                                        <div className="max-h-[50vh] overflow-auto border border-slate-100 rounded-xl bg-slate-50/30 p-4">
+                                            {importView === 'table' ? (
+                                                <div className="border rounded-xl overflow-hidden bg-white shadow-sm">
+                                                    <table className="w-full text-sm text-left">
+                                                        <thead className="bg-slate-50 border-b border-slate-100 sticky top-0 z-10">
+                                                            <tr>
+                                                                <th className="px-4 py-3 font-bold text-slate-600">Status</th>
+                                                                <th className="px-4 py-3 font-bold text-slate-600">Question Text</th>
+                                                                <th className="px-4 py-3 font-bold text-slate-600">Subject</th>
+                                                                <th className="px-4 py-3 font-bold text-slate-600">Chapter</th>
+                                                                <th className="px-4 py-3 font-bold text-slate-600">Type</th>
+                                                                <th className="px-4 py-3 font-bold text-slate-600">Errors</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-slate-50">
+                                                            {parsedRows.map((row, index) => {
+                                                                const validation = validationResults.get(index);
+                                                                return (
+                                                                    <tr key={index} className={validation?.valid ? 'hover:bg-green-50/30' : 'bg-red-50/30 hover:bg-red-50/50'}>
+                                                                        <td className="px-4 py-3">
+                                                                            {validation?.valid ? (
+                                                                                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs">✓</div>
+                                                                            ) : (
+                                                                                <div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xs">✗</div>
+                                                                            )}
+                                                                        </td>
+                                                                        <td className="px-4 py-3 max-w-xs truncate font-medium text-slate-700">{row.text}</td>
+                                                                        <td className="px-4 py-3 text-slate-600">{row.subject}</td>
+                                                                        <td className="px-4 py-3 text-slate-600">{row.chapter}</td>
+                                                                        <td className="px-4 py-3 text-slate-600">{row.type}</td>
+                                                                        <td className="px-4 py-3 text-xs text-red-600 font-medium">
+                                                                            {validation?.errors.slice(0, 2).join(', ')}
+                                                                            {validation && validation.errors.length > 2 ? '...' : ''}
+                                                                        </td>
+                                                                    </tr>
+                                                                );
+                                                            })}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     {parsedRows.map((row, index) => {
                                                         const validation = validationResults.get(index);
+                                                        if (!validation?.valid && importView === 'mcq') return null; // Only show valid in MCQ view
+
                                                         return (
-                                                            <tr key={index} className={validation?.valid ? 'bg-green-50/50' : 'bg-red-50/50'}>
-                                                                <td className="px-3 py-2">
-                                                                    {validation?.valid ? (
-                                                                        <span className="text-green-600">✓</span>
-                                                                    ) : (
-                                                                        <span className="text-red-600">✗</span>
-                                                                    )}
-                                                                </td>
-                                                                <td className="px-3 py-2 max-w-xs truncate">{row.text}</td>
-                                                                <td className="px-3 py-2">{row.subject}</td>
-                                                                <td className="px-3 py-2">{row.chapter}</td>
-                                                                <td className="px-3 py-2">{row.type}</td>
-                                                                <td className="px-3 py-2 text-xs text-red-600">
-                                                                    {validation?.errors.slice(0, 2).join(', ')}
-                                                                    {validation && validation.errors.length > 2 ? '...' : ''}
-                                                                </td>
-                                                            </tr>
+                                                            <div key={index} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                                                                <div className="flex justify-between items-start mb-3">
+                                                                    <span className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 text-[10px] font-black uppercase tracking-wider">
+                                                                        {row.subject} • {row.difficulty}
+                                                                    </span>
+                                                                    <span className="text-[10px] font-bold text-slate-400">Row {index + 1}</span>
+                                                                </div>
+
+                                                                <h4 className="text-sm font-bold text-slate-800 mb-2 line-clamp-3 leading-relaxed">
+                                                                    {row.text}
+                                                                </h4>
+                                                                {row.textHindi && (
+                                                                    <h4 className="text-sm font-medium text-slate-500 mb-4 line-clamp-3 leading-relaxed italic">
+                                                                        {row.textHindi}
+                                                                    </h4>
+                                                                )}
+
+                                                                {row.type === 'MCQ' ? (
+                                                                    <div className="space-y-2 mb-4">
+                                                                        {[
+                                                                            { label: 'A', text: row.optionA, hindi: row.optionHindiA },
+                                                                            { label: 'B', text: row.optionB, hindi: row.optionHindiB },
+                                                                            { label: 'C', text: row.optionC, hindi: row.optionHindiC },
+                                                                            { label: 'D', text: row.optionD, hindi: row.optionHindiD }
+                                                                        ].map((opt, i) => (
+                                                                            <div
+                                                                                key={i}
+                                                                                className={`flex flex-col gap-1 p-2.5 rounded-xl border text-xs transition-colors ${Number(row.correctAnswer) === i
+                                                                                    ? 'bg-teal-50 border-teal-200 text-teal-800 font-bold'
+                                                                                    : 'bg-slate-50/50 border-slate-100 text-slate-600'
+                                                                                    }`}
+                                                                            >
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] flex-shrink-0 ${Number(row.correctAnswer) === i ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                                                                                        {opt.label}
+                                                                                    </div>
+                                                                                    <span className="flex-1">{opt.text}</span>
+                                                                                    {Number(row.correctAnswer) === i && <span className="text-[10px] uppercase font-black text-teal-600">Correct</span>}
+                                                                                </div>
+                                                                                {opt.hindi && (
+                                                                                    <div className="pl-8 text-[11px] text-slate-500 italic">
+                                                                                        {opt.hindi}
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 mb-4">
+                                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Numerical Answer</span>
+                                                                        <span className="text-sm font-black text-slate-700">{row.correctAnswer}</span>
+                                                                    </div>
+                                                                )}
+
+                                                                <div className="pt-3 border-t border-slate-50 flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                                                    <span>{row.chapter}</span>
+                                                                    <span>{row.marks} Marks</span>
+                                                                </div>
+                                                            </div>
                                                         );
                                                     })}
-                                                </tbody>
-                                            </table>
+                                                    {Array.from(validationResults.values()).filter(v => v.valid).length === 0 && (
+                                                        <div className="col-span-full py-12 text-center text-slate-500 italic">
+                                                            No valid questions found to preview in MCQ format.
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Upload Progress */}
                                         {isUploading && (
-                                            <div>
-                                                <div className="flex justify-between text-sm mb-1">
-                                                    <span>Uploading...</span>
+                                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                                                <div className="flex justify-between text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                                    <span>Uploading Questions...</span>
                                                     <span>{Math.round(uploadProgress)}%</span>
                                                 </div>
-                                                <div className="w-full bg-slate-200 rounded-full h-2">
+                                                <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
                                                     <div
-                                                        className="bg-teal-600 h-2 rounded-full transition-all"
+                                                        className="bg-linear-to-r from-teal-500 to-indigo-600 h-full transition-all duration-500 relative"
                                                         style={{ width: `${uploadProgress}%` }}
-                                                    />
+                                                    >
+                                                        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-[shimmer_1.5s_infinite]" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         )}
@@ -1328,10 +1343,10 @@ const AdminQuestionBank = () => {
                                         <button
                                             onClick={handleImportCSV}
                                             disabled={isUploading || Array.from(validationResults.values()).filter(v => v.valid).length === 0}
-                                            className="w-full py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 disabled:bg-slate-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                            className="w-full py-4 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-teal-600 active:scale-[0.98] transition-all duration-300 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed shadow-xl shadow-slate-900/10 flex items-center justify-center gap-3"
                                         >
                                             {isUploading ? <Loader2 className="animate-spin" size={18} /> : <Upload size={18} />}
-                                            {isUploading ? 'Importing...' : `Import ${Array.from(validationResults.values()).filter(v => v.valid).length} Valid Questions`}
+                                            {isUploading ? 'IMPORTING DATA...' : `IMPORT ${Array.from(validationResults.values()).filter(v => v.valid).length} VALID QUESTIONS`}
                                         </button>
                                     </div>
                                 )}

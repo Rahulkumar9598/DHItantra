@@ -17,6 +17,7 @@ export interface ChapterCSVRow {
 
 export interface QuestionCSVRow {
     text: string;
+    textHindi?: string;
     subject: string;
     chapter: string;
     topic: string;
@@ -28,8 +29,13 @@ export interface QuestionCSVRow {
     optionB: string;
     optionC: string;
     optionD: string;
+    optionHindiA?: string;
+    optionHindiB?: string;
+    optionHindiC?: string;
+    optionHindiD?: string;
     correctAnswer: string;
     explanation: string;
+    examCategory?: string;
 }
 
 export interface ValidationResult {
@@ -50,9 +56,73 @@ const parseExcelFile = async <T>(file: File): Promise<ParsedData<T>> => {
         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const data = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as T[];
+        
+        // Get raw data
+        const rawData = XLSX.utils.sheet_to_json(worksheet, { defval: '' }) as any[];
+        
+        // Normalize headers for each row
+        const normalizedData = rawData.map(row => {
+            const normalizedRow: any = {};
+            Object.keys(row).forEach(key => {
+                const k = key.toLowerCase().replace(/\s+/g, '').replace(/_/g, '');
+                
+                // Map common variations to exact interface keys
+                let targetKey = k;
+                if (k === 'question' || k === 'questiontext' || k === 'text') targetKey = 'text';
+                if (k === 'texthindi' || k === 'questionhindi' || k === 'hindi' || k === 'hinditext') targetKey = 'textHindi';
+                if (k === 'subject' || k === 'sub' || k === 'subjectname' || k === 'category') targetKey = 'subject';
+                if (k === 'chapter' || k === 'chap' || k === 'chaptername' || k === 'unit') targetKey = 'chapter';
+                if (k === 'topic' || k === 'topicname') targetKey = 'topic';
+                if (k === 'type' || k === 'questiontype') targetKey = 'type';
+                if (k === 'difficulty' || k === 'level') targetKey = 'difficulty';
+                if (k === 'marks' || k === 'score') targetKey = 'marks';
+                if (k === 'negativemark' || k === 'negativemarking') targetKey = 'negativeMarks';
+                if (k === 'optiona' || k === 'a' || k === 'opt1' || k === 'option1' || k === 'choice1' || k === '1') targetKey = 'optionA';
+                if (k === 'optionb' || k === 'b' || k === 'opt2' || k === 'option2' || k === 'choice2' || k === '2') targetKey = 'optionB';
+                if (k === 'optionc' || k === 'c' || k === 'opt3' || k === 'option3' || k === 'choice3' || k === '3') targetKey = 'optionC';
+                if (k === 'optiond' || k === 'd' || k === 'opt4' || k === 'option4' || k === 'choice4' || k === '4') targetKey = 'optionD';
+                if (k === 'optionhindia') targetKey = 'optionHindiA';
+                if (k === 'optionhindib') targetKey = 'optionHindiB';
+                if (k === 'optionhindic') targetKey = 'optionHindiC';
+                if (k === 'optionhindid') targetKey = 'optionHindiD';
+                if (k === 'ans' || k === 'answer' || k === 'correctans' || k === 'correctanswer' || k === 'key') targetKey = 'correctAnswer';
+                if (k === 'explanation' || k === 'solution' || k === 'sol') targetKey = 'explanation';
+                if (k === 'exam' || k === 'examcategory' || k === 'examname') targetKey = 'examCategory';
+                
+                normalizedRow[targetKey] = row[key];
+            });
+
+            // Auto-detect subject from file name if missing in row
+            if (!normalizedRow.subject || normalizedRow.subject === '') {
+                const fileName = file.name.toLowerCase();
+                if (fileName.includes('physics')) normalizedRow.subject = 'Physics';
+                else if (fileName.includes('chemistry')) normalizedRow.subject = 'Chemistry';
+                else if (fileName.includes('math')) normalizedRow.subject = 'Mathematics';
+                else if (fileName.includes('accountancy') || fileName.includes('accounts')) normalizedRow.subject = 'Accountancy';
+            }
+
+            // Default values if missing
+            if (!normalizedRow.chapter || normalizedRow.chapter === '') normalizedRow.chapter = 'General';
+            if (!normalizedRow.topic || normalizedRow.topic === '') normalizedRow.topic = 'General';
+            if (!normalizedRow.type) normalizedRow.type = 'MCQ';
+            if (!normalizedRow.difficulty) normalizedRow.difficulty = 'Medium';
+            if (!normalizedRow.marks) normalizedRow.marks = '4';
+            if (!normalizedRow.negativeMarks) normalizedRow.negativeMarks = normalizedRow.type === 'MCQ' ? '-1' : '0';
+
+            // Answer intelligence: Convert A,B,C,D or 1,2,3,4 to 0,1,2,3
+            if (normalizedRow.correctAnswer !== undefined && normalizedRow.correctAnswer !== null) {
+                const ans = normalizedRow.correctAnswer.toString().toUpperCase().trim();
+                if (ans === 'A' || ans === '1') normalizedRow.correctAnswer = '0';
+                else if (ans === 'B' || ans === '2') normalizedRow.correctAnswer = '1';
+                else if (ans === 'C' || ans === '3') normalizedRow.correctAnswer = '2';
+                else if (ans === 'D' || ans === '4') normalizedRow.correctAnswer = '3';
+            }
+
+            return normalizedRow as T;
+        });
+
         return {
-            data,
+            data: normalizedData,
             errors: []
         };
     } catch (error) {
@@ -116,8 +186,8 @@ export const validateChapter = async (row: ChapterCSVRow, index: number): Promis
 
     if (!row.subject || row.subject.trim() === '') {
         errors.push(`Row ${index + 1}: Subject is required`);
-    } else if (!['Physics', 'Chemistry', 'Mathematics'].includes(row.subject)) {
-        errors.push(`Row ${index + 1}: Subject must be Physics, Chemistry, or Mathematics`);
+    } else if (!['Physics', 'Chemistry', 'Mathematics', 'Accountancy'].includes(row.subject)) {
+        errors.push(`Row ${index + 1}: Subject must be Physics, Chemistry, Mathematics, or Accountancy`);
     }
 
     if (!row.description || row.description.trim() === '') {
@@ -166,22 +236,29 @@ export const validateChapter = async (row: ChapterCSVRow, index: number): Promis
 export const validateQuestion = async (row: QuestionCSVRow, index: number): Promise<ValidationResult> => {
     const errors: string[] = [];
 
-    // Required fields
+    // Diagnostic info: what keys did we actually find?
+    const foundKeys = Object.keys(row).filter(k => row[k] !== undefined && row[k] !== '');
+    const diagnosticInfo = ` [Detected columns: ${foundKeys.join(', ')}]`;
+
+    // Aggressive Fallback for Question Text
     if (!row.text || row.text.trim() === '') {
-        errors.push(`Row ${index + 1}: Question text is required`);
+        // Try to find ANY column that looks like a question (ends with ? or is long)
+        const possibleQuestionKey = Object.keys(row).find(k => {
+            const val = row[k]?.toString() || '';
+            return val.includes('?') || val.length > 30;
+        });
+        if (possibleQuestionKey) {
+            row.text = row[possibleQuestionKey].toString();
+        } else {
+            errors.push(`Row ${index + 1}: Question text is required.${diagnosticInfo}`);
+        }
     }
 
-    if (!row.subject || !['Physics', 'Chemistry', 'Mathematics'].includes(row.subject)) {
-        errors.push(`Row ${index + 1}: Valid subject is required (Physics/Chemistry/Mathematics)`);
+    if (!row.subject || !['Physics', 'Chemistry', 'Mathematics', 'Accountancy'].includes(row.subject)) {
+        errors.push(`Row ${index + 1}: Valid subject is required (Physics/Chemistry/Mathematics/Accountancy)`);
     }
 
-    if (!row.chapter || row.chapter.trim() === '') {
-        errors.push(`Row ${index + 1}: Chapter is required`);
-    }
-
-    if (!row.topic || row.topic.trim() === '') {
-        errors.push(`Row ${index + 1}: Topic is required`);
-    }
+    // Chapter and Topic are now optional (auto-filled with 'General' if missing)
 
     if (!row.type || !['MCQ', 'Numerical'].includes(row.type)) {
         errors.push(`Row ${index + 1}: Type must be MCQ or Numerical`);
@@ -193,6 +270,10 @@ export const validateQuestion = async (row: QuestionCSVRow, index: number): Prom
 
     if (!row.marks || isNaN(Number(row.marks)) || Number(row.marks) <= 0) {
         errors.push(`Row ${index + 1}: Marks must be a positive number`);
+    }
+
+    if (row.examCategory && !['JEE', 'NEET', 'SSC', 'Boards', 'Other'].includes(row.examCategory)) {
+        errors.push(`Row ${index + 1}: examCategory must be JEE, NEET, SSC, Boards, or Other`);
     }
 
     // Type-specific validation
@@ -214,6 +295,8 @@ export const validateQuestion = async (row: QuestionCSVRow, index: number): Prom
     }
 
     // Verify chapter exists (if no other errors so far)
+    // TEMPORARILY DISABLED: Allow importing questions without strict chapter/topic pre-existence
+    /*
     if (errors.length === 0 && row.chapter && row.subject) {
         try {
             const chaptersQuery = query(
@@ -237,9 +320,12 @@ export const validateQuestion = async (row: QuestionCSVRow, index: number): Prom
             errors.push(`Row ${index + 1}: Error verifying chapter existence`);
         }
     }
+    */
 
     // Check for duplicate questions
+    // TEMPORARILY DISABLED: Allow importing duplicated questions
     let isDuplicate = false;
+    /*
     if (errors.length === 0 && row.text && row.subject) {
         try {
             const duplicateQuery = query(
@@ -256,6 +342,7 @@ export const validateQuestion = async (row: QuestionCSVRow, index: number): Prom
             console.error('Error checking for duplicate questions:', error);
         }
     }
+    */
 
     return {
         valid: errors.length === 0,
@@ -324,6 +411,8 @@ export const batchUploadQuestions = async (
     for (let i = 0; i < rows.length; i++) {
         try {
             // Check if already exists before uploading
+            // TEMPORARILY DISABLED: Allow duplicate question imports
+            /*
             const duplicateQuery = query(
                 collection(db, 'questions'),
                 where('text', '==', rows[i].text.trim()),
@@ -335,16 +424,22 @@ export const batchUploadQuestions = async (
                 console.log(`Skipping duplicate question`);
                 skipped++;
             } else {
+            */
+            // Ensure this block always executes since duplicate check is disabled
+            if (true) {
                 const text = String(rows[i].text ?? '').trim();
+                const textHindi = String(rows[i].textHindi ?? '').trim();
                 const subject = String(rows[i].subject ?? '').trim();
                 const chapter = String(rows[i].chapter ?? '').trim();
                 const topic = String(rows[i].topic ?? '').trim();
                 const type = String(rows[i].type ?? '').trim();
                 const difficulty = String(rows[i].difficulty ?? '').trim();
                 const explanation = String(rows[i].explanation ?? '').trim();
+                const examCategory = String(rows[i].examCategory ?? 'JEE').trim();
 
                 const questionData: any = {
                     text,
+                    textHindi,
                     subject,
                     chapter,
                     topic,
@@ -353,6 +448,7 @@ export const batchUploadQuestions = async (
                     marks: Number(rows[i].marks),
                     negativeMarks: rows[i].negativeMarks != null && rows[i].negativeMarks !== '' ? Number(rows[i].negativeMarks) : (type === 'MCQ' ? -1 : 0),
                     explanation,
+                    examCategory,
                     createdAt: serverTimestamp()
                 };
 
@@ -363,9 +459,16 @@ export const batchUploadQuestions = async (
                         String(rows[i].optionC).trim(),
                         String(rows[i].optionD).trim()
                     ];
+                    questionData.optionsHindi = [
+                        String(rows[i].optionHindiA ?? '').trim(),
+                        String(rows[i].optionHindiB ?? '').trim(),
+                        String(rows[i].optionHindiC ?? '').trim(),
+                        String(rows[i].optionHindiD ?? '').trim()
+                    ];
                     questionData.correctAnswer = Number(rows[i].correctAnswer);
                 } else {
                     questionData.options = [];
+                    questionData.optionsHindi = [];
                     questionData.correctAnswer = String(rows[i].correctAnswer).trim();
                 }
 
